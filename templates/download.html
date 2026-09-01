@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Air Cursor - Download & Terms</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* 💥 આખા પેજમાંથી સ્ક્રોલ બંધ 💥 */
+        html, body {
+            height: 100vh !important;
+            min-height: 100vh !important;
+            max-height: 100vh !important;
+            overflow: hidden !important;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* તમામ એલિમેન્ટ્સમાંથી સ્ક્રોલબાર અદ્રશ્ય કરવા */
+        *::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+        }
+        * {
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
+        }
+
+        .download-page-wrap {
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .download-card {
+            width: 100%;
+            max-width: 720px;
+            padding: 35px 40px;
+            border-radius: 24px;
+            text-align: left;
+            background: var(--bg-card);
+            backdrop-filter: blur(24px);
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+            position: relative;
+        }
+
+        .download-card h1 {
+            font-size: 2rem;
+            margin-bottom: 6px;
+            color: var(--accent);
+        }
+
+        .download-card p.subtitle {
+            opacity: 0.75;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            color: var(--text-main);
+        }
+
+        /* 💥 T&C બોક્સ 💥 */
+        .tc-box {
+            background: rgba(var(--accent-rgb), 0.04);
+            border: 1px solid var(--border);
+            padding: 20px 24px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: border-color 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        /* 💥 T&C હેડિંગ અને લિસ્ટ વચ્ચે વધારાની સ્પેસ (margin-bottom: 18px) 💥 */
+        .tc-box h3 {
+            margin-top: 0;
+            margin-bottom: 18px; /* 👈 અહીં સ્પેસ ઉમેરી છે */
+            font-size: 1.05rem;
+            color: var(--text-main);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        /* બ્લિંક / હાઇલાઇટ એનિમેશન */
+        @keyframes phoneSettingBlink {
+            0% {
+                background-color: transparent;
+                box-shadow: none;
+                color: var(--text-main);
+                transform: scale(1);
+            }
+            25% {
+                background-color: rgba(var(--accent-rgb), 0.28);
+                box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.7);
+                color: var(--accent);
+                transform: scale(1.04);
+            }
+            50% {
+                background-color: transparent;
+                box-shadow: none;
+                color: var(--text-main);
+                transform: scale(1);
+            }
+            75% {
+                background-color: rgba(var(--accent-rgb), 0.28);
+                box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.7);
+                color: var(--accent);
+                transform: scale(1.04);
+            }
+            100% {
+                background-color: transparent;
+                box-shadow: none;
+                color: var(--text-main);
+                transform: scale(1);
+            }
+        }
+
+        .tc-highlight-active {
+            animation: phoneSettingBlink 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .tc-box.box-highlight-active {
+            border-color: rgba(var(--accent-rgb), 0.6);
+            box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.2);
+        }
+
+        .tc-box ul {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+            opacity: 0.85;
+            font-size: 0.88rem;
+            line-height: 1.6;
+            color: var(--text-main);
+        }
+
+        .tc-box li {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .tc-box li:last-child {
+            margin-bottom: 0;
+        }
+
+        .tc-checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 22px;
+            padding: 0 2px;
+            user-select: none;
+        }
+
+        .tc-checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--accent);
+        }
+
+        .tc-checkbox-group label {
+            cursor: pointer;
+            font-size: 0.92rem;
+            opacity: 0.9;
+            color: var(--text-main);
+        }
+        
+        .tc-clickable-link {
+            color: var(--accent);
+            cursor: pointer;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            font-weight: 600;
+            transition: color 0.2s ease, text-shadow 0.2s ease;
+        }
+
+        .tc-clickable-link:hover {
+            color: #D4BC98;
+            text-shadow: 0 0 8px rgba(var(--accent-rgb), 0.5);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .cta-button.btn-disabled {
+            opacity: 0.35;
+            cursor: not-allowed !important;
+            filter: grayscale(0.6);
+            box-shadow: none !important;
+            transform: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Particle Canvas Background -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- Top Left Clickable Logo (Redirects to Home Particles) -->
+    <a href="/" class="app-logo-container glass-effect" style="text-decoration: none;">
+        <img src="{{ url_for('static', filename='favicon.png') }}" alt="Air Cursor Logo" class="app-logo-img">
+        <span class="app-logo-text">AIR CURSOR</span>
+    </a>
+    
+    <div class="download-page-wrap">
+        <div class="download-card glass-effect">
+            <div class="floating-emoji header-emoji" style="margin-bottom: 10px;">⬇️</div>
+            <h1>Ready for Download</h1>
+            <p class="subtitle">Thank you for choosing Air Cursor. Please read our Terms & Conditions below before starting the installer download.</p>
+            
+            <div class="tc-box" id="tcBox">
+                <h3 id="tcHeader">📋 Terms & Conditions (T&C)</h3>
+                <ul>
+                    <li><span>📜</span> <span><strong>License Usage:</strong> Air Cursor is licensed for personal and professional touchless desktop navigation use.</span></li>
+                    <li><span>🔒</span> <span><strong>Privacy & Security:</strong> All gesture tracking happens locally on your machine via your webcam feed. No video streams are recorded, stored, or transmitted.</span></li>
+                    <li><span>💻</span> <span><strong>System Requirements:</strong> Standard USB/Built-in webcam, Windows 10/11 or macOS, and minimum 4GB RAM.</span></li>
+                    <li><span>🔄</span> <span><strong>Updates:</strong> By installing, you agree to receive automated security patches and gesture model enhancements.</span></li>
+                </ul>
+            </div>
+
+            <!-- T&C Agreement Checkbox -->
+            <div class="tc-checkbox-group">
+                <input type="checkbox" id="tcAgree">
+                <label for="tcAgree">
+                    I have read and agree to the <span id="tcLinkTrigger" class="tc-clickable-link">Terms & Conditions (T&C)</span>
+                </label>
+            </div>
+
+            <div class="btn-group">
+                <a href="#" id="trigger-download-btn" class="cta-button btn-disabled" style="text-align: center; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; flex: 1;">
+                    <span>📥</span> Download Installer
+                </a>
+                <a href="/reset-session" class="btn-secondary" style="display: inline-flex; align-items: center; gap: 6px;">
+                    <span>🏠</span> Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- કસ્ટમ પૉપઅપ -->
+    <div id="custom-popup" class="popup-overlay">
+        <div class="popup-card">
+            <div id="popup-icon" class="popup-icon-container floating-emoji">📥</div>
+            <h3 id="popup-title">Download Initialized!</h3>
+            <p id="popup-message">Your colorful PDF receipt and Air Cursor installer are downloading successfully.</p>
+            <button id="popup-close-btn" class="cta-button">OK</button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tcAgree = document.getElementById('tcAgree');
+            const downloadBtn = document.getElementById('trigger-download-btn'); 
+            const popupOverlay = document.getElementById('custom-popup');
+            const popupIcon = document.getElementById('popup-icon');
+            const popupTitle = document.getElementById('popup-title');
+            const popupMessage = document.getElementById('popup-message');
+            const popupCloseBtn = document.getElementById('popup-close-btn');
+
+            const tcLinkTrigger = document.getElementById('tcLinkTrigger');
+            const tcHeader = document.getElementById('tcHeader');
+            const tcBox = document.getElementById('tcBox');
+
+            // T&C લિંક પર ક્લિક કરતાં જ ટાઇટલ બ્લિંક થશે
+            if (tcLinkTrigger) {
+                tcLinkTrigger.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    tcHeader.classList.remove('tc-highlight-active');
+                    tcBox.classList.remove('box-highlight-active');
+                    void tcHeader.offsetWidth;
+
+                    tcHeader.classList.add('tc-highlight-active');
+                    tcBox.classList.add('box-highlight-active');
+
+                    setTimeout(() => {
+                        tcHeader.classList.remove('tc-highlight-active');
+                        tcBox.classList.remove('box-highlight-active');
+                    }, 1400);
+                });
+            }
+
+            // Checkbox Toggle logic
+            tcAgree.addEventListener('change', () => {
+                if (tcAgree.checked) {
+                    downloadBtn.classList.remove('btn-disabled');
+                } else {
+                    downloadBtn.classList.add('btn-disabled');
+                }
+            });
+
+            // Download Trigger logic
+            if (downloadBtn) {
+                downloadBtn.addEventListener('click', (e) => {
+                    e.preventDefault(); 
+                    if (!tcAgree.checked) return;
+
+                    if (popupOverlay) {
+                        popupIcon.innerHTML = "🎉";
+                        popupTitle.innerText = "Download Initialized!";
+                        popupMessage.innerText = "Your colorful PDF receipt and Air Cursor installer are downloading successfully.";
+                        popupOverlay.classList.add('active');
+                    }
+
+                    setTimeout(() => {
+                        window.location.href = "/download-pdf";
+                    }, 1000);
+                });
+            }
+
+            if (popupCloseBtn) {
+                popupCloseBtn.addEventListener('click', () => {
+                    if (popupOverlay) popupOverlay.classList.remove('active');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

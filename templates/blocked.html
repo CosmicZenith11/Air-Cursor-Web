@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Restricted - Windows Only</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+        body {
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #07090e;
+            color: #f3f4f6;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            overflow: hidden;
+            padding: 20px;
+        }
+        .block-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(0, 229, 255, 0.25);
+            border-radius: 28px;
+            padding: 50px 35px;
+            max-width: 520px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 30px rgba(0, 229, 255, 0.15);
+        }
+        .icon {
+            font-size: 3.8rem;
+            margin-bottom: 20px;
+            display: inline-block;
+            filter: drop-shadow(0 0 15px rgba(255, 75, 75, 0.6));
+        }
+        h1 {
+            font-size: 1.8rem;
+            color: #ffffff;
+            margin-bottom: 14px;
+            letter-spacing: -0.5px;
+        }
+        p {
+            font-size: 0.98rem;
+            line-height: 1.65;
+            color: rgba(255, 255, 255, 0.75);
+            margin-bottom: 25px;
+        }
+        .badge-box {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 229, 255, 0.06);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            padding: 10px 20px;
+            border-radius: 99px;
+            color: #00e5ff;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="block-card">
+        <div class="icon">🚫</div>
+        <h1>Desktop Only Experience</h1>
+        <p>Air Cursor touchless optical tracking algorithms are strictly optimized for <strong>Windows PC & Windows Laptops</strong>.<br><br>Mobile devices, Tablets, and macOS are currently unsupported.</p>
+        <div class="badge-box">
+            <span>💻</span> Please open this site on a Windows PC
+        </div>
+    </div>
+</body>
+</html>

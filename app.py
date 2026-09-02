@@ -65,39 +65,121 @@ def get_main_admin():
     return DEFAULT_MAIN_NAME, DEFAULT_MAIN_EMAIL
 
 # =========================================================
-# 💥 ૩. EMAIL DISPATCH ENGINE (LIVE NOTIFICATIONS) 💥
+# 💥 EMAIL DISPATCH ENGINE (WEBSITE THEMED HTML EMAIL) 💥
 # =========================================================
 def send_approval_email(subadmin_name, subadmin_email, action_name, perm_key, subadmin_id):
     if not SMTP_APP_PASSWORD or not SMTP_EMAIL:
-        print(f"⚠️ SMTP not configured. Simulating Email for {subadmin_name} requesting {action_name}")
+        print(f"⚠️ SMTP not configured. Cannot send email to Main Admin.")
         return False
     
     main_name, main_email = get_main_admin()
     app_base_url = "https://air-cursor-nd6r.onrender.com"
+    
+    # લિંક્સ: Approve અને Ignore બંને માટે
     accept_url = f"{app_base_url}/admin/grant-permission?sub_id={subadmin_id}&perm={perm_key}&passcode={MASTER_PASSCODE}"
+    ignore_url = f"{app_base_url}/admin/deny-permission?sub_id={subadmin_id}&action={action_name}"
     
     msg = MIMEMultipart("alternative")
     msg['Subject'] = f"🛡️ [Air Cursor Security] Sub-Admin Access Request: {action_name}"
     msg['From'] = f"Air Cursor Command <{SMTP_EMAIL}>"
-    msg['To'] = main_email
+    msg['To'] = main_email  # vanshp1114@gmail.com
 
+    # તમારી વેબસાઇટ જેવી જ સેમ લક્ઝરી ગોલ્ડ-ઓબ્સિડિયન થીમ (Gmail Compatible Inline CSS)
     html_content = f"""
+    <!DOCTYPE html>
     <html>
-    <body style="font-family:sans-serif; background:#141517; color:#E6E4E0; padding:30px;">
-        <div style="background:#1c1d22; border:1px solid #C5A880; border-radius:16px; padding:25px; max-width:550px; margin:auto;">
-            <h2 style="color:#C5A880; margin-top:0;">Permission Request Alert</h2>
-            <p>Hello <b>{main_name}</b>,</p>
-            <p>Sub-Admin <b>{subadmin_name}</b> (<code>{subadmin_email}</code>) attempted to execute a restricted action:</p>
-            <div style="background:#0f1013; padding:15px; border-radius:8px; margin:15px 0; border-left:4px solid #ff4757;">
-                <b style="color:#fff;">Requested Action:</b> {action_name} ({perm_key})
-            </div>
-            <p>Do you want to grant this permission permanently to this Sub-Admin?</p>
-            <div style="margin-top:25px; display:flex; gap:15px;">
-                <a href="{accept_url}" style="background:#2ed573; color:#fff; text-decoration:none; padding:12px 24px; border-radius:8px; font-weight:bold;">Accept & Grant</a>
-                &nbsp;&nbsp;
-                <span style="color:#888; font-size:0.9rem; padding:12px;">(Ignore this email to deny)</span>
-            </div>
-        </div>
+    <head>
+        <meta charset="UTF-8">
+    </head>
+    <body style="margin:0; padding:0; background-color:#0d0e12; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color:#E6E4E0;">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:#0d0e12; padding:40px 15px;">
+            <tr>
+                <td align="center">
+                    <table width="600" border="0" cellspacing="0" cellpadding="0" style="background-color:#16171d; border:1px solid #C5A880; border-radius:24px; box-shadow:0 25px 60px rgba(0,0,0,0.8); overflow:hidden;">
+                        
+                        <!-- Header Bar -->
+                        <tr>
+                            <td style="padding:35px 35px 20px 35px; border-bottom:1px solid rgba(197, 168, 128, 0.2); text-align:center;">
+                                <div style="color:#C5A880; font-size:24px; font-weight:800; letter-spacing:1px; text-transform:uppercase;">
+                                    AIR CURSOR COMMAND
+                                </div>
+                                <div style="color:#8e8f96; font-size:12px; margin-top:5px; text-transform:uppercase; letter-spacing:2px;">
+                                    Security & Access Authorization Gate
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Body Content -->
+                        <tr>
+                            <td style="padding:30px 35px;">
+                                <p style="font-size:16px; color:#ffffff; margin:0 0 15px 0;">
+                                    Hello <b>{main_name}</b>,
+                                </p>
+                                <p style="font-size:14px; color:#a6a7ad; line-height:1.6; margin:0 0 25px 0;">
+                                    A delegated Sub-Admin has encountered an access restriction and is requesting immediate privilege elevation to execute a protected operation:
+                                </p>
+
+                                <!-- Details Card -->
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:#101115; border:1px solid rgba(255,255,255,0.08); border-radius:14px; margin-bottom:25px;">
+                                    <tr>
+                                        <td style="padding:18px;">
+                                            <table width="100%" border="0" cellspacing="0" cellpadding="5">
+                                                <tr>
+                                                    <td width="38%" style="color:#8e8f96; font-size:13px;">Sub-Admin Name:</td>
+                                                    <td style="color:#ffffff; font-weight:700; font-size:14px;">{subadmin_name}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="color:#8e8f96; font-size:13px;">Sub-Admin Email:</td>
+                                                    <td style="color:#C5A880; font-family:monospace; font-size:13px;">{subadmin_email}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="color:#8e8f96; font-size:13px;">Requested Action:</td>
+                                                    <td style="color:#00e5ff; font-weight:700; font-size:14px;">{action_name}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="color:#8e8f96; font-size:13px;">Permission Flag:</td>
+                                                    <td style="color:#e056fd; font-family:monospace; font-size:12px;">{perm_key}</td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                                <p style="font-size:14px; color:#ffffff; margin:0 0 25px 0; font-weight:600;">
+                                    Do you want to grant this permission permanently?
+                                </p>
+
+                                <!-- Action Buttons: Approve and Ignore -->
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td align="center">
+                                            <!-- Approve Button -->
+                                            <a href="{accept_url}" target="_blank" style="display:inline-block; padding:12px 30px; background:linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%); color:#101115; text-decoration:none; border-radius:99px; font-weight:800; font-size:14px; box-shadow:0 8px 20px rgba(197, 168, 128, 0.3); margin-right:12px;">
+                                                ✓ Approve & Grant
+                                            </a>
+                                            <!-- Ignore Button -->
+                                            <a href="{ignore_url}" target="_blank" style="display:inline-block; padding:12px 28px; background-color:#202228; color:#ff4757; text-decoration:none; border-radius:99px; font-weight:700; font-size:14px; border:1px solid rgba(255,71,87,0.4);">
+                                                ✕ Ignore / Dismiss
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <!-- Footer -->
+                        <tr>
+                            <td style="padding:20px 35px; background-color:#101115; border-top:1px solid rgba(255,255,255,0.05); text-align:center;">
+                                <p style="font-size:11px; color:#60626a; margin:0;">
+                                    © 2026 Air Cursor Technologies • Behind Touch Platform<br>
+                                    Automated dispatch sent to Root Administrator ({main_email})
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
     </body>
     </html>
     """
@@ -107,11 +189,24 @@ def send_approval_email(subadmin_name, subadmin_email, action_name, perm_key, su
         server.login(SMTP_EMAIL, SMTP_APP_PASSWORD)
         server.sendmail(SMTP_EMAIL, main_email, msg.as_string())
         server.quit()
-        print(f"✅ Notification Email Dispatched to {main_email}")
+        print(f"✅ Luxury Themed Email Dispatched to {main_email}")
         return True
     except Exception as e:
         print(f"❌ Failed sending email: {e}")
         return False
+
+# =========================================================
+# 💥 IGNORE / DENY ROUTE 💥
+# =========================================================
+@app.route('/admin/deny-permission')
+def deny_permission():
+    action = request.args.get('action', 'Requested Action')
+    return render_template(
+        'error.html', 
+        code="Dismissed", 
+        title="Permission Request Ignored", 
+        message=f"The request for '{action}' has been ignored and dismissed. The Sub-Admin remains restricted without changes."
+    ), 200
 
 # =========================================================
 # 💥 ૪. DEVICE & BROWSER SECURITY (WINDOWS ONLY) 💥

@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Error {{ code }} - {{ title }}</title>
+    
+    <!-- 💥 GITHUB STYLE TAB TITLE (MIDDLE DOT + APP NAME) 💥 -->
+    <title>{% if code == 404 or code == '404' %}Page not found{% elif code == 500 or code == '500' %}Server error{% elif code == 403 or code == '403' %}Access restricted{% else %}{{ title }}{% endif %} · Air Cursor</title>
+    
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
     <style>
         * {

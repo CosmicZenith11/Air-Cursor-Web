@@ -1,61 +1,87 @@
 import os
-import sqlite3
 import io
-from datetime import timedelta
+from datetime import datetime, timedelta
 from flask import Flask, render_template, request, redirect, url_for, session, make_response
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from reportlab.lib import colors
+from pymongo import MongoClient
 
 app = Flask(__name__)
-app.secret_key = 'air_cursor_super_secret_key_2026'
-
+app.secret_key = os.environ.get('SECRET_KEY', 'air_cursor_super_secret_key_2026')
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=30)
-DB_PATH = os.path.join(app.root_path, 'users.db')
 
-def init_db():
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS visitors (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            email TEXT NOT NULL
-        )
-    ''')
-    conn.commit()
-    conn.close()
+# 💥 MongoDB Cloud Connection Setup 💥
+MONGO_URI = os.environ.get('MONGO_URI')
+client = None
+visitors_collection = None
 
-init_db()
+if MONGO_URI:
+    try:
+        client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
+        db = client['air_cursor_db']
+        visitors_collection = db['visitors']
+        print("✅ MongoDB Atlas Connected Successfully!")
+    except Exception as e:
+        print(f"❌ MongoDB Connection Failed: {e}")
+else:
+    print("⚠️ Warning: MONGO_URI not found in Environment Variables.")
 
-# 💥 સર્વર-સાઇડ ડિવાઇસ વેરિફિકેશન (માત્ર Windows PC / Laptop જ પાસ થશે) 💥
+# 💥 Windows PC / Laptop વેરિફિકેશન લોજિક 💥
 def is_windows_pc(ua_string):
     if not ua_string:
         return False
     ua = ua_string.lower()
-    
-    # Windows હોવું ફરજિયાત છે
     has_windows = 'windows nt' in ua or 'windows' in ua
-    
-    # Mobile, Tablet, Mac, Linux, Android, iOS હોવું ન જોઈએ
     is_blocked_device = any(blocked in ua for blocked in [
         'android', 'iphone', 'ipad', 'ipod', 'mobile',
         'tablet', 'macintosh', 'mac os x', 'mac os', 'linux', 'cros'
     ])
-    
     return has_windows and not is_blocked_device
 
-# 💥 અસલ સિક્યોરિટી ગાર્ડ: સર્વર લેવલ પર અન્ય ડિવાઇસને અટકાવશે 💥
+# 💥 ૧. 403 Forbidden: સર્વર લેવલ પર Mobile, Mac, Tablet બ્લોક 💥
 @app.before_request
 def enforce_windows_only():
-    # સ્ટેટિક ફાઇલો (CSS/Icons) ને બ્લોક ન કરવી
     if request.path.startswith('/static'):
         return None
-
     ua = request.headers.get('User-Agent', '')
     if not is_windows_pc(ua):
-        # સર્વર અસલ પેજનો HTML મોકલશે જ નહીં, જેથી Inspect Element થી પણ બાયપાસ ન થાય
-        return render_template('blocked.html'), 403
+        return render_template(
+            'error.html', 
+            code="403", 
+            title="Desktop Only Experience", 
+            message="Air Cursor touchless optical tracking algorithms are strictly optimized for Windows PC & Laptops only. Mobile devices, Tablets, and macOS are blocked."
+        ), 403
+
+# 💥 ૨. 404 Not Found: ખોટી URL નાખે ત્યારે 💥
+@app.errorhandler(404)
+def not_found_error(error):
+    return render_template(
+        'error.html', 
+        code="404", 
+        title="Page Not Found", 
+        message="The page or link you are trying to access does not exist on Air Cursor platform."
+    ), 404
+
+# 💥 ૩. 405 Method Not Allowed: ખોટી HTTP મેથડ રિક્વેસ્ટ પર 💥
+@app.errorhandler(405)
+def method_not_allowed_error(error):
+    return render_template(
+        'error.html', 
+        code="405", 
+        title="Method Not Allowed", 
+        message="The HTTP method used for this action is strictly restricted."
+    ), 405
+
+# 💥 ૪. 500 Internal Server Error: સર્વર ક્રેશ થાય ત્યારે 💥
+@app.errorhandler(500)
+def internal_server_error(error):
+    return render_template(
+        'error.html', 
+        code="500", 
+        title="Internal Server Error", 
+        message="An unexpected system error occurred on our server. Our team is looking into it."
+    ), 500
 
 @app.route('/')
 def home():
@@ -70,21 +96,26 @@ def register():
     if name and email:
         session['user_registered'] = True
         session['user_name'] = name
+        session.permanent = bool(remember)
+        session['remember_me'] = bool(remember)
         
-        if remember:
-            session.permanent = True
-            session['remember_me'] = True
+        # 💥 ડેટા MongoDB Atlas માં સેવ કરવાનું લોજિક 💥
+        if visitors_collection is not None:
+            try:
+                record = {
+                    "name": name.strip(),
+                    "email": email.strip(),
+                    "remember_me": bool(remember),
+                    "user_agent": request.headers.get('User-Agent', ''),
+                    "registered_at": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
+                }
+                visitors_collection.insert_one(record)
+                print(f"✅ User Data Saved to MongoDB: {name} ({email})")
+            except Exception as err:
+                print(f"❌ Error inserting document to MongoDB: {err}")
         else:
-            session.permanent = False
-            session['remember_me'] = False
-        
-        init_db()
-        conn = sqlite3.connect(DB_PATH)
-        cursor = conn.cursor()
-        cursor.execute("INSERT INTO visitors (name, email) VALUES (?, ?)", (name, email))
-        conn.commit()
-        conn.close()
-        
+            print("⚠️ MongoDB Collection is not accessible. Check MONGO_URI.")
+            
     return redirect(url_for('download_page'))
 
 @app.route('/download')
@@ -113,7 +144,6 @@ def download_pdf():
 
     logo_path = os.path.join(app.root_path, 'static', 'favicon.png')
     text_x = 45
-    
     if os.path.exists(logo_path):
         p.drawImage(logo_path, 40, height - 100, width=65, height=65, preserveAspectRatio=True, mask='auto')
         text_x = 120
@@ -172,5 +202,4 @@ def download_pdf():
     return response
 
 if __name__ == '__main__':
-    init_db()
     app.run(debug=True)

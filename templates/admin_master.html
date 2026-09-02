@@ -110,7 +110,6 @@
             </div>
         </div>
 
-        <!-- ૧. PENDING REQUESTS QUEUE -->
         <div class="box-card" style="border: 1px solid rgba(255, 165, 2, 0.4);">
             <div class="box-title">
                 <span style="color:#ffa502;">🔔 Pending Permission Requests ({{ pending_requests|length }})</span>
@@ -148,7 +147,6 @@
             </table>
         </div>
 
-        <!-- ૨. SUB-ADMIN WORK INBOX -->
         <div class="box-card" style="border: 1px solid rgba(0, 229, 255, 0.35);">
             <div class="box-title">
                 <span style="color:#00e5ff;">📥 Sub-Admin Direct Work Notes & Inbox</span>
@@ -182,7 +180,6 @@
             </table>
         </div>
 
-        <!-- ૩. SUB-ADMIN MANAGEMENT -->
         <div class="box-card">
             <div class="box-title">
                 <span>Sub-Admins & Access Control</span>
@@ -219,7 +216,6 @@
             </table>
         </div>
 
-        <!-- ૪. AUDIT LOGS -->
         <div class="box-card">
             <div class="box-title">
                 <span>Sub-Admin Live Activity Audit Trail</span>
@@ -256,7 +252,6 @@
             </table>
         </div>
 
-        <!-- ૫. VISITOR LEADS -->
         <div class="box-card">
             <div class="box-title">
                 <span>Registered Visitor Leads</span>
@@ -292,7 +287,6 @@
         </div>
     </div>
 
-    <!-- 💥 MODAL: ISSUE DIRECTIVE TO SUB-ADMIN 💥 -->
     <div id="instructionModal" class="modal-overlay">
         <div class="modal-box" style="text-align:left;">
             <h2 style="color:var(--accent-gold); margin-bottom:15px; text-align:center;">📜 Issue Directive to Sub-Admin</h2>
@@ -329,7 +323,6 @@
         </div>
     </div>
 
-    <!-- 💥 REQUEST ALERT POPUP WITH AUDIO 💥 -->
     {% if pending_requests|length > 0 %}
     <div id="requestAlertModal" class="modal-overlay" style="display: flex;">
         <div class="modal-box" style="border-color: #ffa502;">
@@ -351,7 +344,20 @@
     </div>
     {% endif %}
 
-    <!-- Create Sub-Admin Modal -->
+    <div id="incomingMsgModal" class="modal-overlay">
+        <div class="modal-box" style="border-color: #00e5ff;">
+            <span class="modal-emoji">💬</span>
+            <div class="modal-title" style="color: #00e5ff;">Message From <span id="inboxFrom">Sub-Admin</span></div>
+            <div class="modal-msg" style="text-align:left; background:#101115; padding:15px; border-radius:12px; margin-bottom:20px;">
+                <b id="inboxSubj" style="color:#C5A880; display:block; margin-bottom:6px;"></b>
+                <span id="inboxBody" style="color:#fff;"></span>
+            </div>
+            <div class="modal-btns">
+                <button onclick="closeIncomingMsgModal()" class="btn-gold" style="width:100%;">👍 Understood & Refresh Inbox</button>
+            </div>
+        </div>
+    </div>
+
     <div id="subAdminModal" class="modal-overlay">
         <div class="modal-box" style="text-align:left;">
             <h2 style="color:var(--accent-gold); margin-bottom:15px; text-align:center;">Create Sub-Admin</h2>
@@ -380,7 +386,6 @@
         </div>
     </div>
 
-    <!-- Profile PIN Modal -->
     <div id="profileModal" class="modal-overlay">
         <div class="modal-box" style="text-align:left;">
             <h2 style="color:var(--accent-gold); margin-bottom:15px; text-align:center;">🔒 Update Main Admin Info</h2>
@@ -405,7 +410,18 @@
         </div>
     </div>
 
-    <!-- 💥 NATIVE WEB AUDIO SYNTHESIZER 💥 -->
+    <div id="universalConfirmModal" class="modal-overlay">
+        <div class="modal-box">
+            <span id="uEmoji" class="modal-emoji">⚠️</span>
+            <div id="uTitle" class="modal-title">Confirm Action</div>
+            <div id="uMessage" class="modal-msg">Are you sure you want to proceed?</div>
+            <div class="modal-btns">
+                <button onclick="closeUniversalConfirm()" class="btn-cancel">✕ Cancel</button>
+                <button id="uConfirmBtn" class="btn-gold">Confirm</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const SoundFX = {
             ctx: null,
@@ -481,19 +497,49 @@
             }
         });
 
-        // Live Poll for incoming Sub-Admin messages
+        // Live Poll for incoming Sub-Admin messages (NON-BLOCKING CUSTOM MODAL)
         setInterval(() => {
             fetch('/api/admin/poll-messages')
             .then(res => res.json())
             .then(data => {
                 if (data.new_message) {
                     SoundFX.playAlert();
-                    alert('💬 New Message from ' + data.new_message.from + '\nSubject: ' + data.new_message.subject + '\n\n"' + data.new_message.content + '"');
-                    window.location.reload();
+                    document.getElementById('inboxFrom').innerText = data.new_message.from;
+                    document.getElementById('inboxSubj').innerText = data.new_message.subject;
+                    document.getElementById('inboxBody').innerText = data.new_message.content;
+                    document.getElementById('incomingMsgModal').style.display = 'flex';
                 }
             })
             .catch(() => {});
-        }, 4000);
+        }, 3000);
+
+        function closeIncomingMsgModal() {
+            document.getElementById('incomingMsgModal').style.display = 'none';
+            window.location.reload();
+        }
+
+        let uCallback = null;
+        function showAppConfirm(emoji, title, message, btnText, onConfirm) {
+            document.getElementById('uEmoji').innerText = emoji || '⚠️';
+            document.getElementById('uTitle').innerText = title;
+            document.getElementById('uMessage').innerText = message;
+            document.getElementById('uConfirmBtn').innerText = btnText || 'Confirm';
+            uCallback = onConfirm;
+            document.getElementById('universalConfirmModal').style.display = 'flex';
+        }
+
+        function closeUniversalConfirm() {
+            document.getElementById('universalConfirmModal').style.display = 'none';
+            uCallback = null;
+        }
+
+        document.getElementById('uConfirmBtn').onclick = function() {
+            if (uCallback) {
+                const cb = uCallback;
+                closeUniversalConfirm();
+                cb();
+            }
+        };
 
         function openInstructionModal() { document.getElementById('instructionModal').style.display = 'flex'; }
         function targetInstruction(id, name) {
@@ -505,15 +551,23 @@
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
         function confirmRemoveSubAdmin(id, name) {
-            if (confirm('Revoke access for Sub-Admin "' + name + '"?')) {
-                window.location.href = '/admin/remove-subadmin/' + id;
-            }
+            showAppConfirm(
+                '🛡️',
+                'Revoke Access',
+                'Are you sure you want to revoke access for Sub-Admin "' + name + '"?',
+                'Revoke Now',
+                function() { window.location.href = '/admin/remove-subadmin/' + id; }
+            );
         }
 
         function confirmDeleteLead(id) {
-            if (confirm('Permanently delete this visitor entry?')) {
-                window.location.href = '/admin/delete-lead/' + id;
-            }
+            showAppConfirm(
+                '🗑️',
+                'Delete Lead',
+                'Are you sure you want to permanently delete this visitor entry?',
+                'Delete Now',
+                function() { window.location.href = '/admin/delete-lead/' + id; }
+            );
         }
 
         function toggleTheme() {

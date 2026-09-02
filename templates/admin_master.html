@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Air Cursor - Master Command Center</title>
+    <title>Master Command · Air Cursor</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
     <script src="{{ url_for('static', filename='security.js') }}"></script>
     <style>
@@ -47,7 +47,7 @@
         .metric-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 22px; box-shadow: var(--shadow); }
         .metric-val { font-size: 2.2rem; font-weight: 800; color: var(--accent-gold); margin-top: 5px; }
         
-        .box-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 25px; box-shadow: var(--shadow); margin-bottom: 35px; }
+        .box-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 25px; box-shadow: var(--shadow); margin-bottom: 35px; overflow-x: auto; }
         .box-title { font-size: 1.25rem; font-weight: 700; color: var(--text-main); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         
         table { width: 100%; border-collapse: collapse; text-align: left; }
@@ -55,11 +55,10 @@
         td { padding: 16px; border-bottom: 1px solid var(--card-border); font-size: 0.92rem; }
         tr:hover td { background: var(--row-hover); }
 
-        .btn-gold { background: linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%); color: #141517; border: none; padding: 10px 20px; border-radius: 99px; font-weight: 700; cursor: pointer; text-decoration: none; }
+        .btn-gold { background: linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%); color: #141517; border: none; padding: 9px 20px; border-radius: 99px; font-weight: 700; cursor: pointer; text-decoration: none; }
         .btn-danger { background: #ff4757; color: white; text-decoration: none; padding: 5px 12px; border-radius: 6px; font-size: 0.82rem; font-weight: 600; }
         .badge { display: inline-block; padding: 3px 10px; border-radius: 99px; font-size: 0.75rem; font-weight: 700; background: rgba(0, 229, 255, 0.15); color: #00e5ff; margin-right: 4px; }
         
-        /* Modal Style */
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); justify-content: center; align-items: center; z-index: 10000; }
         .modal-box { background: #1a1b20; border: 1px solid var(--card-border); border-radius: 24px; padding: 30px; width: 100%; max-width: 460px; color: #fff; }
         .form-group { margin-bottom: 16px; }
@@ -72,7 +71,7 @@
     <div class="container">
         <div class="top-nav">
             <div class="brand-title">
-                <h1>AIR CURSOR COMMAND (MAIN ADMIN)</h1>
+                <h1>AIR CURSOR (MAIN ADMIN)</h1>
                 <p>Root Access • Full System Authority</p>
             </div>
             <div class="nav-actions">
@@ -82,7 +81,6 @@
             </div>
         </div>
 
-        <!-- આંકડા -->
         <div class="grid-cards">
             <div class="metric-card">
                 <div style="color:var(--text-sub); font-size:0.8rem; font-weight:700;">TOTAL LEADS</div>
@@ -98,7 +96,7 @@
             </div>
         </div>
 
-        <!-- ૧. SUB-ADMIN MANAGEMENT BOX -->
+        <!-- ૧. SUB-ADMIN MANAGEMENT -->
         <div class="box-card">
             <div class="box-title">
                 <span>Sub-Admins & Access Control</span>
@@ -130,15 +128,51 @@
                         </td>
                     </tr>
                     {% else %}
-                    <tr>
-                        <td colspan="5" style="text-align:center; color:var(--text-sub); padding:25px;">No Sub-Admins created yet.</td>
-                    </tr>
+                    <tr><td colspan="5" style="text-align:center; color:var(--text-sub); padding:25px;">No Sub-Admins created yet.</td></tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
 
-        <!-- ૨. VISITOR LEADS BOX -->
+        <!-- ૨. SUB-ADMIN AUDIT TRAIL LOGS -->
+        <div class="box-card">
+            <div class="box-title">
+                <span>Sub-Admin Live Activity Audit Trail</span>
+                <span style="font-size:0.85rem; color:var(--text-sub); font-weight:normal;">Real-time Monitored Logs</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Time (UTC)</th>
+                        <th>Sub-Admin</th>
+                        <th>Action Performed</th>
+                        <th>Status</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in activity_logs %}
+                    <tr>
+                        <td style="color:var(--text-sub); font-size:0.85rem;">{{ log.timestamp }}</td>
+                        <td style="font-weight:700;">{{ log.subadmin_name }}</td>
+                        <td style="color:#ffffff;">{{ log.action }}</td>
+                        <td>
+                            {% if log.status == 'ALLOWED' %}
+                                <span class="badge" style="color:#2ed573; background:rgba(46,213,115,0.15); border:1px solid rgba(46,213,115,0.3);">Allowed</span>
+                            {% else %}
+                                <span class="badge" style="color:#ff4757; background:rgba(255,71,87,0.15); border:1px solid rgba(255,71,87,0.3);">Restricted</span>
+                            {% endif %}
+                        </td>
+                        <td style="color:var(--text-sub); font-size:0.85rem;">{{ log.details }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="5" style="text-align:center; padding:30px; color:var(--text-sub);">No sub-admin activity recorded yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ૩. VISITOR LEADS -->
         <div class="box-card">
             <div class="box-title">
                 <span>Registered Visitor Leads</span>
@@ -167,9 +201,7 @@
                         </td>
                     </tr>
                     {% else %}
-                    <tr>
-                        <td colspan="6" style="text-align:center; color:var(--text-sub); padding:30px;">No leads captured yet.</td>
-                    </tr>
+                    <tr><td colspan="6" style="text-align:center; color:var(--text-sub); padding:30px;">No leads captured yet.</td></tr>
                     {% endfor %}
                 </tbody>
             </table>
@@ -205,7 +237,7 @@
         </div>
     </div>
 
-    <!-- Main Admin Profile Settings Modal (Passcode Protected) -->
+    <!-- Profile & Passcode Modal -->
     <div id="profileModal" class="modal-overlay">
         <div class="modal-box">
             <h2 style="color:var(--accent-gold); margin-bottom:15px;">🔒 Update Main Admin Info</h2>

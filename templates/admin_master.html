@@ -28,6 +28,8 @@
             --text-sub: #5a5c61;
             --accent-gold: #9E7D53;
             --table-header: #ebe7de;
+            --row-hover: rgba(158, 125, 83, 0.08);
+            --shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
             --btn-theme-bg: #e6e1d5;
             --btn-theme-color: #18191b;
         }
@@ -344,16 +346,14 @@
     </div>
     {% endif %}
 
-    <div id="incomingMsgModal" class="modal-overlay">
-        <div class="modal-box" style="border-color: #00e5ff;">
-            <span class="modal-emoji">💬</span>
-            <div class="modal-title" style="color: #00e5ff;">Message From <span id="inboxFrom">Sub-Admin</span></div>
-            <div class="modal-msg" style="text-align:left; background:#101115; padding:15px; border-radius:12px; margin-bottom:20px;">
-                <b id="inboxSubj" style="color:#C5A880; display:block; margin-bottom:6px;"></b>
-                <span id="inboxBody" style="color:#fff;"></span>
-            </div>
+    <div id="universalCustomModal" class="modal-overlay">
+        <div class="modal-box">
+            <span id="uEmoji" class="modal-emoji">💬</span>
+            <div id="uTitle" class="modal-title">Notification</div>
+            <div id="uMessage" class="modal-msg">Message content</div>
             <div class="modal-btns">
-                <button onclick="closeIncomingMsgModal()" class="btn-gold" style="width:100%;">👍 Understood & Refresh Inbox</button>
+                <button id="uCancelBtn" onclick="closeUniversalModal()" class="btn-cancel">Cancel</button>
+                <button id="uConfirmBtn" class="btn-gold">Understood</button>
             </div>
         </div>
     </div>
@@ -407,18 +407,6 @@
                     <button type="submit" class="btn-gold">Authorize Update</button>
                 </div>
             </form>
-        </div>
-    </div>
-
-    <div id="universalConfirmModal" class="modal-overlay">
-        <div class="modal-box">
-            <span id="uEmoji" class="modal-emoji">⚠️</span>
-            <div id="uTitle" class="modal-title">Confirm Action</div>
-            <div id="uMessage" class="modal-msg">Are you sure you want to proceed?</div>
-            <div class="modal-btns">
-                <button onclick="closeUniversalConfirm()" class="btn-cancel">✕ Cancel</button>
-                <button id="uConfirmBtn" class="btn-gold">Confirm</button>
-            </div>
         </div>
     </div>
 
@@ -482,12 +470,40 @@
                 const gain = this.ctx.createGain();
                 osc.type = 'sine';
                 osc.frequency.setValueAtTime(880, now);
-                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.setValueAtTime(0.35, now);
                 gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
                 osc.connect(gain);
                 gain.connect(this.ctx.destination);
                 osc.start(now);
                 osc.stop(now + 0.4);
+            }
+        };
+
+        let universalCallback = null;
+
+        function showCustomAppModal(emoji, title, message, btnText, showCancel, onConfirm) {
+            document.getElementById('uEmoji').innerText = emoji || '💬';
+            document.getElementById('uTitle').innerText = title;
+            document.getElementById('uMessage').innerText = message;
+            document.getElementById('uConfirmBtn').innerText = btnText || 'Understood';
+            document.getElementById('uCancelBtn').style.display = showCancel ? 'inline-block' : 'none';
+            
+            universalCallback = onConfirm;
+            document.getElementById('universalCustomModal').style.display = 'flex';
+        }
+
+        function closeUniversalModal() {
+            document.getElementById('universalCustomModal').style.display = 'none';
+            universalCallback = null;
+        }
+
+        document.getElementById('uConfirmBtn').onclick = function() {
+            if (universalCallback) {
+                const cb = universalCallback;
+                closeUniversalModal();
+                cb();
+            } else {
+                closeUniversalModal();
             }
         };
 
@@ -497,49 +513,25 @@
             }
         });
 
-        // Live Poll for incoming Sub-Admin messages (NON-BLOCKING CUSTOM MODAL)
+        // Continuous Polling for incoming Sub-Admin messages (NO BROWSER POPUPS!)
         setInterval(() => {
             fetch('/api/admin/poll-messages')
             .then(res => res.json())
             .then(data => {
                 if (data.new_message) {
                     SoundFX.playAlert();
-                    document.getElementById('inboxFrom').innerText = data.new_message.from;
-                    document.getElementById('inboxSubj').innerText = data.new_message.subject;
-                    document.getElementById('inboxBody').innerText = data.new_message.content;
-                    document.getElementById('incomingMsgModal').style.display = 'flex';
+                    showCustomAppModal(
+                        '💬',
+                        'New Message from ' + data.new_message.from,
+                        'Subject: ' + data.new_message.subject + '\n\n"' + data.new_message.content + '"',
+                        'Refresh Inbox',
+                        false,
+                        function() { window.location.reload(); }
+                    );
                 }
             })
             .catch(() => {});
         }, 3000);
-
-        function closeIncomingMsgModal() {
-            document.getElementById('incomingMsgModal').style.display = 'none';
-            window.location.reload();
-        }
-
-        let uCallback = null;
-        function showAppConfirm(emoji, title, message, btnText, onConfirm) {
-            document.getElementById('uEmoji').innerText = emoji || '⚠️';
-            document.getElementById('uTitle').innerText = title;
-            document.getElementById('uMessage').innerText = message;
-            document.getElementById('uConfirmBtn').innerText = btnText || 'Confirm';
-            uCallback = onConfirm;
-            document.getElementById('universalConfirmModal').style.display = 'flex';
-        }
-
-        function closeUniversalConfirm() {
-            document.getElementById('universalConfirmModal').style.display = 'none';
-            uCallback = null;
-        }
-
-        document.getElementById('uConfirmBtn').onclick = function() {
-            if (uCallback) {
-                const cb = uCallback;
-                closeUniversalConfirm();
-                cb();
-            }
-        };
 
         function openInstructionModal() { document.getElementById('instructionModal').style.display = 'flex'; }
         function targetInstruction(id, name) {
@@ -551,21 +543,23 @@
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
         function confirmRemoveSubAdmin(id, name) {
-            showAppConfirm(
+            showCustomAppModal(
                 '🛡️',
+                'Revoke Sub-Admin Access',
+                'Are you sure you want to completely revoke access for sub-admin "' + name + '"?',
                 'Revoke Access',
-                'Are you sure you want to revoke access for Sub-Admin "' + name + '"?',
-                'Revoke Now',
+                true,
                 function() { window.location.href = '/admin/remove-subadmin/' + id; }
             );
         }
 
         function confirmDeleteLead(id) {
-            showAppConfirm(
+            showCustomAppModal(
                 '🗑️',
+                'Delete Visitor Entry',
+                'Are you sure you want to permanently delete this lead?',
                 'Delete Lead',
-                'Are you sure you want to permanently delete this visitor entry?',
-                'Delete Now',
+                true,
                 function() { window.location.href = '/admin/delete-lead/' + id; }
             );
         }

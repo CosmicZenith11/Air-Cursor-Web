@@ -29,7 +29,7 @@ SMTP_EMAIL = os.environ.get('SMTP_EMAIL', 'aircursor.verify@gmail.com')
 SMTP_APP_PASSWORD = os.environ.get('SMTP_APP_PASSWORD', 'btajqpkrvkflsqvl')
 
 # =========================================================
-# 💥 ૨. MONGODB ATLAS CONNECTION 💥
+# 💥 ૨. MONGODB ATLAS CLOUD CONNECTION 💥
 # =========================================================
 MONGO_URI = os.environ.get('MONGO_URI')
 client = None
@@ -40,6 +40,7 @@ config_collection = None
 audit_collection = None
 requests_collection = None
 instructions_collection = None
+messages_collection = None
 
 if MONGO_URI:
     try:
@@ -51,6 +52,7 @@ if MONGO_URI:
         audit_collection = db['audit_logs']
         requests_collection = db['permission_requests']
         instructions_collection = db['admin_instructions']
+        messages_collection = db['subadmin_messages']
 
         if config_collection.count_documents({"type": "main_admin"}) == 0:
             config_collection.insert_one({
@@ -93,7 +95,7 @@ def log_activity(sub_name, sub_email, action, status="ALLOWED", details=""):
             print(f"❌ Log Error: {e}")
 
 # =========================================================
-# 💥 ૩. ASYNC BACKGROUND EMAIL ENGINE (NO DISPATCH TIMEOUT) 💥
+# 💥 ૩. ASYNC BACKGROUND EMAIL ENGINE 💥
 # =========================================================
 def async_email_worker(subadmin_name, subadmin_email, action_name, perm_key, subadmin_id, req_id):
     if not SMTP_APP_PASSWORD or not SMTP_EMAIL:
@@ -127,7 +129,7 @@ def async_email_worker(subadmin_name, subadmin_email, action_name, perm_key, sub
                             <td style="padding:30px 35px;">
                                 <p style="font-size:16px; color:#ffffff; margin:0 0 15px 0;">Hello <b>{main_name}</b>,</p>
                                 <p style="font-size:14px; color:#a6a7ad; line-height:1.6; margin:0 0 25px 0;">
-                                    Sub-Admin <b>{subadmin_name}</b> ({subadmin_email}) has requested access for:
+                                    Sub-Admin <b>{subadmin_name}</b> ({subadmin_email}) has requested access elevation:
                                 </p>
                                 <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:#101115; border:1px solid rgba(255,255,255,0.08); border-radius:14px; margin-bottom:25px;">
                                     <tr>
@@ -264,6 +266,10 @@ def main_admin_dashboard():
     if requests_collection is not None:
         pending_requests = list(requests_collection.find({"status": "PENDING"}).sort('_id', -1))
 
+    work_messages = []
+    if messages_collection is not None:
+        work_messages = list(messages_collection.find().sort('_id', -1).limit(40))
+
     main_name, main_email = get_main_admin()
 
     return render_template(
@@ -272,11 +278,11 @@ def main_admin_dashboard():
         sub_admins=sub_admins,
         activity_logs=activity_logs,
         pending_requests=pending_requests,
+        work_messages=work_messages,
         main_name=main_name,
         main_email=main_email
     )
 
-# Main Admin Send Instruction to Sub-Admin
 @app.route('/admin/send-instruction', methods=['POST'])
 def send_instruction():
     if session.get('user_role') != 'main_admin':
@@ -284,7 +290,7 @@ def send_instruction():
     sub_id = request.form.get('subadmin_id')
     title = request.form.get('title', 'Direct Admin Order').strip()
     message = request.form.get('message', '').strip()
-    priority = request.form.get('priority', 'High Priority')
+    priority = request.form.get('priority', 'Urgent Protocol')
 
     if instructions_collection is not None and sub_id and message:
         sub = subadmins_collection.find_one({"_id": ObjectId(sub_id)})
@@ -298,7 +304,7 @@ def send_instruction():
             "status": "UNREAD",
             "created_at": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
         })
-        log_activity("Main Admin", DEFAULT_MAIN_EMAIL, f"Instruction Issued to {sub_name}", "ALLOWED", title)
+        log_activity("Main Admin", DEFAULT_MAIN_EMAIL, f"Directive Issued to {sub_name}", "ALLOWED", title)
 
     return redirect(url_for('main_admin_dashboard'))
 
@@ -337,6 +343,33 @@ def deny_request(req_id):
         )
 
     return redirect(url_for('main_admin_dashboard'))
+
+@app.route('/admin/delete-message/<id>')
+def delete_subadmin_message(id):
+    if session.get('user_role') != 'main_admin':
+        abort(404)
+    if messages_collection is not None:
+        messages_collection.delete_one({"_id": ObjectId(id)})
+    return redirect(url_for('main_admin_dashboard'))
+
+@app.route('/api/admin/poll-messages')
+def api_admin_poll_messages():
+    if session.get('user_role') != 'main_admin':
+        return jsonify({"status": "unauthorized"}), 401
+
+    latest_msg = None
+    if messages_collection is not None:
+        item = messages_collection.find_one({"status": "UNREAD"}, sort=[('_id', -1)])
+        if item:
+            latest_msg = {
+                "id": str(item['_id']),
+                "from": item.get('subadmin_name'),
+                "subject": item.get('subject'),
+                "content": item.get('content')
+            }
+            messages_collection.update_one({"_id": item['_id']}, {"$set": {"status": "DELIVERED"}})
+
+    return jsonify({"new_message": latest_msg})
 
 @app.route('/admin/create-subadmin', methods=['POST'])
 def create_subadmin():
@@ -475,7 +508,6 @@ def subadmin_dashboard():
     if sub_info.get('can_view_visitors') and visitors_collection is not None:
         visitors = list(visitors_collection.find().sort('_id', -1))
 
-    # સેવ કરેલી અને એક્ટિવ સૂચનાઓ
     instructions = []
     if instructions_collection is not None:
         instructions = list(instructions_collection.find({"subadmin_id": sub_id}).sort('_id', -1))
@@ -509,7 +541,6 @@ def request_permission():
 
     log_activity(sub_name, sub_email, f"Unauthorized Action: {action_name}", "RESTRICTED", f"Requested flag: {perm_key}")
 
-    # બેકગ્રાઉન્ડ થ્રેડ જેથી Sub-Admin ને ક્યારેય ટાઇમ-આઉટ / ડિસ્પેચ એરર ન આવે
     threading.Thread(
         target=async_email_worker,
         args=(sub_name, sub_email, action_name, perm_key, sub_id, req_id),
@@ -521,7 +552,33 @@ def request_permission():
         "message": f"Your request for '{action_name}' has been delivered to Main Admin's command center and email!"
     })
 
-# સબ-એડમિન લાઈવ સ્ટેટસ & નવી સૂચનાઓ પોલિંગ API
+@app.route('/subadmin/send-message', methods=['POST'])
+def subadmin_send_message():
+    if session.get('user_role') != 'sub_admin':
+        return jsonify({"status": "error", "message": "Unauthorized"}), 401
+    
+    data = request.get_json() or {}
+    subject = data.get('subject', 'Work Query').strip()
+    content = data.get('content', '').strip()
+    sub_name = session.get('subadmin_name', 'Sub-Admin')
+    sub_email = session.get('subadmin_email', '')
+
+    if not content:
+        return jsonify({"status": "error", "message": "Message content cannot be empty."}), 400
+
+    if messages_collection is not None:
+        messages_collection.insert_one({
+            "subadmin_name": sub_name,
+            "subadmin_email": sub_email,
+            "subject": subject,
+            "content": content,
+            "status": "UNREAD",
+            "sent_at": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
+        })
+        log_activity(sub_name, sub_email, "Dispatched Work Note", "ALLOWED", subject)
+
+    return jsonify({"status": "success", "message": "Message sent directly to Main Admin's inbox!"})
+
 @app.route('/api/subadmin/poll-status')
 def api_subadmin_poll():
     if session.get('user_role') != 'sub_admin':
@@ -553,12 +610,10 @@ def api_subadmin_poll():
                 "action": resolved.get('action'),
                 "status": resolved.get('status')
             }
-            # માર્ક notified
             requests_collection.update_one({"_id": resolved['_id']}, {"$set": {"notified": True}})
 
     return jsonify(result)
 
-# સબ-એડમિન સૂચના સ્વીકારે અથવા સેવ કરે
 @app.route('/subadmin/instruction-action', methods=['POST'])
 def instruction_action():
     if session.get('user_role') != 'sub_admin':
@@ -566,7 +621,7 @@ def instruction_action():
     
     data = request.get_json() or {}
     inst_id = data.get('id')
-    action = data.get('action') # "ACKNOWLEDGED" અથવા "SAVED"
+    action = data.get('action')
 
     if instructions_collection is not None and inst_id:
         instructions_collection.update_one(
@@ -581,7 +636,7 @@ def logout():
     return redirect(url_for('home'))
 
 # =========================================================
-# 💥 ૭. GLOBAL ERROR HANDLERS & DOWNLOAD 💥
+# 💥 ૭. ERROR HANDLERS & DOWNLOADS 💥
 # =========================================================
 @app.errorhandler(HTTPException)
 def handle_http_exception(e):

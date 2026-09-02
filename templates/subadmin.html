@@ -16,6 +16,8 @@
             --accent-gold: #C5A880;
             --table-header: #1f2124;
             --shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            --btn-theme-bg: #282a2e;
+            --btn-theme-color: #C5A880;
         }
         body.light-mode {
             --bg-body: #F4F1EA;
@@ -25,6 +27,8 @@
             --text-sub: #5a5c61;
             --accent-gold: #9E7D53;
             --table-header: #ebe7de;
+            --btn-theme-bg: #e6e1d5;
+            --btn-theme-color: #18191b;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; transition: 0.3s; }
         body { background: var(--bg-body); color: var(--text-main); min-height: 100vh; padding: 35px 20px; }
@@ -37,12 +41,27 @@
         .box-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 25px; box-shadow: var(--shadow); margin-bottom: 30px; overflow-x: auto; }
         .actions-bar { display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
         .action-btn { background: #1f2126; color: var(--text-main); border: 1px solid var(--card-border); padding: 10px 20px; border-radius: 12px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px; }
-        .action-btn:hover { background: rgba(197, 168, 128, 0.15); }
+        .action-btn:hover { background: rgba(197, 168, 128, 0.15); border-color: var(--accent-gold); }
         .locked-tag { font-size: 0.75rem; background: #ff4757; color: white; padding: 2px 7px; border-radius: 99px; }
 
         table { width: 100%; border-collapse: collapse; text-align: left; }
         th { background: var(--table-header); padding: 14px 16px; color: var(--text-sub); font-size: 0.8rem; text-transform: uppercase; border-bottom: 1px solid var(--card-border); }
         td { padding: 16px; border-bottom: 1px solid var(--card-border); font-size: 0.92rem; }
+
+        .btn-gold { background: linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%); color: #141517; border: none; padding: 10px 22px; border-radius: 99px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn-gold:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(197, 168, 128, 0.3); }
+
+        /* 💥 WEBSITE THEMED LUXURY MODAL POPUPS 💥 */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); justify-content: center; align-items: center; z-index: 10000; padding: 20px; }
+        .modal-box { background: #1a1b20; border: 1px solid var(--card-border); border-radius: 28px; padding: 35px 30px; width: 100%; max-width: 440px; text-align: center; color: #fff; box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 30px rgba(197,168,128,0.15); animation: popIn 0.25s ease-out; }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        
+        .modal-emoji { font-size: 3.2rem; margin-bottom: 12px; display: block; line-height: 1; }
+        .modal-title { color: var(--accent-gold); font-size: 1.4rem; font-weight: 800; margin-bottom: 10px; letter-spacing: -0.3px; }
+        .modal-msg { color: var(--text-sub); font-size: 0.95rem; line-height: 1.55; margin-bottom: 25px; }
+        .modal-btns { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+        .btn-cancel { background: #282a30; color: #aaa; border: 1px solid rgba(255,255,255,0.1); padding: 10px 22px; border-radius: 99px; font-weight: 600; cursor: pointer; }
+        .btn-cancel:hover { background: #33363e; color: #fff; }
     </style>
 </head>
 <body>
@@ -95,7 +114,7 @@
                         <td style="color:var(--text-sub);">{{ u.registered_at or 'N/A' }}</td>
                         <td>
                             {% if subadmin_info.can_delete_visitors %}
-                                <a href="/admin/delete-lead/{{ u._id }}" onclick="return confirm('Delete?')" style="color:#ff4757; font-weight:bold;">Delete</a>
+                                <a href="/admin/delete-lead/{{ u._id }}" onclick="return confirm('Delete record?')" style="color:#ff4757; font-weight:bold;">Delete</a>
                             {% else %}
                                 <span onclick="handleAction('can_delete_visitors', 'Delete Single Lead')" style="cursor:pointer; color:#888;">🔒 Delete</span>
                             {% endif %}
@@ -109,11 +128,34 @@
             {% else %}
             <div style="text-align:center; padding:45px 20px; color:#888;">
                 <p style="font-size:1.1rem; margin-bottom:12px;">🔒 Viewing leads is restricted by Main Admin.</p>
-                <button onclick="handleAction('can_view_visitors', 'View Leads')" style="background:var(--accent-gold); border:none; padding:10px 22px; border-radius:99px; font-weight:bold; cursor:pointer; color:#141517;">
-                    Request Access from Main Admin
+                <button onclick="handleAction('can_view_visitors', 'View Leads')" class="btn-gold">
+                    ✉️ Request Access from Main Admin
                 </button>
             </div>
             {% endif %}
+        </div>
+    </div>
+
+    <div id="customConfirmModal" class="modal-overlay">
+        <div class="modal-box">
+            <span id="modalEmoji" class="modal-emoji">🔒</span>
+            <div id="modalTitle" class="modal-title">Access Restricted</div>
+            <div id="modalMessage" class="modal-msg">You do not have permission for this action.</div>
+            <div class="modal-btns">
+                <button onclick="closeConfirmModal()" class="btn-cancel">✕ Cancel</button>
+                <button id="modalConfirmBtn" class="btn-gold">✉️ Send Approval Request</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="customNoticeModal" class="modal-overlay">
+        <div class="modal-box">
+            <span id="noticeEmoji" class="modal-emoji">✅</span>
+            <div id="noticeTitle" class="modal-title">Notification</div>
+            <div id="noticeMessage" class="modal-msg">Operation processed successfully.</div>
+            <div class="modal-btns">
+                <button onclick="closeNoticeModal()" class="btn-gold" style="width: 100%;">👍 Understood</button>
+            </div>
         </div>
     </div>
 
@@ -124,20 +166,66 @@
             can_export_data: {{ 'true' if subadmin_info.can_export_data else 'false' }}
         };
 
+        let pendingAction = null;
+
+        function showCustomConfirm(title, message, emoji, confirmBtnText, onConfirm) {
+            document.getElementById('modalEmoji').innerText = emoji || '🔒';
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalMessage').innerText = message;
+            document.getElementById('modalConfirmBtn').innerText = confirmBtnText || '✉️ Send Approval Request';
+            
+            pendingAction = onConfirm;
+            document.getElementById('customConfirmModal').style.display = 'flex';
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('customConfirmModal').style.display = 'none';
+            pendingAction = null;
+        }
+
+        document.getElementById('modalConfirmBtn').onclick = function() {
+            if (pendingAction) {
+                const actionToRun = pendingAction;
+                closeConfirmModal();
+                actionToRun();
+            }
+        };
+
+        function showCustomNotice(emoji, title, message) {
+            document.getElementById('noticeEmoji').innerText = emoji;
+            document.getElementById('noticeTitle').innerText = title;
+            document.getElementById('noticeMessage').innerText = message;
+            document.getElementById('customNoticeModal').style.display = 'flex';
+        }
+
+        function closeNoticeModal() {
+            document.getElementById('customNoticeModal').style.display = 'none';
+        }
+
         function handleAction(permKey, actionName) {
             if (myPermissions[permKey]) {
-                alert("Action Allowed: " + actionName);
+                showCustomNotice('⚡', 'Access Granted', 'You have active privileges for ' + actionName + '. Proceeding with operation...');
             } else {
-                if (confirm("You do not have permission for '" + actionName + "'. Send a direct approval request to Main Admin's email?")) {
-                    fetch('/subadmin/request-permission', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({ action: actionName, permission_key: permKey })
-                    })
-                    .then(res => res.json())
-                    .then(data => alert(data.message))
-                    .catch(err => alert("Error sending request."));
-                }
+                showCustomConfirm(
+                    'Access Restricted',
+                    'You do not have permission for \'' + actionName + '\'. Would you like to send a direct approval request to Main Admin\'s email?',
+                    '🔒',
+                    '✉️ Send Request to Main Admin',
+                    function() {
+                        fetch('/subadmin/request-permission', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({ action: actionName, permission_key: permKey })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            showCustomNotice('📩', 'Request Dispatched', data.message);
+                        })
+                        .catch(err => {
+                            showCustomNotice('❌', 'Request Failed', 'Unable to send request to Main Admin.');
+                        });
+                    }
+                );
             }
         }
     </script>

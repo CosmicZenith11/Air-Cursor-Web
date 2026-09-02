@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Air Cursor - Sub-Admin Workspace</title>
+    <title>Sub-Admin Workspace · Air Cursor</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
     <script src="{{ url_for('static', filename='security.js') }}"></script>
     <style>
@@ -34,7 +34,7 @@
         .brand p { font-size: 0.85rem; color: var(--text-sub); }
         .logout-btn { background: #ff385c; color: white; padding: 8px 20px; border-radius: 99px; text-decoration: none; font-weight: 700; }
         
-        .box-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 25px; box-shadow: var(--shadow); margin-bottom: 30px; }
+        .box-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 25px; box-shadow: var(--shadow); margin-bottom: 30px; overflow-x: auto; }
         .actions-bar { display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
         .action-btn { background: #1f2126; color: var(--text-main); border: 1px solid var(--card-border); padding: 10px 20px; border-radius: 12px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px; }
         .action-btn:hover { background: rgba(197, 168, 128, 0.15); }
@@ -58,26 +58,21 @@
             </div>
         </div>
 
-        <!-- SUB-ADMIN ACTIONS -->
         <div class="box-card">
             <h2 style="font-size:1.15rem; margin-bottom:15px; color:var(--accent-gold);">Available Operations</h2>
             <div class="actions-bar">
-                <!-- Action 1: View Leads -->
                 <button class="action-btn" onclick="handleAction('can_view_visitors', 'View Leads')">
                     📋 View Leads {% if not subadmin_info.can_view_visitors %}<span class="locked-tag">🔒 Request Access</span>{% endif %}
                 </button>
-                <!-- Action 2: Delete Leads -->
                 <button class="action-btn" onclick="handleAction('can_delete_visitors', 'Delete Leads')">
                     🗑️ Delete Leads {% if not subadmin_info.can_delete_visitors %}<span class="locked-tag">🔒 Request Access</span>{% endif %}
                 </button>
-                <!-- Action 3: Export System Logs -->
                 <button class="action-btn" onclick="handleAction('can_export_data', 'Export Data')">
                     📊 Export Full Analytics {% if not subadmin_info.can_export_data %}<span class="locked-tag">🔒 Request Access</span>{% endif %}
                 </button>
             </div>
         </div>
 
-        <!-- LEADS DATA (જો પરમિશન હોય તો જ દેખાશે) -->
         <div class="box-card">
             <h2 style="font-size:1.15rem; margin-bottom:15px; color:var(--text-main);">Audited Visitor Leads</h2>
             {% if subadmin_info.can_view_visitors %}
@@ -122,7 +117,6 @@
         </div>
     </div>
 
-    <!-- Script to Trigger Email Request -->
     <script>
         const myPermissions = {
             can_view_visitors: {{ 'true' if subadmin_info.can_view_visitors else 'false' }},
@@ -132,7 +126,7 @@
 
         function handleAction(permKey, actionName) {
             if (myPermissions[permKey]) {
-                alert("Action Allowed: Executing " + actionName);
+                alert("Action Allowed: " + actionName);
             } else {
                 if (confirm("You do not have permission for '" + actionName + "'. Send a direct approval request to Main Admin's email?")) {
                     fetch('/subadmin/request-permission', {
@@ -141,9 +135,7 @@
                         body: JSON.stringify({ action: actionName, permission_key: permKey })
                     })
                     .then(res => res.json())
-                    .then(data => {
-                        alert(data.message);
-                    })
+                    .then(data => alert(data.message))
                     .catch(err => alert("Error sending request."));
                 }
             }

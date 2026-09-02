@@ -1,7 +1,9 @@
 import os
+import re
 import io
 from datetime import datetime, timedelta
-from flask import Flask, render_template, request, redirect, url_for, session, make_response, abort
+from bson.objectid import ObjectId
+from flask import Flask, render_template, request, redirect, url_for, session, make_response, abort, jsonify
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from reportlab.lib import colors
@@ -12,9 +14,16 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'air_cursor_super_secret_key_2026')
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=30)
 
-# ==========================================
-# 💥 ૧. MONGODB ATLAS CLOUD CONNECTION 💥
-# ==========================================
+# =========================================================================
+# 💥 ૧. તમારા ગુપ્ત એડમિન ક્રેડેન્શિયલ્સ (STRICT CASE-SENSITIVE) 💥
+# આ નામ અને ઈમેઇલ બરાબર આ જ કેસમાં નાખશો તો જ એડમિન ખુલશે
+# =========================================================================
+ADMIN_SECRET_NAME = os.environ.get('ADMIN_SECRET_NAME', 'Vansh Patel')
+ADMIN_SECRET_EMAIL = os.environ.get('ADMIN_SECRET_EMAIL', 'admin@aircursor.com')
+
+# =========================================================
+# 💥 ૨. MONGODB ATLAS CLOUD CONNECTION 💥
+# =========================================================
 MONGO_URI = os.environ.get('MONGO_URI')
 client = None
 visitors_collection = None
@@ -30,9 +39,9 @@ if MONGO_URI:
 else:
     print("⚠️ Warning: MONGO_URI not found in Environment Variables.")
 
-# ==========================================
-# 💥 ૨. DEVICE SECURITY (WINDOWS ONLY) 💥
-# ==========================================
+# =========================================================
+# 💥 ૩. ડિવાઇસ સિક્યોરિટી (WINDOWS ONLY) 💥
+# =========================================================
 def is_windows_pc(ua_string):
     if not ua_string:
         return False
@@ -40,33 +49,37 @@ def is_windows_pc(ua_string):
     has_windows = 'windows nt' in ua or 'windows' in ua
     is_blocked_device = any(blocked in ua for blocked in [
         'android', 'iphone', 'ipad', 'ipod', 'mobile',
-        'tablet', 'macintosh', 'mac os x', 'mac os', 'linux', 'cros'
+        'tablet', 'macintosh', 'mac os x', 'mac os', 'linux', 'cros', 'tizen', 'watch'
     ])
     return has_windows and not is_blocked_device
 
-# બિફોર રિક્વેસ્ટ: નોન-વિન્ડોઝ ડિવાઇસને 403 Forbidden આપવું
+def sanitize_input(text):
+    if not text:
+        return ""
+    clean = re.sub(r'[<>${}]', '', str(text))
+    return clean
+
 @app.before_request
-def enforce_windows_only():
+def enforce_security_and_devices():
     if request.path.startswith('/static'):
-        return None
-    
-    # લાઇવ ટેસ્ટિંગ રૂટ માટે ડિવાઇસ ચેક બાયપાસ રાખવું જેથી ટેસ્ટ કરી શકાય
-    if request.path.startswith('/error/'):
         return None
 
     ua = request.headers.get('User-Agent', '')
     if not is_windows_pc(ua):
-        abort(403, description="Air Cursor touchless optical tracking algorithms are strictly optimized for Windows PC & Laptops only. Mobile devices, Tablets, and macOS are blocked.")
+        abort(403, description="Air Cursor touchless tracking algorithms are strictly engineered for Windows PC & Laptops only. Mobile phones, Tablets, Smart Boards, and macOS are strictly blocked.")
+
+@app.after_request
+def add_security_headers(response):
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    return response
 
 # =========================================================
-# 💥 ૩. ગ્લોબલ એરર હેન્ડલર (દુનિયાની તમામ ૪૦+ એરર્સ માટે) 💥
+# 💥 ૪. ગ્લોબલ એરર હેન્ડલર (દુનિયાની તમામ એરર્સ માટે) 💥
 # =========================================================
 @app.errorhandler(HTTPException)
 def handle_http_exception(e):
-    """
-    દુનિયાના તમામ સ્ટાન્ડર્ડ HTTP કોડ્સ (400 થી 505) ને પકડીને
-    તમારા પ્રીમિયમ error.html પેજમાં ડાયનેમિકલી મોકલે છે.
-    """
     return render_template(
         'error.html',
         code=e.code,
@@ -76,77 +89,124 @@ def handle_http_exception(e):
 
 @app.errorhandler(Exception)
 def handle_generic_server_crash(e):
-    """
-    જો કોઈ અણધારી ગંભીર સિસ્ટમ ભૂલ થાય તો 500 પેજ બતાવશે.
-    """
     return render_template(
         'error.html',
         code=500,
         title="Internal Server Error",
-        message="An unexpected system failure occurred on our backend server. Our team is inspecting it."
+        message="An unexpected system failure occurred on backend server. Our team is inspecting it."
     ), 500
 
-# ==========================================
-# 💥 ૪. સ્પેશિયલ ટેસ્ટિંગ રૂટ (ALL ERRORS DEMO) 💥
-# ==========================================
 @app.route('/error/<int:code>')
 def simulate_error(code):
-    """
-    કોઈપણ એરર ટેસ્ટ કરવા માટે: દા.ત. /error/400, /error/418, /error/429, /error/503
-    """
     if code in default_exceptions:
         abort(code)
     else:
-        # જો કોઈ અસ્તિત્વમાં ન હોય તેવો કોડ નાખે (જેમ કે 365)
         return render_template(
             'error.html',
             code=code,
-            title="Custom / Non-Standard Status",
-            message=f"HTTP Code {code} is either experimental or not recognized by standard IETF web protocols."
+            title="Custom Status",
+            message=f"HTTP Code {code} is experimental or non-standard."
         ), 400
 
-# ==========================================
-# 💥 ૫. મુખ્ય એપ્લિકેશન રૂટ્સ 💥
-# ==========================================
+# =========================================================
+# 💥 ૫. મુખ્ય વેબસાઇટ અને હિડન એડમિન ગેટવે લોજિક 💥
+# =========================================================
 @app.route('/')
 def home():
     return render_template('index.html')
 
 @app.route('/register', methods=['POST'])
 def register():
-    name = request.form.get('name')
-    email = request.form.get('email')
+    # અહી કોઈ strip() કે lower() નથી વાપર્યું જેથી કેપિટલ-સ્મોલ અક્ષરો એક્ઝેક્ટ મેચ થાય
+    raw_name = request.form.get('name', '')
+    raw_email = request.form.get('email', '')
     remember = request.form.get('remember')
-    
-    # 400 Bad Request: જો નામ કે ઈમેઈલ ખાલી હોય તો
-    if not name or not email:
-        abort(400, description="Invalid form submission. Full Name and Email ID are mandatory fields.")
+
+    # 🕵️‍♂️ ૧. સ્ટીલ્થ ચેક: જો એક્ઝેક્ટ એડમિન નામ અને ઈમેઇલ નાખવામાં આવે તો
+    if raw_name == ADMIN_SECRET_NAME and raw_email == ADMIN_SECRET_EMAIL:
+        session['is_admin_authenticated'] = True
+        # આ ડેટાબેઝમાં એન્ટર નહીં થાય અને સીધા એડમિન પેનલ પર મોકલી દેશે
+        return redirect(url_for('admin_panel'))
+
+    # 👤 ૨. નોર્મલ યુઝર સબમિશન
+    name = sanitize_input(raw_name).strip()
+    email = sanitize_input(raw_email).strip()
+
+    if not name or not email or '@' not in email:
+        abort(400, description="Invalid form submission. Full Name and Email are required.")
 
     session['user_registered'] = True
     session['user_name'] = name
     session.permanent = bool(remember)
     session['remember_me'] = bool(remember)
-    
-    # MongoDB Atlas માં ડેટા સ્ટોર કરવો
+
     if visitors_collection is not None:
         try:
             record = {
-                "name": name.strip(),
-                "email": email.strip(),
+                "name": name,
+                "email": email,
                 "remember_me": bool(remember),
                 "user_agent": request.headers.get('User-Agent', ''),
                 "registered_at": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
             }
             visitors_collection.insert_one(record)
-            print(f"✅ User Data Saved to MongoDB: {name} ({email})")
+            print(f"✅ Normal User Stored: {name}")
         except Exception as err:
-            print(f"❌ Error inserting document to MongoDB: {err}")
-        
+            print(f"❌ Storage Failed: {err}")
+
     return redirect(url_for('download_page'))
 
+# =========================================================
+# 💥 ૬. છૂપું એડમિન પેનલ (ડાયરેક્ટ URL ખોલવા પર 404 આપશે) 💥
+# =========================================================
+@app.route('/admin')
+def admin_panel():
+    # જો કોઈ સીધું URL લખીને આવશે, તો તેને એવું જ લાગશે કે આવું કોઈ પેજ જ નથી (404 Not Found)
+    if not session.get('is_admin_authenticated'):
+        abort(404)
+
+    records = []
+    if visitors_collection is not None:
+        records = list(visitors_collection.find().sort('_id', -1))
+
+    return render_template('admin.html', visitors=records)
+
+@app.route('/admin/delete/<id>')
+def admin_delete(id):
+    if not session.get('is_admin_authenticated'):
+        abort(404)
+    if visitors_collection is not None:
+        visitors_collection.delete_one({'_id': ObjectId(id)})
+    return redirect(url_for('admin_panel'))
+
+@app.route('/admin/logout')
+def admin_logout():
+    session.pop('is_admin_authenticated', None)
+    return redirect(url_for('home'))
+
+# 🚀 REST API (App સપોર્ટ માટે)
+@app.route('/api/admin/visitors')
+def api_get_visitors():
+    if not session.get('is_admin_authenticated'):
+        return jsonify({"status": "error", "message": "Resource Not Found"}), 404
+
+    data = []
+    if visitors_collection is not None:
+        for v in visitors_collection.find().sort('_id', -1):
+            data.append({
+                "id": str(v['_id']),
+                "name": v.get('name'),
+                "email": v.get('email'),
+                "registered_at": v.get('registered_at'),
+                "user_agent": v.get('user_agent')
+            })
+    return jsonify({"status": "success", "count": len(data), "visitors": data})
+
+# =========================================================
+# 💥 ૭. ડાઉનલોડ અને પીડીએફ રૂટ્સ 💥
+# =========================================================
 @app.route('/download')
 def download_page():
-    # 401 Unauthorized: જો યુઝર રજીસ્ટર કર્યા વગર સીધો પેજ ખોલવા જાય
     if not session.get('user_registered'):
         return redirect(url_for('home', action='download_click'))
     return render_template('download.html')
@@ -161,7 +221,7 @@ def reset_session():
 def download_pdf():
     if not session.get('user_registered'):
         return redirect(url_for('home', action='download_click'))
-    
+
     buffer = io.BytesIO()
     p = canvas.Canvas(buffer, pagesize=letter)
     width, height = letter
@@ -208,13 +268,12 @@ def download_pdf():
     p.drawString(65, height - 344, "• Status: Authenticated & Secure Session Active")
 
     p.setStrokeColor(colors.HexColor("#e2e8f0"))
-    p.setLineWidth(0.8)
     p.line(45, 65, width - 45, 65)
 
     p.setFillColor(colors.HexColor("#64748b"))
     p.setFont("Helvetica", 9)
     p.drawString(45, 45, "© 2026 Air Cursor Technologies. All rights reserved.")
-    
+
     p.setFillColor(colors.HexColor("#0077ff"))
     p.setFont("Helvetica-Bold", 9.5)
     p.drawRightString(width - 45, 45, "Powered By:- Developer Mode")

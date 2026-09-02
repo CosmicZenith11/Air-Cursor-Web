@@ -20,11 +20,11 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=30)
 # =========================================================================
 # 💥 ૧. કન્ફિગરેશન & ક્રેડેન્શિયલ્સ 💥
 # =========================================================================
-MASTER_PASSCODE = os.environ.get('MASTER_PASSCODE', '112008')
+MASTER_PASSCODE = os.environ.get('MASTER_PASSCODE', '998877')
 DEFAULT_MAIN_NAME = os.environ.get('MAIN_ADMIN_NAME', 'Vansh Patel')
 DEFAULT_MAIN_EMAIL = os.environ.get('MAIN_ADMIN_EMAIL', 'vanshp1114@gmail.com')
 
-# SMTP સેટિંગ્સ
+# SMTP Credentials
 SMTP_EMAIL = os.environ.get('SMTP_EMAIL', 'aircursor.verify@gmail.com')
 SMTP_APP_PASSWORD = os.environ.get('SMTP_APP_PASSWORD', 'btajqpkrvkflsqvl')
 
@@ -38,6 +38,7 @@ visitors_collection = None
 subadmins_collection = None
 config_collection = None
 audit_collection = None
+requests_collection = None
 
 if MONGO_URI:
     try:
@@ -47,6 +48,7 @@ if MONGO_URI:
         subadmins_collection = db['sub_admins']
         config_collection = db['system_config']
         audit_collection = db['audit_logs']
+        requests_collection = db['permission_requests']
 
         if config_collection.count_documents({"type": "main_admin"}) == 0:
             config_collection.insert_one({
@@ -59,11 +61,19 @@ if MONGO_URI:
         print(f"❌ DB Connection Failed: {e}")
 
 def get_main_admin():
+    env_name = os.environ.get('MAIN_ADMIN_NAME', DEFAULT_MAIN_NAME).strip()
+    env_email = os.environ.get('MAIN_ADMIN_EMAIL', DEFAULT_MAIN_EMAIL).strip()
+
     if config_collection is not None:
         rec = config_collection.find_one({"type": "main_admin"})
         if rec:
-            return rec.get("name", DEFAULT_MAIN_NAME), rec.get("email", DEFAULT_MAIN_EMAIL)
-    return DEFAULT_MAIN_NAME, DEFAULT_MAIN_EMAIL
+            if rec.get("email") != env_email or rec.get("name") != env_name:
+                config_collection.update_one(
+                    {"type": "main_admin"},
+                    {"$set": {"name": env_name, "email": env_email}}
+                )
+            return env_name, env_email
+    return env_name, env_email
 
 # =========================================================
 # 💥 ૩. સબ-એડમિન લાઈવ ઓડિટ લોગર (ACTIVITY TRACKER) 💥
@@ -86,15 +96,15 @@ def log_activity(sub_name, sub_email, action, status="ALLOWED", details=""):
 # =========================================================
 # 💥 ૪. EMAIL DISPATCH ENGINE (GOLD-OBSIDIAN THEME) 💥
 # =========================================================
-def send_approval_email(subadmin_name, subadmin_email, action_name, perm_key, subadmin_id):
+def send_approval_email(subadmin_name, subadmin_email, action_name, perm_key, subadmin_id, req_id):
     if not SMTP_APP_PASSWORD or not SMTP_EMAIL:
-        print("⚠️ SMTP not configured.")
+        print("⚠️ SMTP credentials not set.")
         return False
 
     main_name, main_email = get_main_admin()
     app_base_url = "https://air-cursor-nd6r.onrender.com"
-    accept_url = f"{app_base_url}/admin/grant-permission?sub_id={subadmin_id}&perm={perm_key}&passcode={MASTER_PASSCODE}"
-    ignore_url = f"{app_base_url}/admin/deny-permission?sub_id={subadmin_id}&action={action_name}"
+    accept_url = f"{app_base_url}/admin/grant-permission?sub_id={subadmin_id}&perm={perm_key}&passcode={MASTER_PASSCODE}&req_id={req_id}"
+    ignore_url = f"{app_base_url}/admin/deny-permission?sub_id={subadmin_id}&action={action_name}&req_id={req_id}"
 
     msg = MIMEMultipart("alternative")
     msg['Subject'] = f"🛡️ [Air Cursor Security] Sub-Admin Access Request: {action_name}"
@@ -243,7 +253,7 @@ def register():
 
     main_name, main_email = get_main_admin()
 
-    # ૧. Main Admin Honeypot Match
+    # ૧. Main Admin Check
     if raw_name == main_name and raw_email == main_email:
         session['user_role'] = 'main_admin'
         session['admin_authenticated'] = True
@@ -295,6 +305,12 @@ def main_admin_dashboard():
     visitors = list(visitors_collection.find().sort('_id', -1)) if visitors_collection is not None else []
     sub_admins = list(subadmins_collection.find().sort('_id', -1)) if subadmins_collection is not None else []
     activity_logs = list(audit_collection.find().sort('_id', -1).limit(50)) if audit_collection is not None else []
+    
+    # પેન્ડિંગ રિક્વેસ્ટ્સ ફેચ કરવી
+    pending_requests = []
+    if requests_collection is not None:
+        pending_requests = list(requests_collection.find({"status": "PENDING"}).sort('_id', -1))
+
     main_name, main_email = get_main_admin()
 
     return render_template(
@@ -302,9 +318,48 @@ def main_admin_dashboard():
         visitors=visitors,
         sub_admins=sub_admins,
         activity_logs=activity_logs,
+        pending_requests=pending_requests,
         main_name=main_name,
         main_email=main_email
     )
+
+# Dashboard પરથી Approve કરવું
+@app.route('/admin/approve-request/<req_id>')
+def approve_request(req_id):
+    if session.get('user_role') != 'main_admin':
+        abort(404)
+    
+    if requests_collection is not None and subadmins_collection is not None:
+        req_item = requests_collection.find_one({"_id": ObjectId(req_id)})
+        if req_item and req_item.get('status') == 'PENDING':
+            perm_key = req_item.get('permission_key')
+            sub_id = req_item.get('subadmin_id')
+
+            subadmins_collection.update_one(
+                {"_id": ObjectId(sub_id)},
+                {"$set": {perm_key: True}}
+            )
+            requests_collection.update_one(
+                {"_id": ObjectId(req_id)},
+                {"$set": {"status": "APPROVED", "resolved_at": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")}}
+            )
+            log_activity(req_item.get('subadmin_name'), req_item.get('subadmin_email'), f"Permission Approved: {req_item.get('action')}", "ALLOWED", "Granted by Main Admin")
+
+    return redirect(url_for('main_admin_dashboard'))
+
+# Dashboard પરથી Deny/Ignore કરવું
+@app.route('/admin/deny-request/<req_id>')
+def deny_request(req_id):
+    if session.get('user_role') != 'main_admin':
+        abort(404)
+    
+    if requests_collection is not None:
+        requests_collection.update_one(
+            {"_id": ObjectId(req_id)},
+            {"$set": {"status": "DENIED", "resolved_at": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")}}
+        )
+
+    return redirect(url_for('main_admin_dashboard'))
 
 @app.route('/admin/create-subadmin', methods=['POST'])
 def create_subadmin():
@@ -375,11 +430,13 @@ def delete_lead(id):
 
     return redirect(request.referrer or url_for('home'))
 
+# ઈમેઈલ પરથી Approve લિંક
 @app.route('/admin/grant-permission')
 def grant_permission():
     sub_id = request.args.get('sub_id')
     perm = request.args.get('perm')
     passcode = request.args.get('passcode')
+    req_id = request.args.get('req_id')
 
     if passcode != MASTER_PASSCODE or not sub_id or not perm:
         abort(403, description="Invalid authorization token.")
@@ -389,11 +446,32 @@ def grant_permission():
             {"_id": ObjectId(sub_id)},
             {"$set": {perm: True}}
         )
+    if requests_collection is not None and req_id:
+        try:
+            requests_collection.update_one(
+                {"_id": ObjectId(req_id)},
+                {"$set": {"status": "APPROVED", "resolved_at": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")}}
+            )
+        except Exception:
+            pass
+
     return render_template('error.html', code="200", title="Permission Granted", message=f"Permission '{perm}' successfully granted to Sub-Admin.")
 
+# ઈમેઈલ પરથી Deny લિંક
 @app.route('/admin/deny-permission')
 def deny_permission():
     action = request.args.get('action', 'Requested Action')
+    req_id = request.args.get('req_id')
+
+    if requests_collection is not None and req_id:
+        try:
+            requests_collection.update_one(
+                {"_id": ObjectId(req_id)},
+                {"$set": {"status": "DENIED", "resolved_at": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")}}
+            )
+        except Exception:
+            pass
+
     return render_template(
         'error.html', 
         code="Dismissed", 
@@ -402,7 +480,7 @@ def deny_permission():
     ), 200
 
 # =========================================================
-# 💥 ૮. SUB-ADMIN WORKSPACE & AUDIT 💥
+# 💥 ૮. SUB-ADMIN WORKSPACE & REQUEST CREATION 💥
 # =========================================================
 @app.route('/subadmin')
 def subadmin_dashboard():
@@ -436,13 +514,29 @@ def request_permission():
     sub_name = session.get('subadmin_name')
     sub_email = session.get('subadmin_email')
 
+    # રિક્વેસ્ટને MongoDB માં સ્ટોર કરવી
+    req_id = None
+    if requests_collection is not None:
+        insert_res = requests_collection.insert_one({
+            "subadmin_id": sub_id,
+            "subadmin_name": sub_name,
+            "subadmin_email": sub_email,
+            "action": action_name,
+            "permission_key": perm_key,
+            "status": "PENDING",
+            "requested_at": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
+        })
+        req_id = str(insert_res.inserted_id)
+
     log_activity(sub_name, sub_email, f"Unauthorized Action: {action_name}", "RESTRICTED", f"Requested flag: {perm_key}")
-    sent = send_approval_email(sub_name, sub_email, action_name, perm_key, sub_id)
     
-    if sent:
-        return jsonify({"status": "success", "message": "Approval request sent to Main Admin's email!"})
-    else:
-        return jsonify({"status": "logged", "message": "Request logged in security audit trail."})
+    # ઈમેઈલ મોકલવો
+    sent = send_approval_email(sub_name, sub_email, action_name, perm_key, sub_id, req_id)
+    
+    return jsonify({
+        "status": "success",
+        "message": f"Your access request for '{action_name}' has been delivered to Main Admin's email & dashboard."
+    })
 
 @app.route('/admin/logout')
 def logout():

@@ -28,8 +28,6 @@
             --text-sub: #5a5c61;
             --accent-gold: #9E7D53;
             --table-header: #ebe7de;
-            --row-hover: rgba(158, 125, 83, 0.08);
-            --shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
             --btn-theme-bg: #e6e1d5;
             --btn-theme-color: #18191b;
         }
@@ -39,7 +37,7 @@
         .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid var(--card-border); padding-bottom: 20px; }
         .brand-title h1 { font-size: 1.8rem; color: var(--accent-gold); font-weight: 800; }
         .brand-title p { font-size: 0.88rem; color: var(--text-sub); }
-        .nav-actions { display: flex; gap: 12px; align-items: center; }
+        .nav-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
         .theme-btn { background: var(--btn-theme-bg); color: var(--btn-theme-color); border: 1px solid var(--card-border); padding: 8px 16px; border-radius: 99px; cursor: pointer; font-weight: 600; }
         .logout-btn { background: #ff385c; color: white; border: none; padding: 8px 20px; border-radius: 99px; text-decoration: none; font-weight: 700; }
         
@@ -62,8 +60,7 @@
         
         .badge { display: inline-block; padding: 3px 10px; border-radius: 99px; font-size: 0.75rem; font-weight: 700; background: rgba(0, 229, 255, 0.15); color: #00e5ff; margin-right: 4px; }
         .badge-pending { background: rgba(255, 165, 2, 0.2); color: #ffa502; border: 1px solid #ffa502; }
-        
-        /* 💥 LUXURY MODAL STYLES 💥 */
+
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); justify-content: center; align-items: center; z-index: 10000; padding: 20px; }
         .modal-box { background: #1a1b20; border: 1px solid var(--card-border); border-radius: 28px; padding: 35px 30px; width: 100%; max-width: 480px; text-align: center; color: #fff; box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 30px rgba(197,168,128,0.15); animation: popIn 0.25s ease-out; }
         @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
@@ -77,7 +74,7 @@
 
         .form-group { margin-bottom: 16px; text-align: left; }
         .form-group label { display: block; font-size: 0.85rem; color: #aaa; margin-bottom: 6px; }
-        .form-group input { width: 100%; padding: 12px; border-radius: 10px; background: #0f1013; border: 1px solid #333; color: #fff; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border-radius: 10px; background: #0f1013; border: 1px solid #333; color: #fff; font-family: inherit; }
         .checkbox-group { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; font-size: 0.9rem; }
     </style>
 </head>
@@ -86,11 +83,12 @@
         <div class="top-nav">
             <div class="brand-title">
                 <h1>AIR CURSOR (MAIN ADMIN)</h1>
-                <p>Root Access • Full System Authority</p>
+                <p>Root Access • Audio-Reactive Command Center</p>
             </div>
             <div class="nav-actions">
                 <button class="theme-btn" onclick="toggleTheme()"><span id="themeIcon">☀️</span> Mode</button>
-                <button class="btn-gold" onclick="openProfileModal()">⚙️ Profile & Passcode</button>
+                <button class="btn-gold" onclick="openInstructionModal()">📜 Issue Directive</button>
+                <button class="btn-gold" onclick="openProfileModal()">⚙️ Profile & PIN</button>
                 <a href="/admin/logout" class="logout-btn">Exit</a>
             </div>
         </div>
@@ -112,11 +110,11 @@
             </div>
         </div>
 
-        <!-- 💥 ૧. PENDING PERMISSION REQUESTS QUEUE (CAN APPROVE OR IGNORE LATER) 💥 -->
+        <!-- ૧. PENDING REQUESTS -->
         <div class="box-card" style="border: 1px solid rgba(255, 165, 2, 0.4);">
             <div class="box-title">
                 <span style="color:#ffa502;">🔔 Pending Permission Requests ({{ pending_requests|length }})</span>
-                <span style="font-size:0.85rem; color:var(--text-sub); font-weight:normal;">Review & Decide Anytime</span>
+                <span style="font-size:0.85rem; color:var(--text-sub); font-weight:normal;">Audio & Email Synchronized</span>
             </div>
             <table>
                 <thead>
@@ -139,18 +137,18 @@
                         <td style="color:#00e5ff; font-weight:bold;">{{ req.action }}</td>
                         <td><span class="badge badge-pending">{{ req.permission_key }}</span></td>
                         <td>
-                            <a href="/admin/approve-request/{{ req._id }}" class="btn-approve">✓ Approve</a>
-                            <a href="/admin/deny-request/{{ req._id }}" class="btn-deny">✕ Ignore</a>
+                            <a href="/admin/approve-request/{{ req._id }}" onclick="SoundFX.playApprove()" class="btn-approve">✓ Approve</a>
+                            <a href="/admin/deny-request/{{ req._id }}" onclick="SoundFX.playReject()" class="btn-deny">✕ Ignore</a>
                         </td>
                     </tr>
                     {% else %}
-                    <tr><td colspan="5" style="text-align:center; color:var(--text-sub); padding:20px;">No pending permission requests right now. All clear!</td></tr>
+                    <tr><td colspan="5" style="text-align:center; color:var(--text-sub); padding:20px;">No pending requests right now. System all clear!</td></tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
 
-        <!-- 💥 ૨. SUB-ADMIN MANAGEMENT 💥 -->
+        <!-- ૨. SUB-ADMIN MANAGEMENT -->
         <div class="box-card">
             <div class="box-title">
                 <span>Sub-Admins & Access Control</span>
@@ -162,8 +160,7 @@
                         <th>Name</th>
                         <th>Email</th>
                         <th>Permissions Granted</th>
-                        <th>Created At</th>
-                        <th>Action</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -176,30 +173,29 @@
                             {% if sa.can_delete_visitors %}<span class="badge" style="color:#ff4757; background:rgba(255,71,87,0.15)">Delete Leads</span>{% endif %}
                             {% if sa.can_export_data %}<span class="badge" style="color:#ffa502; background:rgba(255,165,2,0.15)">Export Data</span>{% endif %}
                         </td>
-                        <td style="color:var(--text-sub);">{{ sa.created_at }}</td>
                         <td>
-                            <button onclick="confirmRemoveSubAdmin('{{ sa._id }}', '{{ sa.name }}')" class="btn-danger">Revoke Access</button>
+                            <button onclick="targetInstruction('{{ sa._id }}', '{{ sa.name }}')" class="btn-gold" style="padding:4px 12px; font-size:0.8rem; margin-right:8px;">📝 Send Directive</button>
+                            <button onclick="confirmRemoveSubAdmin('{{ sa._id }}', '{{ sa.name }}')" class="btn-danger">Revoke</button>
                         </td>
                     </tr>
                     {% else %}
-                    <tr><td colspan="5" style="text-align:center; color:var(--text-sub); padding:25px;">No Sub-Admins created yet.</td></tr>
+                    <tr><td colspan="4" style="text-align:center; color:var(--text-sub); padding:25px;">No Sub-Admins registered yet.</td></tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
 
-        <!-- 💥 ૩. SUB-ADMIN LIVE AUDIT TRAIL 💥 -->
+        <!-- ૩. AUDIT LOGS -->
         <div class="box-card">
             <div class="box-title">
                 <span>Sub-Admin Live Activity Audit Trail</span>
-                <span style="font-size:0.85rem; color:var(--text-sub); font-weight:normal;">Real-time Monitored Logs</span>
             </div>
             <table>
                 <thead>
                     <tr>
                         <th>Time (UTC)</th>
                         <th>Sub-Admin</th>
-                        <th>Action Performed</th>
+                        <th>Action</th>
                         <th>Status</th>
                         <th>Details</th>
                     </tr>
@@ -209,94 +205,82 @@
                     <tr>
                         <td style="color:var(--text-sub); font-size:0.85rem;">{{ log.timestamp }}</td>
                         <td style="font-weight:700;">{{ log.subadmin_name }}</td>
-                        <td style="color:#ffffff;">{{ log.action }}</td>
+                        <td style="color:#fff;">{{ log.action }}</td>
                         <td>
                             {% if log.status == 'ALLOWED' %}
-                                <span class="badge" style="color:#2ed573; background:rgba(46,213,115,0.15); border:1px solid rgba(46,213,115,0.3);">Allowed</span>
+                                <span class="badge" style="color:#2ed573; background:rgba(46,213,115,0.15);">Allowed</span>
                             {% else %}
-                                <span class="badge" style="color:#ff4757; background:rgba(255,71,87,0.15); border:1px solid rgba(255,71,87,0.3);">Restricted</span>
+                                <span class="badge" style="color:#ff4757; background:rgba(255,71,87,0.15);">Restricted</span>
                             {% endif %}
                         </td>
                         <td style="color:var(--text-sub); font-size:0.85rem;">{{ log.details }}</td>
                     </tr>
                     {% else %}
-                    <tr><td colspan="5" style="text-align:center; padding:30px; color:var(--text-sub);">No sub-admin activity recorded yet.</td></tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-
-        <!-- 💥 ૪. VISITOR LEADS 💥 -->
-        <div class="box-card">
-            <div class="box-title">
-                <span>Registered Visitor Leads</span>
-            </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Date (UTC)</th>
-                        <th>Device</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for u in visitors %}
-                    <tr>
-                        <td>{{ loop.index }}</td>
-                        <td style="font-weight:700;">{{ u.name }}</td>
-                        <td>{{ u.email }}</td>
-                        <td style="color:var(--text-sub);">{{ u.registered_at or 'N/A' }}</td>
-                        <td><span class="badge">Windows PC</span></td>
-                        <td>
-                            <button onclick="confirmDeleteLead('{{ u._id }}')" class="btn-danger">Delete</button>
-                        </td>
-                    </tr>
-                    {% else %}
-                    <tr><td colspan="6" style="text-align:center; color:var(--text-sub); padding:30px;">No leads captured yet.</td></tr>
+                    <tr><td colspan="5" style="text-align:center; padding:25px; color:var(--text-sub);">No audit trail recorded yet.</td></tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!-- 💥 ૫. LIVE POPUP ALERT FOR NEW PERMISSION REQUESTS 💥 -->
+    <!-- 💥 MODAL: ISSUE DIRECTIVE / INSTRUCTION TO SUB-ADMIN 💥 -->
+    <div id="instructionModal" class="modal-overlay">
+        <div class="modal-box" style="text-align:left;">
+            <h2 style="color:var(--accent-gold); margin-bottom:15px; text-align:center;">📜 Issue Directive to Sub-Admin</h2>
+            <form action="/admin/send-instruction" method="POST">
+                <div class="form-group">
+                    <label>Target Sub-Admin:</label>
+                    <select name="subadmin_id" id="instSubAdminSelect" required>
+                        {% for sa in sub_admins %}
+                        <option value="{{ sa._id }}">{{ sa.name }} ({{ sa.email }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Directive Title / Header:</label>
+                    <input type="text" name="title" required placeholder="e.g. Clean Inactive Leads Today">
+                </div>
+                <div class="form-group">
+                    <label>Instruction Message & Details:</label>
+                    <textarea name="message" rows="4" required placeholder="Describe the task or urgent directive..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Priority Level:</label>
+                    <select name="priority">
+                        <option value="Urgent Protocol">⚡ Urgent Protocol</option>
+                        <option value="Standard Instruction">Standard Instruction</option>
+                        <option value="Informational Note">Informational Note</option>
+                    </select>
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                    <button type="button" onclick="closeModal('instructionModal')" class="btn-cancel">Cancel</button>
+                    <button type="submit" onclick="SoundFX.playSend()" class="btn-gold">🚀 Dispatch Directive</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 💥 REQUEST ALERT POPUP WITH AUDIO CHIME 💥 -->
     {% if pending_requests|length > 0 %}
     <div id="requestAlertModal" class="modal-overlay" style="display: flex;">
         <div class="modal-box" style="border-color: #ffa502;">
             <span class="modal-emoji">🔔</span>
             <div class="modal-title" style="color: #ffa502;">New Permission Request!</div>
             <div class="modal-msg">
-                Sub-Admin <b>{{ pending_requests[0].subadmin_name }}</b> is requesting access to:<br>
-                <span style="color:#00e5ff; font-weight:bold; font-size:1.05rem;">"{{ pending_requests[0].action }}"</span><br><br>
-                You can approve it immediately or dismiss this popup and decide later from the dashboard.
+                Sub-Admin <b>{{ pending_requests[0].subadmin_name }}</b> is requesting authorization for:<br>
+                <span style="color:#00e5ff; font-weight:bold; font-size:1.05rem;">"{{ pending_requests[0].action }}"</span>
             </div>
             <div class="modal-btns">
                 <button onclick="document.getElementById('requestAlertModal').style.display='none'" class="btn-cancel">
                     ✕ Dismiss / Review Later
                 </button>
-                <a href="/admin/approve-request/{{ pending_requests[0]._id }}" class="btn-gold" style="background:#2ed573; color:#fff;">
+                <a href="/admin/approve-request/{{ pending_requests[0]._id }}" onclick="SoundFX.playApprove()" class="btn-gold" style="background:#2ed573; color:#fff;">
                     ✓ Approve Now
                 </a>
             </div>
         </div>
     </div>
     {% endif %}
-
-    <!-- 💥 ૬. UNIVERSAL CONFIRM MODAL (REPLACES BROWSER CONFIRM) 💥 -->
-    <div id="universalConfirmModal" class="modal-overlay">
-        <div class="modal-box">
-            <span id="uEmoji" class="modal-emoji">⚠️</span>
-            <div id="uTitle" class="modal-title">Confirm Action</div>
-            <div id="uMessage" class="modal-msg">Are you sure you want to proceed?</div>
-            <div class="modal-btns">
-                <button onclick="closeUniversalConfirm()" class="btn-cancel">✕ Cancel</button>
-                <button id="uConfirmBtn" class="btn-gold">Confirm</button>
-            </div>
-        </div>
-    </div>
 
     <!-- Create Sub-Admin Modal -->
     <div id="subAdminModal" class="modal-overlay">
@@ -312,11 +296,11 @@
                     <input type="email" name="email" required placeholder="rahul@company.com">
                 </div>
                 <div class="form-group">
-                    <label>Select Permissions:</label>
+                    <label>Permissions:</label>
                     <div class="checkbox-group">
-                        <label><input type="checkbox" name="can_view_visitors" checked> Allow View Visitor Leads</label>
-                        <label><input type="checkbox" name="can_delete_visitors"> Allow Delete Visitor Leads</label>
-                        <label><input type="checkbox" name="can_export_data"> Allow Export PDF/Data</label>
+                        <label><input type="checkbox" name="can_view_visitors" checked> Allow View Leads</label>
+                        <label><input type="checkbox" name="can_delete_visitors"> Allow Delete Leads</label>
+                        <label><input type="checkbox" name="can_export_data"> Allow Export Data</label>
                     </div>
                 </div>
                 <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
@@ -327,7 +311,7 @@
         </div>
     </div>
 
-    <!-- Profile & Passcode Modal -->
+    <!-- Profile PIN Modal -->
     <div id="profileModal" class="modal-overlay">
         <div class="modal-box" style="text-align:left;">
             <h2 style="color:var(--accent-gold); margin-bottom:15px; text-align:center;">🔒 Update Main Admin Info</h2>
@@ -340,9 +324,9 @@
                     <label>New Secret Email:</label>
                     <input type="email" name="new_email" value="{{ main_email }}" required>
                 </div>
-                <div class="form-group" style="border-top:1px solid #333; padding-top:15px;">
-                    <label style="color:#ff4757; font-weight:bold;">ENTER MASTER PASSCODE TO VERIFY:</label>
-                    <input type="password" name="passcode" placeholder="Master Passcode Required" required>
+                <div class="form-group">
+                    <label style="color:#ff4757; font-weight:bold;">ENTER MASTER PASSCODE:</label>
+                    <input type="password" name="passcode" placeholder="Master PIN Required" required>
                 </div>
                 <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
                     <button type="button" onclick="closeModal('profileModal')" class="btn-cancel">Cancel</button>
@@ -352,59 +336,91 @@
         </div>
     </div>
 
+    <!-- 💥 NATIVE WEB AUDIO SYNTHESIZER (SOUND FX ENGINE) 💥 -->
     <script>
-        let uCallback = null;
-
-        function showAppConfirm(emoji, title, message, btnText, onConfirm) {
-            document.getElementById('uEmoji').innerText = emoji || '⚠️';
-            document.getElementById('uTitle').innerText = title;
-            document.getElementById('uMessage').innerText = message;
-            document.getElementById('uConfirmBtn').innerText = btnText || 'Confirm';
-            uCallback = onConfirm;
-            document.getElementById('universalConfirmModal').style.display = 'flex';
-        }
-
-        function closeUniversalConfirm() {
-            document.getElementById('universalConfirmModal').style.display = 'none';
-            uCallback = null;
-        }
-
-        document.getElementById('uConfirmBtn').onclick = function() {
-            if (uCallback) {
-                const cb = uCallback;
-                closeUniversalConfirm();
-                cb();
+        const SoundFX = {
+            ctx: null,
+            init() {
+                if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+            },
+            playSend() {
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(440, now);
+                osc.frequency.exponentialRampToValueAtTime(880, now + 0.2);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.2);
+            },
+            playApprove() {
+                this.init();
+                const notes = [523.25, 659.25, 783.99, 1046.50]; // C Major Chord Chime
+                notes.forEach((freq, index) => {
+                    const now = this.ctx.currentTime + index * 0.08;
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now);
+                    gain.gain.setValueAtTime(0.25, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.35);
+                });
+            },
+            playReject() {
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.linearRampToValueAtTime(140, now + 0.25);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.25);
+            },
+            playAlert() {
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, now);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.4);
             }
         };
 
-        function confirmRemoveSubAdmin(id, name) {
-            showAppConfirm(
-                '🛡️',
-                'Revoke Sub-Admin Access',
-                'Are you sure you want to completely revoke access for sub-admin "' + name + '"?',
-                'Revoke Access',
-                function() {
-                    window.location.href = '/admin/remove-subadmin/' + id;
-                }
-            );
-        }
+        // રિક્વેસ્ટ એલર્ટ માટે સાઉન્ડ
+        window.addEventListener('load', () => {
+            if (document.getElementById('requestAlertModal')) {
+                setTimeout(() => SoundFX.playAlert(), 300);
+            }
+        });
 
-        function confirmDeleteLead(id) {
-            showAppConfirm(
-                '🗑️',
-                'Delete Lead Record',
-                'Are you sure you want to permanently delete this visitor entry?',
-                'Delete Lead',
-                function() {
-                    window.location.href = '/admin/delete-lead/' + id;
-                }
-            );
+        function openInstructionModal() { document.getElementById('instructionModal').style.display = 'flex'; }
+        function targetInstruction(id, name) {
+            document.getElementById('instSubAdminSelect').value = id;
+            openInstructionModal();
         }
-
         function openSubAdminModal() { document.getElementById('subAdminModal').style.display = 'flex'; }
         function openProfileModal() { document.getElementById('profileModal').style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        
         function toggleTheme() {
             document.body.classList.toggle('light-mode');
             const isLight = document.body.classList.contains('light-mode');

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master Command · Air Cursor</title>
+    <title>Sub-Admin Workspace · Air Cursor</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
     <script src="{{ url_for('static', filename='security.js') }}"></script>
     <style>
@@ -15,10 +15,7 @@
             --text-sub: rgba(230, 228, 224, 0.65);
             --accent-gold: #C5A880;
             --table-header: #1f2124;
-            --row-hover: rgba(197, 168, 128, 0.05);
             --shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
-            --btn-theme-bg: #282a2e;
-            --btn-theme-color: #C5A880;
         }
         body.light-mode {
             --bg-body: #F4F1EA;
@@ -28,242 +25,106 @@
             --text-sub: #5a5c61;
             --accent-gold: #9E7D53;
             --table-header: #ebe7de;
-            --btn-theme-bg: #e6e1d5;
-            --btn-theme-color: #18191b;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; transition: background 0.3s, color 0.3s; }
-        body { background: var(--bg-body); color: var(--text-main); min-height: 100vh; padding: 30px 20px; }
-        .container { max-width: 1200px; margin: 0 auto; }
-        .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid var(--card-border); padding-bottom: 20px; }
-        .brand-title h1 { font-size: 1.8rem; color: var(--accent-gold); font-weight: 800; }
-        .brand-title p { font-size: 0.88rem; color: var(--text-sub); }
-        .nav-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-        .theme-btn { background: var(--btn-theme-bg); color: var(--btn-theme-color); border: 1px solid var(--card-border); padding: 8px 16px; border-radius: 99px; cursor: pointer; font-weight: 600; }
-        .logout-btn { background: #ff385c; color: white; border: none; padding: 8px 20px; border-radius: 99px; text-decoration: none; font-weight: 700; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; transition: 0.3s; }
+        body { background: var(--bg-body); color: var(--text-main); min-height: 100vh; padding: 35px 20px; }
+        .container { max-width: 1100px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid var(--card-border); padding-bottom: 20px; }
+        .brand h1 { font-size: 1.6rem; color: var(--accent-gold); font-weight: 800; }
+        .brand p { font-size: 0.85rem; color: var(--text-sub); }
+        .logout-btn { background: #ff385c; color: white; padding: 8px 20px; border-radius: 99px; text-decoration: none; font-weight: 700; }
         
-        .grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .metric-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 22px; box-shadow: var(--shadow); }
-        .metric-val { font-size: 2.2rem; font-weight: 800; color: var(--accent-gold); margin-top: 5px; }
-        
-        .box-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 25px; box-shadow: var(--shadow); margin-bottom: 35px; overflow-x: auto; }
-        .box-title { font-size: 1.25rem; font-weight: 700; color: var(--text-main); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-        
+        .box-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 25px; box-shadow: var(--shadow); margin-bottom: 30px; overflow-x: auto; }
+        .actions-bar { display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
+        .action-btn { background: #1f2126; color: var(--text-main); border: 1px solid var(--card-border); padding: 10px 20px; border-radius: 12px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .action-btn:hover { background: rgba(197, 168, 128, 0.15); border-color: var(--accent-gold); }
+        .locked-tag { font-size: 0.75rem; background: #ff4757; color: white; padding: 2px 7px; border-radius: 99px; }
+
         table { width: 100%; border-collapse: collapse; text-align: left; }
         th { background: var(--table-header); padding: 14px 16px; color: var(--text-sub); font-size: 0.8rem; text-transform: uppercase; border-bottom: 1px solid var(--card-border); }
         td { padding: 16px; border-bottom: 1px solid var(--card-border); font-size: 0.92rem; }
-        tr:hover td { background: var(--row-hover); }
 
-        .btn-gold { background: linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%); color: #141517; border: none; padding: 9px 20px; border-radius: 99px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
-        .btn-approve { background: #2ed573; color: white; padding: 6px 14px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 0.85rem; margin-right: 6px; display: inline-block; }
-        .btn-deny { background: #2f3542; color: #ff4757; border: 1px solid rgba(255,71,87,0.4); padding: 6px 14px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 0.85rem; display: inline-block; }
-        .btn-danger { background: #ff4757; color: white; text-decoration: none; padding: 5px 12px; border-radius: 6px; font-size: 0.82rem; font-weight: 600; cursor: pointer; border: none; }
-        
-        .badge { display: inline-block; padding: 3px 10px; border-radius: 99px; font-size: 0.75rem; font-weight: 700; background: rgba(0, 229, 255, 0.15); color: #00e5ff; margin-right: 4px; }
-        .badge-pending { background: rgba(255, 165, 2, 0.2); color: #ffa502; border: 1px solid #ffa502; }
+        .btn-gold { background: linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%); color: #141517; border: none; padding: 10px 22px; border-radius: 99px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
 
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); justify-content: center; align-items: center; z-index: 10000; padding: 20px; }
-        .modal-box { background: #1a1b20; border: 1px solid var(--card-border); border-radius: 28px; padding: 35px 30px; width: 100%; max-width: 480px; text-align: center; color: #fff; box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 30px rgba(197,168,128,0.15); animation: popIn 0.25s ease-out; }
+        .directive-card { background: #181a20; border-left: 4px solid var(--accent-gold); border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+        .directive-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
+
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); justify-content: center; align-items: center; z-index: 10000; padding: 20px; }
+        .modal-box { background: #1a1b20; border: 1px solid var(--card-border); border-radius: 28px; padding: 35px 30px; width: 100%; max-width: 450px; text-align: center; color: #fff; box-shadow: 0 25px 60px rgba(0,0,0,0.8); animation: popIn 0.25s ease-out; }
         @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
         
-        .modal-emoji { font-size: 3.4rem; margin-bottom: 14px; display: block; line-height: 1; }
+        .modal-emoji { font-size: 3.4rem; margin-bottom: 14px; display: block; }
         .modal-title { color: var(--accent-gold); font-size: 1.4rem; font-weight: 800; margin-bottom: 10px; }
-        .modal-msg { color: var(--text-sub); font-size: 0.95rem; line-height: 1.6; margin-bottom: 25px; }
+        .modal-msg { color: var(--text-sub); font-size: 0.95rem; line-height: 1.6; margin-bottom: 25px; white-space: pre-line; }
         .modal-btns { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
         .btn-cancel { background: #282a30; color: #aaa; border: 1px solid rgba(255,255,255,0.1); padding: 10px 22px; border-radius: 99px; font-weight: 600; cursor: pointer; }
-        .btn-cancel:hover { background: #33363e; color: #fff; }
-
-        .form-group { margin-bottom: 16px; text-align: left; }
+        .form-group { margin-bottom: 14px; text-align: left; }
         .form-group label { display: block; font-size: 0.85rem; color: #aaa; margin-bottom: 6px; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border-radius: 10px; background: #0f1013; border: 1px solid #333; color: #fff; font-family: inherit; }
-        .checkbox-group { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; font-size: 0.9rem; }
+        .form-group input, .form-group textarea { width: 100%; padding: 12px; border-radius: 10px; background: #0f1013; border: 1px solid #333; color: #fff; font-family: inherit; }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="top-nav">
-            <div class="brand-title">
-                <h1>AIR CURSOR (MAIN ADMIN)</h1>
-                <p>Root Access • Audio-Reactive Command Center</p>
+        <div class="header">
+            <div class="brand">
+                <h1>AIR CURSOR (SUB-ADMIN WORKSPACE)</h1>
+                <p>Logged in: {{ subadmin_info.name }} • Live Synchronized</p>
             </div>
-            <div class="nav-actions">
-                <button class="theme-btn" onclick="toggleTheme()"><span id="themeIcon">☀️</span> Mode</button>
-                <button class="btn-gold" onclick="openInstructionModal()">📜 Issue Directive</button>
-                <button class="btn-gold" onclick="openProfileModal()">⚙️ Profile & PIN</button>
-                <a href="/admin/logout" class="logout-btn">Exit</a>
+            <div style="display:flex; gap:12px; align-items:center;">
+                <button onclick="document.body.classList.toggle('light-mode')" style="padding:8px 16px; border-radius:99px; cursor:pointer; background:#222; color:#fff; border:1px solid #444;">☀️/🌙</button>
+                <a href="/admin/logout" class="logout-btn">Log Out</a>
             </div>
         </div>
 
-        <div class="grid-cards">
-            <div class="metric-card">
-                <div style="color:var(--text-sub); font-size:0.8rem; font-weight:700;">TOTAL LEADS</div>
-                <div class="metric-val">{{ visitors|length }}</div>
-            </div>
-            <div class="metric-card">
-                <div style="color:var(--text-sub); font-size:0.8rem; font-weight:700;">SUB-ADMINS ACTIVE</div>
-                <div class="metric-val">{{ sub_admins|length }}</div>
-            </div>
-            <div class="metric-card">
-                <div style="color:var(--text-sub); font-size:0.8rem; font-weight:700;">PENDING REQUESTS</div>
-                <div class="metric-val" style="color:{% if pending_requests|length > 0 %}#ffa502{% else %}#2ed573{% endif %};">
-                    {{ pending_requests|length }}
+        <div class="box-card" style="border-color: rgba(197, 168, 128, 0.4);">
+            <h2 style="font-size:1.15rem; margin-bottom:15px; color:var(--accent-gold); display:flex; justify-content:space-between;">
+                <span>📌 Main Admin Directives & Tasks</span>
+                <span style="font-size:0.85rem; color:var(--text-sub); font-weight:normal;">Saved for reference</span>
+            </h2>
+            <div id="directivesContainer">
+                {% for inst in instructions %}
+                <div class="directive-card">
+                    <div class="directive-header">
+                        <b style="color:#00e5ff;">{{ inst.title }}</b>
+                        <span style="font-size:0.75rem; background:#333; padding:2px 8px; border-radius:6px; color:#fff;">{{ inst.priority }}</span>
+                    </div>
+                    <p style="font-size:0.9rem; color:#ddd; margin:6px 0;">{{ inst.message }}</p>
+                    <div style="font-size:0.75rem; color:#888;">Issued: {{ inst.created_at }} • Status: {{ inst.status }}</div>
                 </div>
+                {% else %}
+                <p style="color:var(--text-sub); font-size:0.9rem;">No directives assigned by Main Admin yet.</p>
+                {% endfor %}
             </div>
-        </div>
-
-        <div class="box-card" style="border: 1px solid rgba(255, 165, 2, 0.4);">
-            <div class="box-title">
-                <span style="color:#ffa502;">🔔 Pending Permission Requests ({{ pending_requests|length }})</span>
-                <span style="font-size:0.85rem; color:var(--text-sub); font-weight:normal;">Audio & Email Synchronized</span>
-            </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Time</th>
-                        <th>Sub-Admin</th>
-                        <th>Requested Action</th>
-                        <th>Permission Flag</th>
-                        <th>Decision Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for req in pending_requests %}
-                    <tr>
-                        <td style="color:var(--text-sub); font-size:0.85rem;">{{ req.requested_at }}</td>
-                        <td>
-                            <b>{{ req.subadmin_name }}</b><br>
-                            <span style="color:var(--text-sub); font-size:0.8rem;">{{ req.subadmin_email }}</span>
-                        </td>
-                        <td style="color:#00e5ff; font-weight:bold;">{{ req.action }}</td>
-                        <td><span class="badge badge-pending">{{ req.permission_key }}</span></td>
-                        <td>
-                            <a href="/admin/approve-request/{{ req._id }}" onclick="SoundFX.playApprove()" class="btn-approve">✓ Approve</a>
-                            <a href="/admin/deny-request/{{ req._id }}" onclick="SoundFX.playReject()" class="btn-deny">✕ Ignore</a>
-                        </td>
-                    </tr>
-                    {% else %}
-                    <tr><td colspan="5" style="text-align:center; color:var(--text-sub); padding:20px;">No pending requests right now. System all clear!</td></tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-
-        <div class="box-card" style="border: 1px solid rgba(0, 229, 255, 0.35);">
-            <div class="box-title">
-                <span style="color:#00e5ff;">📥 Sub-Admin Direct Work Notes & Inbox</span>
-                <span style="font-size:0.85rem; color:var(--text-sub); font-weight:normal;">Real-time Monitored</span>
-            </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Sent Time (UTC)</th>
-                        <th>Sub-Admin</th>
-                        <th>Subject</th>
-                        <th>Message Content</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="inboxTableBody">
-                    {% for msg in work_messages %}
-                    <tr>
-                        <td style="color:var(--text-sub); font-size:0.85rem;">{{ msg.sent_at }}</td>
-                        <td style="font-weight:700;">{{ msg.subadmin_name }}</td>
-                        <td style="color:#00e5ff; font-weight:600;">{{ msg.subject }}</td>
-                        <td style="color:#ddd; font-size:0.9rem;">{{ msg.content }}</td>
-                        <td>
-                            <a href="/admin/delete-message/{{ msg._id }}" class="btn-danger" style="font-size:0.75rem;">Delete</a>
-                        </td>
-                    </tr>
-                    {% else %}
-                    <tr><td colspan="5" style="text-align:center; padding:25px; color:var(--text-sub);">No incoming messages from sub-admins.</td></tr>
-                    {% endfor %}
-                </tbody>
-            </table>
         </div>
 
         <div class="box-card">
-            <div class="box-title">
-                <span>Sub-Admins & Access Control</span>
-                <button class="btn-gold" onclick="openSubAdminModal()">+ Create Sub-Admin</button>
+            <h2 style="font-size:1.15rem; margin-bottom:15px; color:var(--accent-gold);">Available Operations</h2>
+            <div class="actions-bar">
+                <button class="action-btn" onclick="handleAction('can_view_visitors', 'View Leads')">
+                    📋 View Leads {% if not subadmin_info.can_view_visitors %}<span class="locked-tag">🔒 Request Access</span>{% endif %}
+                </button>
+                <button class="action-btn" onclick="handleAction('can_delete_visitors', 'Delete Leads')">
+                    🗑️ Delete Leads {% if not subadmin_info.can_delete_visitors %}<span class="locked-tag">🔒 Request Access</span>{% endif %}
+                </button>
+                <button class="action-btn" onclick="handleAction('can_export_data', 'Export Data')">
+                    📊 Export Analytics {% if not subadmin_info.can_export_data %}<span class="locked-tag">🔒 Request Access</span>{% endif %}
+                </button>
+                <button class="action-btn" onclick="openSendMessageModal()" style="border-color: #00e5ff; color: #00e5ff;">
+                    💬 Message Main Admin
+                </button>
             </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Permissions Granted</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for sa in sub_admins %}
-                    <tr>
-                        <td style="font-weight:700;">{{ sa.name }}</td>
-                        <td>{{ sa.email }}</td>
-                        <td>
-                            {% if sa.can_view_visitors %}<span class="badge">View Leads</span>{% endif %}
-                            {% if sa.can_delete_visitors %}<span class="badge" style="color:#ff4757; background:rgba(255,71,87,0.15)">Delete Leads</span>{% endif %}
-                            {% if sa.can_export_data %}<span class="badge" style="color:#ffa502; background:rgba(255,165,2,0.15)">Export Data</span>{% endif %}
-                        </td>
-                        <td>
-                            <button onclick="targetInstruction('{{ sa._id }}', '{{ sa.name }}')" class="btn-gold" style="padding:4px 12px; font-size:0.8rem; margin-right:8px;">📝 Send Directive</button>
-                            <button onclick="confirmRemoveSubAdmin('{{ sa._id }}', '{{ sa.name }}')" class="btn-danger">Revoke</button>
-                        </td>
-                    </tr>
-                    {% else %}
-                    <tr><td colspan="4" style="text-align:center; color:var(--text-sub); padding:25px;">No Sub-Admins registered yet.</td></tr>
-                    {% endfor %}
-                </tbody>
-            </table>
         </div>
 
         <div class="box-card">
-            <div class="box-title">
-                <span>Sub-Admin Live Activity Audit Trail</span>
-            </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Time (UTC)</th>
-                        <th>Sub-Admin</th>
-                        <th>Action</th>
-                        <th>Status</th>
-                        <th>Details</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for log in activity_logs %}
-                    <tr>
-                        <td style="color:var(--text-sub); font-size:0.85rem;">{{ log.timestamp }}</td>
-                        <td style="font-weight:700;">{{ log.subadmin_name }}</td>
-                        <td style="color:#fff;">{{ log.action }}</td>
-                        <td>
-                            {% if log.status == 'ALLOWED' %}
-                                <span class="badge" style="color:#2ed573; background:rgba(46,213,115,0.15);">Allowed</span>
-                            {% else %}
-                                <span class="badge" style="color:#ff4757; background:rgba(255,71,87,0.15);">Restricted</span>
-                            {% endif %}
-                        </td>
-                        <td style="color:var(--text-sub); font-size:0.85rem;">{{ log.details }}</td>
-                    </tr>
-                    {% else %}
-                    <tr><td colspan="5" style="text-align:center; padding:25px; color:var(--text-sub);">No audit trail recorded yet.</td></tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-
-        <div class="box-card">
-            <div class="box-title">
-                <span>Registered Visitor Leads</span>
-            </div>
+            <h2 style="font-size:1.15rem; margin-bottom:15px; color:var(--text-main);">Visitor Leads Data</h2>
+            {% if subadmin_info.can_view_visitors %}
             <table>
                 <thead>
                     <tr>
                         <th>#</th>
                         <th>Name</th>
                         <th>Email</th>
-                        <th>Date (UTC)</th>
-                        <th>Device</th>
+                        <th>Registration Date (UTC)</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -274,150 +135,79 @@
                         <td style="font-weight:700;">{{ u.name }}</td>
                         <td>{{ u.email }}</td>
                         <td style="color:var(--text-sub);">{{ u.registered_at or 'N/A' }}</td>
-                        <td><span class="badge">Windows PC</span></td>
                         <td>
-                            <button onclick="confirmDeleteLead('{{ u._id }}')" class="btn-danger">Delete</button>
+                            {% if subadmin_info.can_delete_visitors %}
+                                <a href="javascript:void(0)" onclick="confirmDeleteLead('{{ u._id }}')" style="color:#ff4757; font-weight:bold; text-decoration:none;">Delete</a>
+                            {% else %}
+                                <span onclick="handleAction('can_delete_visitors', 'Delete Single Lead')" style="cursor:pointer; color:#888;">🔒 Delete</span>
+                            {% endif %}
                         </td>
                     </tr>
                     {% else %}
-                    <tr><td colspan="6" style="text-align:center; color:var(--text-sub); padding:30px;">No leads captured yet.</td></tr>
+                    <tr><td colspan="5" style="text-align:center; padding:30px; color:#888;">No leads registered.</td></tr>
                     {% endfor %}
                 </tbody>
             </table>
-        </div>
-    </div>
-
-    <div id="instructionModal" class="modal-overlay">
-        <div class="modal-box" style="text-align:left;">
-            <h2 style="color:var(--accent-gold); margin-bottom:15px; text-align:center;">📜 Issue Directive to Sub-Admin</h2>
-            <form action="/admin/send-instruction" method="POST">
-                <div class="form-group">
-                    <label>Target Sub-Admin:</label>
-                    <select name="subadmin_id" id="instSubAdminSelect" required>
-                        {% for sa in sub_admins %}
-                        <option value="{{ sa._id }}">{{ sa.name }} ({{ sa.email }})</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Directive Title / Header:</label>
-                    <input type="text" name="title" required placeholder="e.g. Clean Inactive Leads Today">
-                </div>
-                <div class="form-group">
-                    <label>Instruction Message & Details:</label>
-                    <textarea name="message" rows="4" required placeholder="Describe the task or urgent directive..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Priority Level:</label>
-                    <select name="priority">
-                        <option value="Urgent Protocol">⚡ Urgent Protocol</option>
-                        <option value="Standard Instruction">Standard Instruction</option>
-                        <option value="Informational Note">Informational Note</option>
-                    </select>
-                </div>
-                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
-                    <button type="button" onclick="closeModal('instructionModal')" class="btn-cancel">Cancel</button>
-                    <button type="submit" onclick="SoundFX.playSend()" class="btn-gold">🚀 Dispatch Directive</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    {% if pending_requests|length > 0 %}
-    <div id="requestAlertModal" class="modal-overlay" style="display: flex;">
-        <div class="modal-box" style="border-color: #ffa502;">
-            <span class="modal-emoji">🔔</span>
-            <div class="modal-title" style="color: #ffa502;">New Permission Request!</div>
-            <div class="modal-msg">
-                Sub-Admin <b>{{ pending_requests[0].subadmin_name }}</b> is requesting authorization for:<br>
-                <span style="color:#00e5ff; font-weight:bold; font-size:1.05rem;">"{{ pending_requests[0].action }}"</span>
-            </div>
-            <div class="modal-btns">
-                <button onclick="document.getElementById('requestAlertModal').style.display='none'" class="btn-cancel">
-                    ✕ Dismiss / Review Later
+            {% else %}
+            <div style="text-align:center; padding:45px 20px; color:#888;">
+                <p style="font-size:1.1rem; margin-bottom:12px;">🔒 Viewing leads is restricted by Main Admin.</p>
+                <button onclick="handleAction('can_view_visitors', 'View Leads')" class="btn-gold">
+                    ✉️ Request Access from Main Admin
                 </button>
-                <a href="/admin/approve-request/{{ pending_requests[0]._id }}" onclick="SoundFX.playApprove()" class="btn-gold" style="background:#2ed573; color:#fff;">
-                    ✓ Approve Now
-                </a>
             </div>
-        </div>
-    </div>
-    {% endif %}
-
-    <div id="incomingMsgModal" class="modal-overlay">
-        <div class="modal-box" style="border-color: #00e5ff;">
-            <span class="modal-emoji">💬</span>
-            <div class="modal-title" style="color: #00e5ff;">Message From <span id="inboxFrom">Sub-Admin</span></div>
-            <div class="modal-msg" style="text-align:left; background:#101115; padding:15px; border-radius:12px; margin-bottom:20px;">
-                <b id="inboxSubj" style="color:#C5A880; display:block; margin-bottom:6px;"></b>
-                <span id="inboxBody" style="color:#fff;"></span>
-            </div>
-            <div class="modal-btns">
-                <button onclick="closeIncomingMsgModal()" class="btn-gold" style="width:100%;">👍 Understood & Refresh Inbox</button>
-            </div>
+            {% endif %}
         </div>
     </div>
 
-    <div id="subAdminModal" class="modal-overlay">
-        <div class="modal-box" style="text-align:left;">
-            <h2 style="color:var(--accent-gold); margin-bottom:15px; text-align:center;">Create Sub-Admin</h2>
-            <form action="/admin/create-subadmin" method="POST">
-                <div class="form-group">
-                    <label>Sub-Admin Exact Name:</label>
-                    <input type="text" name="name" required placeholder="e.g. Rahul Sharma">
-                </div>
-                <div class="form-group">
-                    <label>Sub-Admin Exact Email:</label>
-                    <input type="email" name="email" required placeholder="rahul@company.com">
-                </div>
-                <div class="form-group">
-                    <label>Permissions:</label>
-                    <div class="checkbox-group">
-                        <label><input type="checkbox" name="can_view_visitors" checked> Allow View Leads</label>
-                        <label><input type="checkbox" name="can_delete_visitors"> Allow Delete Leads</label>
-                        <label><input type="checkbox" name="can_export_data"> Allow Export Data</label>
-                    </div>
-                </div>
-                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
-                    <button type="button" onclick="closeModal('subAdminModal')" class="btn-cancel">Cancel</button>
-                    <button type="submit" class="btn-gold">Confirm & Add</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div id="profileModal" class="modal-overlay">
-        <div class="modal-box" style="text-align:left;">
-            <h2 style="color:var(--accent-gold); margin-bottom:15px; text-align:center;">🔒 Update Main Admin Info</h2>
-            <form action="/admin/update-credentials" method="POST">
-                <div class="form-group">
-                    <label>New Secret Name:</label>
-                    <input type="text" name="new_name" value="{{ main_name }}" required>
-                </div>
-                <div class="form-group">
-                    <label>New Secret Email:</label>
-                    <input type="email" name="new_email" value="{{ main_email }}" required>
-                </div>
-                <div class="form-group">
-                    <label style="color:#ff4757; font-weight:bold;">ENTER MASTER PASSCODE:</label>
-                    <input type="password" name="passcode" placeholder="Master PIN Required" required>
-                </div>
-                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
-                    <button type="button" onclick="closeModal('profileModal')" class="btn-cancel">Cancel</button>
-                    <button type="submit" class="btn-gold">Authorize Update</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div id="universalConfirmModal" class="modal-overlay">
+    <div id="customConfirmModal" class="modal-overlay">
         <div class="modal-box">
-            <span id="uEmoji" class="modal-emoji">⚠️</span>
-            <div id="uTitle" class="modal-title">Confirm Action</div>
-            <div id="uMessage" class="modal-msg">Are you sure you want to proceed?</div>
+            <span id="modalEmoji" class="modal-emoji">🔒</span>
+            <div id="modalTitle" class="modal-title">Access Restricted</div>
+            <div id="modalMessage" class="modal-msg">You do not have permission for this action.</div>
             <div class="modal-btns">
-                <button onclick="closeUniversalConfirm()" class="btn-cancel">✕ Cancel</button>
-                <button id="uConfirmBtn" class="btn-gold">Confirm</button>
+                <button onclick="closeConfirmModal()" class="btn-cancel">✕ Cancel</button>
+                <button id="modalConfirmBtn" class="btn-gold">✉️ Send Request to Main Admin</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="customNoticeModal" class="modal-overlay">
+        <div class="modal-box">
+            <span id="noticeEmoji" class="modal-emoji">📩</span>
+            <div id="noticeTitle" class="modal-title">Request Dispatched!</div>
+            <div id="noticeMessage" class="modal-msg">Your permission request has been delivered.</div>
+            <div class="modal-btns">
+                <button onclick="closeNoticeModal()" class="btn-gold" style="width: 100%;">👍 Understood</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="directiveModal" class="modal-overlay">
+        <div class="modal-box" style="border-color:#00e5ff;">
+            <span class="modal-emoji">📜</span>
+            <div id="dirTitle" class="modal-title" style="color:#00e5ff;">Main Admin Directive</div>
+            <div id="dirMsg" class="modal-msg" style="color:#fff; text-align:left; background:#111; padding:15px; border-radius:12px;"></div>
+            <div class="modal-btns">
+                <button id="dirSaveBtn" class="btn-cancel" style="border-color:#00e5ff; color:#00e5ff;">📌 Save / See Later</button>
+                <button id="dirDoneBtn" class="btn-gold">✅ Acknowledge & Done</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="msgModal" class="modal-overlay">
+        <div class="modal-box" style="text-align:left;">
+            <h2 style="color:var(--accent-gold); margin-bottom:15px; text-align:center;">💬 Send Note to Main Admin</h2>
+            <div class="form-group">
+                <label>Subject / Task Reference:</label>
+                <input type="text" id="msgSubject" placeholder="e.g. Lead verification completed">
+            </div>
+            <div class="form-group">
+                <label>Work Details / Query:</label>
+                <textarea id="msgContent" rows="4" placeholder="Type your work memo or question..."></textarea>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                <button type="button" onclick="document.getElementById('msgModal').style.display='none'" class="btn-cancel">Cancel</button>
+                <button type="button" onclick="submitMessageToAdmin()" class="btn-gold">🚀 Dispatch Note</button>
             </div>
         </div>
     </div>
@@ -434,20 +224,20 @@
                 const osc = this.ctx.createOscillator();
                 const gain = this.ctx.createGain();
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(440, now);
-                osc.frequency.exponentialRampToValueAtTime(880, now + 0.2);
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.exponentialRampToValueAtTime(900, now + 0.25);
                 gain.gain.setValueAtTime(0.3, now);
-                gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
                 osc.connect(gain);
                 gain.connect(this.ctx.destination);
                 osc.start(now);
-                osc.stop(now + 0.2);
+                osc.stop(now + 0.25);
             },
             playApprove() {
                 this.init();
                 const notes = [523.25, 659.25, 783.99, 1046.50];
-                notes.forEach((freq, index) => {
-                    const now = this.ctx.currentTime + index * 0.08;
+                notes.forEach((freq, i) => {
+                    const now = this.ctx.currentTime + i * 0.08;
                     const osc = this.ctx.createOscillator();
                     const gain = this.ctx.createGain();
                     osc.type = 'triangle';
@@ -467,116 +257,191 @@
                 const gain = this.ctx.createGain();
                 osc.type = 'sawtooth';
                 osc.frequency.setValueAtTime(220, now);
-                osc.frequency.linearRampToValueAtTime(140, now + 0.25);
+                osc.frequency.linearRampToValueAtTime(120, now + 0.3);
                 gain.gain.setValueAtTime(0.3, now);
-                gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
                 osc.connect(gain);
                 gain.connect(this.ctx.destination);
                 osc.start(now);
-                osc.stop(now + 0.25);
+                osc.stop(now + 0.3);
             },
-            playAlert() {
+            playLoudInstructionAlert() {
                 this.init();
-                const now = this.ctx.currentTime;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(880, now);
-                gain.gain.setValueAtTime(0.3, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-                osc.start(now);
-                osc.stop(now + 0.4);
+                const tones = [587.33, 880.00, 1174.66, 1760.00];
+                tones.forEach((freq, i) => {
+                    const now = this.ctx.currentTime + (i * 0.12);
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(freq, now);
+                    gain.gain.setValueAtTime(0.85, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                });
             }
         };
 
-        window.addEventListener('load', () => {
-            if (document.getElementById('requestAlertModal')) {
-                setTimeout(() => SoundFX.playAlert(), 300);
-            }
-        });
+        const myPermissions = {
+            can_view_visitors: {{ 'true' if subadmin_info.can_view_visitors else 'false' }},
+            can_delete_visitors: {{ 'true' if subadmin_info.can_delete_visitors else 'false' }},
+            can_export_data: {{ 'true' if subadmin_info.can_export_data else 'false' }}
+        };
 
-        // Live Poll for incoming Sub-Admin messages (NON-BLOCKING CUSTOM MODAL)
-        setInterval(() => {
-            fetch('/api/admin/poll-messages')
-            .then(res => res.json())
-            .then(data => {
-                if (data.new_message) {
-                    SoundFX.playAlert();
-                    document.getElementById('inboxFrom').innerText = data.new_message.from;
-                    document.getElementById('inboxSubj').innerText = data.new_message.subject;
-                    document.getElementById('inboxBody').innerText = data.new_message.content;
-                    document.getElementById('incomingMsgModal').style.display = 'flex';
-                }
-            })
-            .catch(() => {});
-        }, 3000);
+        let pendingCallback = null;
 
-        function closeIncomingMsgModal() {
-            document.getElementById('incomingMsgModal').style.display = 'none';
-            window.location.reload();
+        function showCustomConfirm(title, message, emoji, confirmBtnText, onConfirm) {
+            document.getElementById('modalEmoji').innerText = emoji || '🔒';
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalMessage').innerText = message;
+            document.getElementById('modalConfirmBtn').innerText = confirmBtnText || 'Confirm';
+            pendingCallback = onConfirm;
+            document.getElementById('customConfirmModal').style.display = 'flex';
         }
 
-        let uCallback = null;
-        function showAppConfirm(emoji, title, message, btnText, onConfirm) {
-            document.getElementById('uEmoji').innerText = emoji || '⚠️';
-            document.getElementById('uTitle').innerText = title;
-            document.getElementById('uMessage').innerText = message;
-            document.getElementById('uConfirmBtn').innerText = btnText || 'Confirm';
-            uCallback = onConfirm;
-            document.getElementById('universalConfirmModal').style.display = 'flex';
+        function closeConfirmModal() {
+            document.getElementById('customConfirmModal').style.display = 'none';
+            pendingCallback = null;
         }
 
-        function closeUniversalConfirm() {
-            document.getElementById('universalConfirmModal').style.display = 'none';
-            uCallback = null;
-        }
-
-        document.getElementById('uConfirmBtn').onclick = function() {
-            if (uCallback) {
-                const cb = uCallback;
-                closeUniversalConfirm();
+        document.getElementById('modalConfirmBtn').onclick = function() {
+            if (pendingCallback) {
+                const cb = pendingCallback;
+                closeConfirmModal();
                 cb();
             }
         };
 
-        function openInstructionModal() { document.getElementById('instructionModal').style.display = 'flex'; }
-        function targetInstruction(id, name) {
-            document.getElementById('instSubAdminSelect').value = id;
-            openInstructionModal();
+        function showCustomNotice(emoji, title, message) {
+            document.getElementById('noticeEmoji').innerText = emoji;
+            document.getElementById('noticeTitle').innerText = title;
+            document.getElementById('noticeMessage').innerText = message;
+            document.getElementById('customNoticeModal').style.display = 'flex';
         }
-        function openSubAdminModal() { document.getElementById('subAdminModal').style.display = 'flex'; }
-        function openProfileModal() { document.getElementById('profileModal').style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        function confirmRemoveSubAdmin(id, name) {
-            showAppConfirm(
-                '🛡️',
-                'Revoke Access',
-                'Are you sure you want to revoke access for Sub-Admin "' + name + '"?',
-                'Revoke Now',
-                function() { window.location.href = '/admin/remove-subadmin/' + id; }
-            );
+        function closeNoticeModal() {
+            document.getElementById('customNoticeModal').style.display = 'none';
+        }
+
+        function handleAction(permKey, actionName) {
+            if (myPermissions[permKey]) {
+                SoundFX.playApprove();
+                showCustomNotice('⚡', 'Access Granted', 'You have active privileges for ' + actionName + '.');
+            } else {
+                showCustomConfirm(
+                    'Access Restricted',
+                    'You do not have permission for \'' + actionName + '\'. Send a direct approval request to Main Admin?',
+                    '🔒',
+                    '✉️ Send Request to Main Admin',
+                    function() {
+                        fetch('/subadmin/request-permission', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({ action: actionName, permission_key: permKey })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            SoundFX.playSend();
+                            showCustomNotice('📩', 'Request Sent Successfully!', data.message);
+                        })
+                        .catch(err => {
+                            SoundFX.playReject();
+                            showCustomNotice('❌', 'Notice', 'Request logged in central security audit trail.');
+                        });
+                    }
+                );
+            }
+        }
+
+        function openSendMessageModal() {
+            document.getElementById('msgModal').style.display = 'flex';
+        }
+
+        function submitMessageToAdmin() {
+            const subject = document.getElementById('msgSubject').value.trim();
+            const content = document.getElementById('msgContent').value.trim();
+            if (!content) {
+                showCustomNotice('⚠️', 'Validation', 'Please enter message details before sending.');
+                return;
+            }
+
+            fetch('/subadmin/send-message', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ subject: subject, content: content })
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('msgModal').style.display = 'none';
+                document.getElementById('msgSubject').value = '';
+                document.getElementById('msgContent').value = '';
+                SoundFX.playSend();
+                showCustomNotice('📨', 'Dispatched!', data.message);
+            })
+            .catch(err => showCustomNotice('❌', 'Error', 'Error sending message.'));
         }
 
         function confirmDeleteLead(id) {
-            showAppConfirm(
+            showCustomConfirm(
+                'Delete Visitor Entry',
+                'Are you sure you want to permanently delete this visitor entry?',
                 '🗑️',
                 'Delete Lead',
-                'Are you sure you want to permanently delete this visitor entry?',
-                'Delete Now',
                 function() { window.location.href = '/admin/delete-lead/' + id; }
             );
         }
 
-        function toggleTheme() {
-            document.body.classList.toggle('light-mode');
-            const isLight = document.body.classList.contains('light-mode');
-            document.getElementById('themeIcon').innerText = isLight ? '🌙' : '☀️';
-            localStorage.setItem('air_theme', isLight ? 'light' : 'dark');
-        }
-        if (localStorage.getItem('air_theme') === 'light') toggleTheme();
+        // Live Polling for Directive Notifications and Approval status
+        setInterval(() => {
+            fetch('/api/subadmin/poll-status')
+            .then(res => res.json())
+            .then(data => {
+                if (data.resolved_request) {
+                    if (data.resolved_request.status === 'APPROVED') {
+                        SoundFX.playApprove();
+                        showCustomNotice('🎉', 'Permission Approved!', 'Main Admin GRANTED access for ' + data.resolved_request.action + '! Reloading...');
+                        setTimeout(() => window.location.reload(), 2500);
+                    } else if (data.resolved_request.status === 'DENIED') {
+                        SoundFX.playReject();
+                        showCustomNotice('❌', 'Permission Denied', 'Main Admin DISMISSED request for ' + data.resolved_request.action + '.');
+                    }
+                }
+
+                if (data.new_instruction) {
+                    SoundFX.playLoudInstructionAlert();
+                    const inst = data.new_instruction;
+                    document.getElementById('dirTitle').innerText = '📜 Directive: ' + inst.title;
+                    document.getElementById('dirMsg').innerText = inst.message;
+                    
+                    document.getElementById('dirDoneBtn').onclick = () => {
+                        fetch('/subadmin/instruction-action', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({ id: inst.id, action: 'ACKNOWLEDGED' })
+                        }).then(() => {
+                            document.getElementById('directiveModal').style.display = 'none';
+                            window.location.reload();
+                        });
+                    };
+
+                    document.getElementById('dirSaveBtn').onclick = () => {
+                        fetch('/subadmin/instruction-action', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({ id: inst.id, action: 'SAVED' })
+                        }).then(() => {
+                            document.getElementById('directiveModal').style.display = 'none';
+                            window.location.reload();
+                        });
+                    };
+
+                    document.getElementById('directiveModal').style.display = 'flex';
+                }
+            })
+            .catch(() => {});
+        }, 3000);
     </script>
 </body>
 </html>

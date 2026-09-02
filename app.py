@@ -5,6 +5,7 @@ import smtplib
 import threading
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.utils import formatdate, make_msgid
 from datetime import datetime, timedelta
 from bson.objectid import ObjectId
 from flask import Flask, render_template, request, redirect, url_for, session, make_response, abort, jsonify
@@ -19,7 +20,7 @@ app.secret_key = os.environ.get('SECRET_KEY', 'air_cursor_super_secret_key_2026'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=30)
 
 # =========================================================
-# 💥 ૧. ક્રેડેન્શિયલ્સ & કન્ફિગરેશન 💥
+# 💥 1. CONFIGURATION & CREDENTIALS 💥
 # =========================================================
 MASTER_PASSCODE = os.environ.get('MASTER_PASSCODE', '998877')
 DEFAULT_MAIN_NAME = os.environ.get('MAIN_ADMIN_NAME', 'Vansh Patel')
@@ -29,7 +30,7 @@ SMTP_EMAIL = os.environ.get('SMTP_EMAIL', 'aircursor.verify@gmail.com')
 SMTP_APP_PASSWORD = os.environ.get('SMTP_APP_PASSWORD', 'btajqpkrvkflsqvl')
 
 # =========================================================
-# 💥 ૨. MONGODB ATLAS CLOUD CONNECTION 💥
+# 💥 2. MONGODB ATLAS CLOUD CONNECTION 💥
 # =========================================================
 MONGO_URI = os.environ.get('MONGO_URI')
 client = None
@@ -95,7 +96,7 @@ def log_activity(sub_name, sub_email, action, status="ALLOWED", details=""):
             print(f"❌ Log Error: {e}")
 
 # =========================================================
-# 💥 ૩. SPAM-SAFE ASYNC BACKGROUND EMAIL ENGINE 💥
+# 💥 3. ANTI-SPAM ASYNC EMAIL DISPATCH ENGINE 💥
 # =========================================================
 def async_email_worker(subadmin_name, subadmin_email, action_name, perm_key, subadmin_id, req_id):
     if not SMTP_APP_PASSWORD or not SMTP_EMAIL:
@@ -106,84 +107,89 @@ def async_email_worker(subadmin_name, subadmin_email, action_name, perm_key, sub
     accept_url = f"{app_base_url}/admin/grant-permission?sub_id={subadmin_id}&perm={perm_key}&passcode={MASTER_PASSCODE}&req_id={req_id}"
     ignore_url = f"{app_base_url}/admin/deny-permission?sub_id={subadmin_id}&action={action_name}&req_id={req_id}"
 
-    # Anti-Spam Headers & Clean Subject
+    # Anti-Spam Compliant Headers
     msg = MIMEMultipart("alternative")
-    msg['Subject'] = f"Air Cursor Security: Sub-Admin Request for {action_name}"
-    msg['From'] = f"Air Cursor Security Team <{SMTP_EMAIL}>"
+    msg['Subject'] = f"Air Cursor Security Request: {action_name}"
+    msg['From'] = f"Air Cursor Security <{SMTP_EMAIL}>"
     msg['To'] = main_email
     msg['Reply-To'] = SMTP_EMAIL
-    msg['X-Mailer'] = "AirCursor-Security-Dispatcher/2.0"
+    msg['Date'] = formatdate(localtime=True)
+    msg['Message-ID'] = make_msgid(domain='aircursor.verify')
 
-    # Plain text version (Essential for avoiding SPAM folder)
-    text_content = f"Hello {main_name},\n\nSub-Admin {subadmin_name} ({subadmin_email}) has requested access for: {action_name} ({perm_key}).\n\nApprove Access: {accept_url}\nIgnore Request: {ignore_url}\n\nAir Cursor Security Automation"
-    msg.attach(MIMEText(text_content, "plain"))
+    # Plain text fallback (Spam filters require both plain text and HTML)
+    plain_text = f"""Hello {main_name},
 
-    html_content = f"""
-    <!DOCTYPE html>
-    <html>
-    <head><meta charset="UTF-8"></head>
-    <body style="margin:0; padding:0; background-color:#0d0e12; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color:#E6E4E0;">
-        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:#0d0e12; padding:40px 15px;">
-            <tr>
-                <td align="center">
-                    <table width="600" border="0" cellspacing="0" cellpadding="0" style="background-color:#16171d; border:1px solid #C5A880; border-radius:24px; box-shadow:0 25px 60px rgba(0,0,0,0.8); overflow:hidden;">
-                        <tr>
-                            <td style="padding:35px 35px 20px 35px; border-bottom:1px solid rgba(197, 168, 128, 0.2); text-align:center;">
-                                <div style="color:#C5A880; font-size:24px; font-weight:800; letter-spacing:1px; text-transform:uppercase;">AIR CURSOR COMMAND</div>
-                                <div style="color:#8e8f96; font-size:12px; margin-top:5px; text-transform:uppercase; letter-spacing:2px;">Security & Authorization Portal</div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="padding:30px 35px;">
-                                <p style="font-size:16px; color:#ffffff; margin:0 0 15px 0;">Hello <b>{main_name}</b>,</p>
-                                <p style="font-size:14px; color:#a6a7ad; line-height:1.6; margin:0 0 25px 0;">
-                                    Sub-Admin <b>{subadmin_name}</b> ({subadmin_email}) has requested access elevation:
-                                </p>
-                                <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:#101115; border:1px solid rgba(255,255,255,0.08); border-radius:14px; margin-bottom:25px;">
-                                    <tr>
-                                        <td style="padding:18px;">
-                                            <p style="margin:4px 0; font-size:14px; color:#fff;"><b>Action:</b> <span style="color:#00e5ff;">{action_name}</span></p>
-                                            <p style="margin:4px 0; font-size:13px; color:#888;"><b>Permission:</b> <code>{perm_key}</code></p>
-                                        </td>
-                                    </tr>
-                                </table>
-                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                                    <tr>
-                                        <td align="center">
-                                            <a href="{accept_url}" target="_blank" style="display:inline-block; padding:12px 30px; background:linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%); color:#101115; text-decoration:none; border-radius:99px; font-weight:800; font-size:14px; margin-right:12px;">Approve & Grant</a>
-                                            <a href="{ignore_url}" target="_blank" style="display:inline-block; padding:12px 28px; background-color:#202228; color:#ff4757; text-decoration:none; border-radius:99px; font-weight:700; font-size:14px; border:1px solid rgba(255,71,87,0.4);">Ignore / Dismiss</a>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="padding:20px 35px; background-color:#101115; border-top:1px solid rgba(255,255,255,0.05); text-align:center;">
-                                <p style="font-size:11px; color:#60626a; margin:0;">
-                                    © 2026 Air Cursor Technologies • Behind Touch Platform<br>
-                                    Automated dispatch sent to Root Administrator ({main_email})
-                                </p>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
-    </body>
-    </html>
-    """
-    msg.attach(MIMEText(html_content, "html"))
+Sub-Admin {subadmin_name} ({subadmin_email}) has requested authorization for: {action_name} ({perm_key}).
+
+To Approve & Grant Permission:
+{accept_url}
+
+To Ignore & Dismiss:
+{ignore_url}
+
+--
+Air Cursor Security System
+"""
+
+    html_content = f"""<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body style="margin:0; padding:0; background-color:#0d0e12; font-family:'Segoe UI', Arial, sans-serif; color:#E6E4E0;">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:#0d0e12; padding:30px 15px;">
+        <tr>
+            <td align="center">
+                <table width="580" border="0" cellspacing="0" cellpadding="0" style="background-color:#16171d; border:1px solid #C5A880; border-radius:20px; overflow:hidden;">
+                    <tr>
+                        <td style="padding:30px 30px 20px 30px; border-bottom:1px solid rgba(197, 168, 128, 0.2); text-align:center;">
+                            <div style="color:#C5A880; font-size:22px; font-weight:800; letter-spacing:1px; text-transform:uppercase;">AIR CURSOR COMMAND</div>
+                            <div style="color:#8e8f96; font-size:11px; margin-top:4px; text-transform:uppercase; letter-spacing:2px;">Security & Authorization Portal</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:25px 30px;">
+                            <p style="font-size:15px; color:#ffffff; margin:0 0 12px 0;">Hello <b>{main_name}</b>,</p>
+                            <p style="font-size:14px; color:#a6a7ad; line-height:1.5; margin:0 0 20px 0;">
+                                Sub-Admin <b>{subadmin_name}</b> ({subadmin_email}) has requested access elevation:
+                            </p>
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:#101115; border:1px solid rgba(255,255,255,0.08); border-radius:12px; margin-bottom:20px;">
+                                <tr>
+                                    <td style="padding:15px;">
+                                        <p style="margin:4px 0; font-size:14px; color:#fff;"><b>Action:</b> <span style="color:#00e5ff;">{action_name}</span></p>
+                                        <p style="margin:4px 0; font-size:13px; color:#888;"><b>Permission Flag:</b> <code>{perm_key}</code></p>
+                                    </td>
+                                </tr>
+                            </table>
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td align="center">
+                                        <a href="{accept_url}" target="_blank" style="display:inline-block; padding:12px 26px; background:linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%); color:#101115; text-decoration:none; border-radius:99px; font-weight:800; font-size:13px; margin-right:10px;">✓ Approve & Grant</a>
+                                        <a href="{ignore_url}" target="_blank" style="display:inline-block; padding:12px 24px; background-color:#202228; color:#ff4757; text-decoration:none; border-radius:99px; font-weight:700; font-size:13px; border:1px solid rgba(255,71,87,0.4);">✕ Ignore / Dismiss</a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>"""
+
+    msg.attach(MIMEText(plain_text, "plain", "utf-8"))
+    msg.attach(MIMEText(html_content, "html", "utf-8"))
+
     try:
-        server = smtplib.SMTP_SSL('smtp.gmail.com', 465, timeout=7)
+        server = smtplib.SMTP_SSL('smtp.gmail.com', 465, timeout=10)
         server.login(SMTP_EMAIL, SMTP_APP_PASSWORD)
         server.sendmail(SMTP_EMAIL, main_email, msg.as_string())
         server.quit()
-        print(f"✅ Primary Inbox Email delivered asynchronously to {main_email}")
+        print(f"✅ Anti-Spam Compliant Email delivered to Inbox of {main_email}")
     except Exception as e:
         print(f"⚠️ SMTP background dispatch warning: {e}")
 
 # =========================================================
-# 💥 ૪. DEVICE & STEALTH LOGINS 💥
+# 💥 4. DEVICE RESTRICTION & ROUTING 💥
 # =========================================================
 def is_windows_pc(ua_string):
     if not ua_string:
@@ -266,7 +272,7 @@ def register():
     return redirect(url_for('download_page'))
 
 # =========================================================
-# 💥 ૫. MAIN ADMIN DASHBOARD & CONTROLS 💥
+# 💥 5. MAIN ADMIN DASHBOARD & APIS 💥
 # =========================================================
 @app.route('/admin')
 @app.route('/admin/master')
@@ -504,7 +510,7 @@ def deny_permission():
     ), 200
 
 # =========================================================
-# 💥 ૬. SUB-ADMIN WORKSPACE & INTERACTIVE APIS 💥
+# 💥 6. SUB-ADMIN WORKSPACE & APIS 💥
 # =========================================================
 @app.route('/subadmin')
 def subadmin_dashboard():
@@ -652,7 +658,7 @@ def logout():
     return redirect(url_for('home'))
 
 # =========================================================
-# 💥 ૭. ERROR HANDLERS & DOWNLOADS 💥
+# 💥 7. ERROR HANDLERS & DOWNLOADS 💥
 # =========================================================
 @app.errorhandler(HTTPException)
 def handle_http_exception(e):

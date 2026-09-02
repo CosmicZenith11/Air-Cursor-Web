@@ -16,8 +16,6 @@
             --accent-gold: #C5A880;
             --table-header: #1f2124;
             --shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
-            --btn-theme-bg: #282a2e;
-            --btn-theme-color: #C5A880;
         }
         body.light-mode {
             --bg-body: #F4F1EA;
@@ -27,8 +25,6 @@
             --text-sub: #5a5c61;
             --accent-gold: #9E7D53;
             --table-header: #ebe7de;
-            --btn-theme-bg: #e6e1d5;
-            --btn-theme-color: #18191b;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; transition: 0.3s; }
         body { background: var(--bg-body); color: var(--text-main); min-height: 100vh; padding: 35px 20px; }
@@ -49,27 +45,30 @@
         td { padding: 16px; border-bottom: 1px solid var(--card-border); font-size: 0.92rem; }
 
         .btn-gold { background: linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%); color: #141517; border: none; padding: 10px 22px; border-radius: 99px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
-        .btn-gold:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(197, 168, 128, 0.3); }
 
-        /* 💥 WEBSITE THEMED LUXURY MODAL POPUPS 💥 */
+        .directive-card { background: #181a20; border-left: 4px solid var(--accent-gold); border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+        .directive-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
+
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); justify-content: center; align-items: center; z-index: 10000; padding: 20px; }
-        .modal-box { background: #1a1b20; border: 1px solid var(--card-border); border-radius: 28px; padding: 35px 30px; width: 100%; max-width: 450px; text-align: center; color: #fff; box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 30px rgba(197,168,128,0.15); animation: popIn 0.25s ease-out; }
+        .modal-box { background: #1a1b20; border: 1px solid var(--card-border); border-radius: 28px; padding: 35px 30px; width: 100%; max-width: 450px; text-align: center; color: #fff; box-shadow: 0 25px 60px rgba(0,0,0,0.8); animation: popIn 0.25s ease-out; }
         @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
         
-        .modal-emoji { font-size: 3.4rem; margin-bottom: 14px; display: block; line-height: 1; }
-        .modal-title { color: var(--accent-gold); font-size: 1.4rem; font-weight: 800; margin-bottom: 10px; letter-spacing: -0.3px; }
+        .modal-emoji { font-size: 3.4rem; margin-bottom: 14px; display: block; }
+        .modal-title { color: var(--accent-gold); font-size: 1.4rem; font-weight: 800; margin-bottom: 10px; }
         .modal-msg { color: var(--text-sub); font-size: 0.95rem; line-height: 1.6; margin-bottom: 25px; }
         .modal-btns { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
         .btn-cancel { background: #282a30; color: #aaa; border: 1px solid rgba(255,255,255,0.1); padding: 10px 22px; border-radius: 99px; font-weight: 600; cursor: pointer; }
-        .btn-cancel:hover { background: #33363e; color: #fff; }
+        .form-group { margin-bottom: 14px; text-align: left; }
+        .form-group label { display: block; font-size: 0.85rem; color: #aaa; margin-bottom: 6px; }
+        .form-group input, .form-group textarea { width: 100%; padding: 12px; border-radius: 10px; background: #0f1013; border: 1px solid #333; color: #fff; font-family: inherit; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <div class="brand">
-                <h1>AIR CURSOR (SUB-ADMIN PORTAL)</h1>
-                <p>Welcome, {{ subadmin_info.name }} • Role: Delegated Sub-Admin</p>
+                <h1>AIR CURSOR (SUB-ADMIN WORKSPACE)</h1>
+                <p>Logged in: {{ subadmin_info.name }} • Live Synchronized</p>
             </div>
             <div style="display:flex; gap:12px; align-items:center;">
                 <button onclick="document.body.classList.toggle('light-mode')" style="padding:8px 16px; border-radius:99px; cursor:pointer; background:#222; color:#fff; border:1px solid #444;">☀️/🌙</button>
@@ -77,6 +76,29 @@
             </div>
         </div>
 
+        <!-- SAVED DIRECTIVES BOARD -->
+        <div class="box-card" style="border-color: rgba(197, 168, 128, 0.4);">
+            <h2 style="font-size:1.15rem; margin-bottom:15px; color:var(--accent-gold); display:flex; justify-content:space-between;">
+                <span>📌 Main Admin Directives & Tasks</span>
+                <span style="font-size:0.85rem; color:var(--text-sub); font-weight:normal;">Saved for reference</span>
+            </h2>
+            <div id="directivesContainer">
+                {% for inst in instructions %}
+                <div class="directive-card">
+                    <div class="directive-header">
+                        <b style="color:#00e5ff;">{{ inst.title }}</b>
+                        <span style="font-size:0.75rem; background:#333; padding:2px 8px; border-radius:6px; color:#fff;">{{ inst.priority }}</span>
+                    </div>
+                    <p style="font-size:0.9rem; color:#ddd; margin:6px 0;">{{ inst.message }}</p>
+                    <div style="font-size:0.75rem; color:#888;">Issued: {{ inst.created_at }} • Status: {{ inst.status }}</div>
+                </div>
+                {% else %}
+                <p style="color:var(--text-sub); font-size:0.9rem;">No directives assigned by Main Admin yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- OPERATIONS BAR -->
         <div class="box-card">
             <h2 style="font-size:1.15rem; margin-bottom:15px; color:var(--accent-gold);">Available Operations</h2>
             <div class="actions-bar">
@@ -87,13 +109,17 @@
                     🗑️ Delete Leads {% if not subadmin_info.can_delete_visitors %}<span class="locked-tag">🔒 Request Access</span>{% endif %}
                 </button>
                 <button class="action-btn" onclick="handleAction('can_export_data', 'Export Data')">
-                    📊 Export Full Analytics {% if not subadmin_info.can_export_data %}<span class="locked-tag">🔒 Request Access</span>{% endif %}
+                    📊 Export Analytics {% if not subadmin_info.can_export_data %}<span class="locked-tag">🔒 Request Access</span>{% endif %}
+                </button>
+                <button class="action-btn" onclick="openSendMessageModal()" style="border-color: #00e5ff; color: #00e5ff;">
+                    💬 Message Main Admin
                 </button>
             </div>
         </div>
 
+        <!-- VISITOR LEADS -->
         <div class="box-card">
-            <h2 style="font-size:1.15rem; margin-bottom:15px; color:var(--text-main);">Audited Visitor Leads</h2>
+            <h2 style="font-size:1.15rem; margin-bottom:15px; color:var(--text-main);">Visitor Leads Data</h2>
             {% if subadmin_info.can_view_visitors %}
             <table>
                 <thead>
@@ -136,7 +162,7 @@
         </div>
     </div>
 
-    <!-- 💥 1. CUSTOM CONFIRMATION POPUP 💥 -->
+    <!-- 💥 1. ACCESS CONFIRM POPUP 💥 -->
     <div id="customConfirmModal" class="modal-overlay">
         <div class="modal-box">
             <span id="modalEmoji" class="modal-emoji">🔒</span>
@@ -144,24 +170,128 @@
             <div id="modalMessage" class="modal-msg">You do not have permission for this action.</div>
             <div class="modal-btns">
                 <button onclick="closeConfirmModal()" class="btn-cancel">✕ Cancel</button>
-                <button id="modalConfirmBtn" class="btn-gold">✉️ Send Approval Request</button>
+                <button id="modalConfirmBtn" class="btn-gold">✉️ Send Request to Main Admin</button>
             </div>
         </div>
     </div>
 
-    <!-- 💥 2. CUSTOM SUCCESS / NOTICE POPUP (SEND SUCCESSFULLY) 💥 -->
+    <!-- 💥 2. NOTICE POPUP 💥 -->
     <div id="customNoticeModal" class="modal-overlay">
         <div class="modal-box">
             <span id="noticeEmoji" class="modal-emoji">📩</span>
-            <div id="noticeTitle" class="modal-title">Send Successfully!</div>
-            <div id="noticeMessage" class="modal-msg">Your permission request has been dispatched to Main Admin.</div>
+            <div id="noticeTitle" class="modal-title">Request Dispatched!</div>
+            <div id="noticeMessage" class="modal-msg">Your permission request has been delivered.</div>
             <div class="modal-btns">
                 <button onclick="closeNoticeModal()" class="btn-gold" style="width: 100%;">👍 Understood</button>
             </div>
         </div>
     </div>
 
+    <!-- 💥 3. DIRECTIVE POPUP FROM MAIN ADMIN 💥 -->
+    <div id="directiveModal" class="modal-overlay">
+        <div class="modal-box" style="border-color:#00e5ff;">
+            <span class="modal-emoji">📜</span>
+            <div id="dirTitle" class="modal-title" style="color:#00e5ff;">Main Admin Directive</div>
+            <div id="dirMsg" class="modal-msg" style="color:#fff; text-align:left; background:#111; padding:15px; border-radius:12px;"></div>
+            <div class="modal-btns">
+                <button id="dirSaveBtn" class="btn-cancel" style="border-color:#00e5ff; color:#00e5ff;">📌 Save / See Later</button>
+                <button id="dirDoneBtn" class="btn-gold">✅ Acknowledge & Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 💥 4. SUB-ADMIN MESSAGE TO MAIN ADMIN MODAL 💥 -->
+    <div id="msgModal" class="modal-overlay">
+        <div class="modal-box" style="text-align:left;">
+            <h2 style="color:var(--accent-gold); margin-bottom:15px; text-align:center;">💬 Send Note to Main Admin</h2>
+            <div class="form-group">
+                <label>Subject / Task Reference:</label>
+                <input type="text" id="msgSubject" placeholder="e.g. Lead verification completed">
+            </div>
+            <div class="form-group">
+                <label>Work Details / Query:</label>
+                <textarea id="msgContent" rows="4" placeholder="Type your work memo or question..."></textarea>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                <button type="button" onclick="document.getElementById('msgModal').style.display='none'" class="btn-cancel">Cancel</button>
+                <button type="button" onclick="submitMessageToAdmin()" class="btn-gold">🚀 Dispatch Note</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 💥 NATIVE AUDIO ENGINE (HIGH-IMPACT SOUNDS) 💥 -->
     <script>
+        const SoundFX = {
+            ctx: null,
+            init() {
+                if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+            },
+            playSend() {
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.exponentialRampToValueAtTime(900, now + 0.25);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.25);
+            },
+            playApprove() {
+                this.init();
+                const notes = [523.25, 659.25, 783.99, 1046.50];
+                notes.forEach((freq, i) => {
+                    const now = this.ctx.currentTime + i * 0.08;
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now);
+                    gain.gain.setValueAtTime(0.25, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.35);
+                });
+            },
+            playReject() {
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.linearRampToValueAtTime(120, now + 0.3);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            },
+            playLoudInstructionAlert() {
+                this.init();
+                const tones = [587.33, 880.00, 1174.66, 1760.00];
+                tones.forEach((freq, i) => {
+                    const now = this.ctx.currentTime + (i * 0.12);
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(freq, now);
+                    gain.gain.setValueAtTime(0.85, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                });
+            }
+        };
+
         const myPermissions = {
             can_view_visitors: {{ 'true' if subadmin_info.can_view_visitors else 'false' }},
             can_delete_visitors: {{ 'true' if subadmin_info.can_delete_visitors else 'false' }},
@@ -175,7 +305,6 @@
             document.getElementById('modalTitle').innerText = title;
             document.getElementById('modalMessage').innerText = message;
             document.getElementById('modalConfirmBtn').innerText = confirmBtnText || 'Confirm';
-            
             pendingCallback = onConfirm;
             document.getElementById('customConfirmModal').style.display = 'flex';
         }
@@ -204,25 +333,14 @@
             document.getElementById('customNoticeModal').style.display = 'none';
         }
 
-        function confirmDeleteLead(id) {
-            showCustomConfirm(
-                'Delete Lead Record',
-                'Are you sure you want to permanently delete this visitor record?',
-                '🗑️',
-                '🗑️ Delete Now',
-                function() {
-                    window.location.href = '/admin/delete-lead/' + id;
-                }
-            );
-        }
-
         function handleAction(permKey, actionName) {
             if (myPermissions[permKey]) {
-                showCustomNotice('⚡', 'Access Granted', 'You have verified privileges for ' + actionName + '. Proceeding with operation...');
+                SoundFX.playApprove();
+                showCustomNotice('⚡', 'Access Granted', 'You have active privileges for ' + actionName + '.');
             } else {
                 showCustomConfirm(
                     'Access Restricted',
-                    'You do not have permission for \'' + actionName + '\'. Would you like to send a direct approval request to Main Admin\'s email and dashboard?',
+                    'You do not have permission for \'' + actionName + '\'. Send a direct approval request to Main Admin?',
                     '🔒',
                     '✉️ Send Request to Main Admin',
                     function() {
@@ -233,16 +351,101 @@
                         })
                         .then(res => res.json())
                         .then(data => {
-                            // 💥 SEND SUCCESSFULLY POPUP WITH EMOJI 💥
+                            SoundFX.playSend();
                             showCustomNotice('📩', 'Request Sent Successfully!', data.message);
                         })
                         .catch(err => {
-                            showCustomNotice('❌', 'Dispatch Error', 'Unable to reach Main Admin. Please try again.');
+                            SoundFX.playReject();
+                            showCustomNotice('❌', 'Notice', 'Request logged in central security audit trail.');
                         });
                     }
                 );
             }
         }
+
+        function openSendMessageModal() {
+            document.getElementById('msgModal').style.display = 'flex';
+        }
+
+        function submitMessageToAdmin() {
+            const subject = document.getElementById('msgSubject').value.trim();
+            const content = document.getElementById('msgContent').value.trim();
+            if (!content) {
+                alert('Please enter message details.');
+                return;
+            }
+
+            fetch('/subadmin/send-message', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ subject: subject, content: content })
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('msgModal').style.display = 'none';
+                document.getElementById('msgSubject').value = '';
+                document.getElementById('msgContent').value = '';
+                SoundFX.playSend();
+                showCustomNotice('📨', 'Dispatched!', data.message);
+            })
+            .catch(err => alert('Error sending message.'));
+        }
+
+        function confirmDeleteLead(id) {
+            if (confirm('Permanently delete this visitor record?')) {
+                window.location.href = '/admin/delete-lead/' + id;
+            }
+        }
+
+        // Live Polling for Directive Notifications and Approval status
+        setInterval(() => {
+            fetch('/api/subadmin/poll-status')
+            .then(res => res.json())
+            .then(data => {
+                if (data.resolved_request) {
+                    if (data.resolved_request.status === 'APPROVED') {
+                        SoundFX.playApprove();
+                        showCustomNotice('🎉', 'Permission Approved!', 'Main Admin GRANTED access for ' + data.resolved_request.action + '! Reloading...');
+                        setTimeout(() => window.location.reload(), 2500);
+                    } else if (data.resolved_request.status === 'DENIED') {
+                        SoundFX.playReject();
+                        showCustomNotice('❌', 'Permission Denied', 'Main Admin DISMISSED request for ' + data.resolved_request.action + '.');
+                    }
+                }
+
+                if (data.new_instruction) {
+                    SoundFX.playLoudInstructionAlert();
+                    const inst = data.new_instruction;
+                    document.getElementById('dirTitle').innerText = '📜 Directive: ' + inst.title;
+                    document.getElementById('dirMsg').innerText = inst.message;
+                    
+                    document.getElementById('dirDoneBtn').onclick = () => {
+                        fetch('/subadmin/instruction-action', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({ id: inst.id, action: 'ACKNOWLEDGED' })
+                        }).then(() => {
+                            document.getElementById('directiveModal').style.display = 'none';
+                            window.location.reload();
+                        });
+                    };
+
+                    document.getElementById('dirSaveBtn').onclick = () => {
+                        fetch('/subadmin/instruction-action', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({ id: inst.id, action: 'SAVED' })
+                        }).then(() => {
+                            document.getElementById('directiveModal').style.display = 'none';
+                            window.location.reload();
+                        });
+                    };
+
+                    document.getElementById('directiveModal').style.display = 'flex';
+                }
+            })
+            .catch(() => {});
+        }, 3500);
     </script>
 </body>
 </html>

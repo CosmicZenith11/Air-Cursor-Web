@@ -1,17 +1,20 @@
 import os
 import io
 from datetime import datetime, timedelta
-from flask import Flask, render_template, request, redirect, url_for, session, make_response
+from flask import Flask, render_template, request, redirect, url_for, session, make_response, abort
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from reportlab.lib import colors
 from pymongo import MongoClient
+from werkzeug.exceptions import HTTPException, default_exceptions
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'air_cursor_super_secret_key_2026')
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=30)
 
-# 💥 MongoDB Cloud Connection Setup 💥
+# ==========================================
+# 💥 ૧. MONGODB ATLAS CLOUD CONNECTION 💥
+# ==========================================
 MONGO_URI = os.environ.get('MONGO_URI')
 client = None
 visitors_collection = None
@@ -27,7 +30,9 @@ if MONGO_URI:
 else:
     print("⚠️ Warning: MONGO_URI not found in Environment Variables.")
 
-# 💥 Windows PC / Laptop વેરિફિકેશન લોજિક 💥
+# ==========================================
+# 💥 ૨. DEVICE SECURITY (WINDOWS ONLY) 💥
+# ==========================================
 def is_windows_pc(ua_string):
     if not ua_string:
         return False
@@ -39,50 +44,70 @@ def is_windows_pc(ua_string):
     ])
     return has_windows and not is_blocked_device
 
-# 💥 ૧. 403 Forbidden: સર્વર લેવલ પર Mobile, Mac, Tablet બ્લોક 💥
+# બિફોર રિક્વેસ્ટ: નોન-વિન્ડોઝ ડિવાઇસને 403 Forbidden આપવું
 @app.before_request
 def enforce_windows_only():
     if request.path.startswith('/static'):
         return None
+    
+    # લાઇવ ટેસ્ટિંગ રૂટ માટે ડિવાઇસ ચેક બાયપાસ રાખવું જેથી ટેસ્ટ કરી શકાય
+    if request.path.startswith('/error/'):
+        return None
+
     ua = request.headers.get('User-Agent', '')
     if not is_windows_pc(ua):
-        return render_template(
-            'error.html', 
-            code="403", 
-            title="Desktop Only Experience", 
-            message="Air Cursor touchless optical tracking algorithms are strictly optimized for Windows PC & Laptops only. Mobile devices, Tablets, and macOS are blocked."
-        ), 403
+        abort(403, description="Air Cursor touchless optical tracking algorithms are strictly optimized for Windows PC & Laptops only. Mobile devices, Tablets, and macOS are blocked.")
 
-# 💥 ૨. 404 Not Found: ખોટી URL નાખે ત્યારે 💥
-@app.errorhandler(404)
-def not_found_error(error):
+# =========================================================
+# 💥 ૩. ગ્લોબલ એરર હેન્ડલર (દુનિયાની તમામ ૪૦+ એરર્સ માટે) 💥
+# =========================================================
+@app.errorhandler(HTTPException)
+def handle_http_exception(e):
+    """
+    દુનિયાના તમામ સ્ટાન્ડર્ડ HTTP કોડ્સ (400 થી 505) ને પકડીને
+    તમારા પ્રીમિયમ error.html પેજમાં ડાયનેમિકલી મોકલે છે.
+    """
     return render_template(
-        'error.html', 
-        code="404", 
-        title="Page Not Found", 
-        message="The page or link you are trying to access does not exist on Air Cursor platform."
-    ), 404
+        'error.html',
+        code=e.code,
+        title=e.name,
+        message=e.description
+    ), e.code
 
-# 💥 ૩. 405 Method Not Allowed: ખોટી HTTP મેથડ રિક્વેસ્ટ પર 💥
-@app.errorhandler(405)
-def method_not_allowed_error(error):
+@app.errorhandler(Exception)
+def handle_generic_server_crash(e):
+    """
+    જો કોઈ અણધારી ગંભીર સિસ્ટમ ભૂલ થાય તો 500 પેજ બતાવશે.
+    """
     return render_template(
-        'error.html', 
-        code="405", 
-        title="Method Not Allowed", 
-        message="The HTTP method used for this action is strictly restricted."
-    ), 405
-
-# 💥 ૪. 500 Internal Server Error: સર્વર ક્રેશ થાય ત્યારે 💥
-@app.errorhandler(500)
-def internal_server_error(error):
-    return render_template(
-        'error.html', 
-        code="500", 
-        title="Internal Server Error", 
-        message="An unexpected system error occurred on our server. Our team is looking into it."
+        'error.html',
+        code=500,
+        title="Internal Server Error",
+        message="An unexpected system failure occurred on our backend server. Our team is inspecting it."
     ), 500
 
+# ==========================================
+# 💥 ૪. સ્પેશિયલ ટેસ્ટિંગ રૂટ (ALL ERRORS DEMO) 💥
+# ==========================================
+@app.route('/error/<int:code>')
+def simulate_error(code):
+    """
+    કોઈપણ એરર ટેસ્ટ કરવા માટે: દા.ત. /error/400, /error/418, /error/429, /error/503
+    """
+    if code in default_exceptions:
+        abort(code)
+    else:
+        # જો કોઈ અસ્તિત્વમાં ન હોય તેવો કોડ નાખે (જેમ કે 365)
+        return render_template(
+            'error.html',
+            code=code,
+            title="Custom / Non-Standard Status",
+            message=f"HTTP Code {code} is either experimental or not recognized by standard IETF web protocols."
+        ), 400
+
+# ==========================================
+# 💥 ૫. મુખ્ય એપ્લિકેશન રૂટ્સ 💥
+# ==========================================
 @app.route('/')
 def home():
     return render_template('index.html')
@@ -93,33 +118,35 @@ def register():
     email = request.form.get('email')
     remember = request.form.get('remember')
     
-    if name and email:
-        session['user_registered'] = True
-        session['user_name'] = name
-        session.permanent = bool(remember)
-        session['remember_me'] = bool(remember)
+    # 400 Bad Request: જો નામ કે ઈમેઈલ ખાલી હોય તો
+    if not name or not email:
+        abort(400, description="Invalid form submission. Full Name and Email ID are mandatory fields.")
+
+    session['user_registered'] = True
+    session['user_name'] = name
+    session.permanent = bool(remember)
+    session['remember_me'] = bool(remember)
+    
+    # MongoDB Atlas માં ડેટા સ્ટોર કરવો
+    if visitors_collection is not None:
+        try:
+            record = {
+                "name": name.strip(),
+                "email": email.strip(),
+                "remember_me": bool(remember),
+                "user_agent": request.headers.get('User-Agent', ''),
+                "registered_at": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
+            }
+            visitors_collection.insert_one(record)
+            print(f"✅ User Data Saved to MongoDB: {name} ({email})")
+        except Exception as err:
+            print(f"❌ Error inserting document to MongoDB: {err}")
         
-        # 💥 ડેટા MongoDB Atlas માં સેવ કરવાનું લોજિક 💥
-        if visitors_collection is not None:
-            try:
-                record = {
-                    "name": name.strip(),
-                    "email": email.strip(),
-                    "remember_me": bool(remember),
-                    "user_agent": request.headers.get('User-Agent', ''),
-                    "registered_at": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
-                }
-                visitors_collection.insert_one(record)
-                print(f"✅ User Data Saved to MongoDB: {name} ({email})")
-            except Exception as err:
-                print(f"❌ Error inserting document to MongoDB: {err}")
-        else:
-            print("⚠️ MongoDB Collection is not accessible. Check MONGO_URI.")
-            
     return redirect(url_for('download_page'))
 
 @app.route('/download')
 def download_page():
+    # 401 Unauthorized: જો યુઝર રજીસ્ટર કર્યા વગર સીધો પેજ ખોલવા જાય
     if not session.get('user_registered'):
         return redirect(url_for('home', action='download_click'))
     return render_template('download.html')

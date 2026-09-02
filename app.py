@@ -2,6 +2,7 @@ import os
 import re
 import io
 import smtplib
+import threading
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timedelta
@@ -17,19 +18,18 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'air_cursor_super_secret_key_2026')
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=30)
 
-# =========================================================================
-# 💥 ૧. કન્ફિગરેશન & ક્રેડેન્શિયલ્સ 💥
-# =========================================================================
+# =========================================================
+# 💥 ૧. ક્રેડેન્શિયલ્સ & કન્ફિગરેશન 💥
+# =========================================================
 MASTER_PASSCODE = os.environ.get('MASTER_PASSCODE', '998877')
 DEFAULT_MAIN_NAME = os.environ.get('MAIN_ADMIN_NAME', 'Vansh Patel')
 DEFAULT_MAIN_EMAIL = os.environ.get('MAIN_ADMIN_EMAIL', 'vanshp1114@gmail.com')
 
-# SMTP Credentials
 SMTP_EMAIL = os.environ.get('SMTP_EMAIL', 'aircursor.verify@gmail.com')
 SMTP_APP_PASSWORD = os.environ.get('SMTP_APP_PASSWORD', 'btajqpkrvkflsqvl')
 
 # =========================================================
-# 💥 ૨. MONGODB ATLAS CLOUD CONNECTION 💥
+# 💥 ૨. MONGODB ATLAS CONNECTION 💥
 # =========================================================
 MONGO_URI = os.environ.get('MONGO_URI')
 client = None
@@ -39,6 +39,7 @@ subadmins_collection = None
 config_collection = None
 audit_collection = None
 requests_collection = None
+instructions_collection = None
 
 if MONGO_URI:
     try:
@@ -49,6 +50,7 @@ if MONGO_URI:
         config_collection = db['system_config']
         audit_collection = db['audit_logs']
         requests_collection = db['permission_requests']
+        instructions_collection = db['admin_instructions']
 
         if config_collection.count_documents({"type": "main_admin"}) == 0:
             config_collection.insert_one({
@@ -75,9 +77,6 @@ def get_main_admin():
             return env_name, env_email
     return env_name, env_email
 
-# =========================================================
-# 💥 ૩. સબ-એડમિન લાઈવ ઓડિટ લોગર (ACTIVITY TRACKER) 💥
-# =========================================================
 def log_activity(sub_name, sub_email, action, status="ALLOWED", details=""):
     if audit_collection is not None:
         try:
@@ -94,12 +93,11 @@ def log_activity(sub_name, sub_email, action, status="ALLOWED", details=""):
             print(f"❌ Log Error: {e}")
 
 # =========================================================
-# 💥 ૪. EMAIL DISPATCH ENGINE (GOLD-OBSIDIAN THEME) 💥
+# 💥 ૩. ASYNC BACKGROUND EMAIL ENGINE (NO DISPATCH TIMEOUT) 💥
 # =========================================================
-def send_approval_email(subadmin_name, subadmin_email, action_name, perm_key, subadmin_id, req_id):
+def async_email_worker(subadmin_name, subadmin_email, action_name, perm_key, subadmin_id, req_id):
     if not SMTP_APP_PASSWORD or not SMTP_EMAIL:
-        print("⚠️ SMTP credentials not set.")
-        return False
+        return
 
     main_name, main_email = get_main_admin()
     app_base_url = "https://air-cursor-nd6r.onrender.com"
@@ -114,75 +112,39 @@ def send_approval_email(subadmin_name, subadmin_email, action_name, perm_key, su
     html_content = f"""
     <!DOCTYPE html>
     <html>
-    <head><meta charset="UTF-8"></head>
-    <body style="margin:0; padding:0; background-color:#0d0e12; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color:#E6E4E0;">
+    <body style="margin:0; padding:0; background-color:#0d0e12; font-family:'Segoe UI', sans-serif; color:#E6E4E0;">
         <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:#0d0e12; padding:40px 15px;">
             <tr>
                 <td align="center">
                     <table width="600" border="0" cellspacing="0" cellpadding="0" style="background-color:#16171d; border:1px solid #C5A880; border-radius:24px; box-shadow:0 25px 60px rgba(0,0,0,0.8); overflow:hidden;">
                         <tr>
                             <td style="padding:35px 35px 20px 35px; border-bottom:1px solid rgba(197, 168, 128, 0.2); text-align:center;">
-                                <div style="color:#C5A880; font-size:24px; font-weight:800; letter-spacing:1px; text-transform:uppercase;">
-                                    AIR CURSOR COMMAND
-                                </div>
-                                <div style="color:#8e8f96; font-size:12px; margin-top:5px; text-transform:uppercase; letter-spacing:2px;">
-                                    Security & Access Authorization Gate
-                                </div>
+                                <div style="color:#C5A880; font-size:24px; font-weight:800; letter-spacing:1px; text-transform:uppercase;">AIR CURSOR COMMAND</div>
+                                <div style="color:#8e8f96; font-size:12px; margin-top:5px; text-transform:uppercase; letter-spacing:2px;">Security & Authorization Portal</div>
                             </td>
                         </tr>
                         <tr>
                             <td style="padding:30px 35px;">
                                 <p style="font-size:16px; color:#ffffff; margin:0 0 15px 0;">Hello <b>{main_name}</b>,</p>
                                 <p style="font-size:14px; color:#a6a7ad; line-height:1.6; margin:0 0 25px 0;">
-                                    A delegated Sub-Admin has encountered an access restriction and is requesting immediate privilege elevation to execute a protected operation:
+                                    Sub-Admin <b>{subadmin_name}</b> ({subadmin_email}) has requested access for:
                                 </p>
                                 <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:#101115; border:1px solid rgba(255,255,255,0.08); border-radius:14px; margin-bottom:25px;">
                                     <tr>
                                         <td style="padding:18px;">
-                                            <table width="100%" border="0" cellspacing="0" cellpadding="5">
-                                                <tr>
-                                                    <td width="38%" style="color:#8e8f96; font-size:13px;">Sub-Admin Name:</td>
-                                                    <td style="color:#ffffff; font-weight:700; font-size:14px;">{subadmin_name}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td style="color:#8e8f96; font-size:13px;">Sub-Admin Email:</td>
-                                                    <td style="color:#C5A880; font-family:monospace; font-size:13px;">{subadmin_email}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td style="color:#8e8f96; font-size:13px;">Requested Action:</td>
-                                                    <td style="color:#00e5ff; font-weight:700; font-size:14px;">{action_name}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td style="color:#8e8f96; font-size:13px;">Permission Flag:</td>
-                                                    <td style="color:#e056fd; font-family:monospace; font-size:12px;">{perm_key}</td>
-                                                </tr>
-                                            </table>
+                                            <p style="margin:4px 0; font-size:14px; color:#fff;"><b>Action:</b> <span style="color:#00e5ff;">{action_name}</span></p>
+                                            <p style="margin:4px 0; font-size:13px; color:#888;"><b>Permission:</b> <code>{perm_key}</code></p>
                                         </td>
                                     </tr>
                                 </table>
-                                <p style="font-size:14px; color:#ffffff; margin:0 0 25px 0; font-weight:600;">
-                                    Do you want to grant this permission permanently?
-                                </p>
                                 <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                     <tr>
                                         <td align="center">
-                                            <a href="{accept_url}" target="_blank" style="display:inline-block; padding:12px 30px; background:linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%); color:#101115; text-decoration:none; border-radius:99px; font-weight:800; font-size:14px; margin-right:12px;">
-                                                ✓ Approve & Grant
-                                            </a>
-                                            <a href="{ignore_url}" target="_blank" style="display:inline-block; padding:12px 28px; background-color:#202228; color:#ff4757; text-decoration:none; border-radius:99px; font-weight:700; font-size:14px; border:1px solid rgba(255,71,87,0.4);">
-                                                ✕ Ignore / Dismiss
-                                            </a>
+                                            <a href="{accept_url}" target="_blank" style="display:inline-block; padding:12px 30px; background:linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%); color:#101115; text-decoration:none; border-radius:99px; font-weight:800; font-size:14px; margin-right:12px;">✓ Approve & Grant</a>
+                                            <a href="{ignore_url}" target="_blank" style="display:inline-block; padding:12px 28px; background-color:#202228; color:#ff4757; text-decoration:none; border-radius:99px; font-weight:700; font-size:14px; border:1px solid rgba(255,71,87,0.4);">✕ Ignore / Dismiss</a>
                                         </td>
                                     </tr>
                                 </table>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="padding:20px 35px; background-color:#101115; border-top:1px solid rgba(255,255,255,0.05); text-align:center;">
-                                <p style="font-size:11px; color:#60626a; margin:0;">
-                                    © 2026 Air Cursor Technologies • Behind Touch Platform<br>
-                                    Automated dispatch sent to Root Administrator ({main_email})
-                                </p>
                             </td>
                         </tr>
                     </table>
@@ -194,18 +156,16 @@ def send_approval_email(subadmin_name, subadmin_email, action_name, perm_key, su
     """
     msg.attach(MIMEText(html_content, "html"))
     try:
-        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        server = smtplib.SMTP_SSL('smtp.gmail.com', 465, timeout=7)
         server.login(SMTP_EMAIL, SMTP_APP_PASSWORD)
         server.sendmail(SMTP_EMAIL, main_email, msg.as_string())
         server.quit()
-        print(f"✅ Notification Email Dispatched to {main_email}")
-        return True
+        print(f"✅ Email delivered asynchronously to {main_email}")
     except Exception as e:
-        print(f"❌ Email Failed: {e}")
-        return False
+        print(f"⚠️ SMTP background dispatch warning: {e}")
 
 # =========================================================
-# 💥 ૫. DEVICE RESTRICTION (WINDOWS ONLY) 💥
+# 💥 ૪. DEVICE & STEALTH LOGINS 💥
 # =========================================================
 def is_windows_pc(ua_string):
     if not ua_string:
@@ -225,11 +185,11 @@ def sanitize_input(text):
 
 @app.before_request
 def enforce_security():
-    if request.path.startswith('/static') or request.path.startswith('/error/'):
+    if request.path.startswith('/static') or request.path.startswith('/error/') or request.path.startswith('/api/'):
         return None
     ua = request.headers.get('User-Agent', '')
     if not is_windows_pc(ua):
-        abort(403, description="Air Cursor touchless algorithms are strictly engineered for Windows PC & Laptops only. Mobile devices, Tablets, and macOS are blocked.")
+        abort(403, description="Air Cursor algorithms are strictly engineered for Windows PC & Laptops only.")
 
 @app.after_request
 def add_security_headers(response):
@@ -238,9 +198,6 @@ def add_security_headers(response):
     response.headers['X-XSS-Protection'] = '1; mode=block'
     return response
 
-# =========================================================
-# 💥 ૬. STEALTH HONEYPOT GATEWAY 💥
-# =========================================================
 @app.route('/')
 def home():
     return render_template('index.html')
@@ -253,13 +210,11 @@ def register():
 
     main_name, main_email = get_main_admin()
 
-    # ૧. Main Admin Check
     if raw_name == main_name and raw_email == main_email:
         session['user_role'] = 'main_admin'
         session['admin_authenticated'] = True
         return redirect(url_for('main_admin_dashboard'))
 
-    # ૨. Sub-Admin Check
     if subadmins_collection is not None:
         sub = subadmins_collection.find_one({"name": raw_name, "email": raw_email})
         if sub:
@@ -270,7 +225,6 @@ def register():
             log_activity(sub['name'], sub['email'], "Session Started", "ALLOWED", "Logged in via Stealth Gateway")
             return redirect(url_for('subadmin_dashboard'))
 
-    # ૩. Normal User Lead
     name = sanitize_input(raw_name)
     email = sanitize_input(raw_email)
 
@@ -294,7 +248,7 @@ def register():
     return redirect(url_for('download_page'))
 
 # =========================================================
-# 💥 ૭. MAIN ADMIN DASHBOARD & CONTROLS 💥
+# 💥 ૫. MAIN ADMIN DASHBOARD & CONTROLS 💥
 # =========================================================
 @app.route('/admin')
 @app.route('/admin/master')
@@ -306,7 +260,6 @@ def main_admin_dashboard():
     sub_admins = list(subadmins_collection.find().sort('_id', -1)) if subadmins_collection is not None else []
     activity_logs = list(audit_collection.find().sort('_id', -1).limit(50)) if audit_collection is not None else []
     
-    # પેન્ડિંગ રિક્વેસ્ટ્સ ફેચ કરવી
     pending_requests = []
     if requests_collection is not None:
         pending_requests = list(requests_collection.find({"status": "PENDING"}).sort('_id', -1))
@@ -323,7 +276,32 @@ def main_admin_dashboard():
         main_email=main_email
     )
 
-# Dashboard પરથી Approve કરવું
+# Main Admin Send Instruction to Sub-Admin
+@app.route('/admin/send-instruction', methods=['POST'])
+def send_instruction():
+    if session.get('user_role') != 'main_admin':
+        abort(404)
+    sub_id = request.form.get('subadmin_id')
+    title = request.form.get('title', 'Direct Admin Order').strip()
+    message = request.form.get('message', '').strip()
+    priority = request.form.get('priority', 'High Priority')
+
+    if instructions_collection is not None and sub_id and message:
+        sub = subadmins_collection.find_one({"_id": ObjectId(sub_id)})
+        sub_name = sub['name'] if sub else "Sub-Admin"
+        instructions_collection.insert_one({
+            "subadmin_id": sub_id,
+            "subadmin_name": sub_name,
+            "title": title,
+            "message": message,
+            "priority": priority,
+            "status": "UNREAD",
+            "created_at": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
+        })
+        log_activity("Main Admin", DEFAULT_MAIN_EMAIL, f"Instruction Issued to {sub_name}", "ALLOWED", title)
+
+    return redirect(url_for('main_admin_dashboard'))
+
 @app.route('/admin/approve-request/<req_id>')
 def approve_request(req_id):
     if session.get('user_role') != 'main_admin':
@@ -331,7 +309,7 @@ def approve_request(req_id):
     
     if requests_collection is not None and subadmins_collection is not None:
         req_item = requests_collection.find_one({"_id": ObjectId(req_id)})
-        if req_item and req_item.get('status') == 'PENDING':
+        if req_item:
             perm_key = req_item.get('permission_key')
             sub_id = req_item.get('subadmin_id')
 
@@ -347,7 +325,6 @@ def approve_request(req_id):
 
     return redirect(url_for('main_admin_dashboard'))
 
-# Dashboard પરથી Deny/Ignore કરવું
 @app.route('/admin/deny-request/<req_id>')
 def deny_request(req_id):
     if session.get('user_role') != 'main_admin':
@@ -430,7 +407,6 @@ def delete_lead(id):
 
     return redirect(request.referrer or url_for('home'))
 
-# ઈમેઈલ પરથી Approve લિંક
 @app.route('/admin/grant-permission')
 def grant_permission():
     sub_id = request.args.get('sub_id')
@@ -457,7 +433,6 @@ def grant_permission():
 
     return render_template('error.html', code="200", title="Permission Granted", message=f"Permission '{perm}' successfully granted to Sub-Admin.")
 
-# ઈમેઈલ પરથી Deny લિંક
 @app.route('/admin/deny-permission')
 def deny_permission():
     action = request.args.get('action', 'Requested Action')
@@ -480,7 +455,7 @@ def deny_permission():
     ), 200
 
 # =========================================================
-# 💥 ૮. SUB-ADMIN WORKSPACE & REQUEST CREATION 💥
+# 💥 ૬. SUB-ADMIN WORKSPACE & INTERACTIVE APIS 💥
 # =========================================================
 @app.route('/subadmin')
 def subadmin_dashboard():
@@ -500,7 +475,12 @@ def subadmin_dashboard():
     if sub_info.get('can_view_visitors') and visitors_collection is not None:
         visitors = list(visitors_collection.find().sort('_id', -1))
 
-    return render_template('subadmin.html', subadmin_info=sub_info, visitors=visitors)
+    # સેવ કરેલી અને એક્ટિવ સૂચનાઓ
+    instructions = []
+    if instructions_collection is not None:
+        instructions = list(instructions_collection.find({"subadmin_id": sub_id}).sort('_id', -1))
+
+    return render_template('subadmin.html', subadmin_info=sub_info, visitors=visitors, instructions=instructions)
 
 @app.route('/subadmin/request-permission', methods=['POST'])
 def request_permission():
@@ -514,8 +494,7 @@ def request_permission():
     sub_name = session.get('subadmin_name')
     sub_email = session.get('subadmin_email')
 
-    # રિક્વેસ્ટને MongoDB માં સ્ટોર કરવી
-    req_id = None
+    req_id = ""
     if requests_collection is not None:
         insert_res = requests_collection.insert_one({
             "subadmin_id": sub_id,
@@ -529,14 +508,72 @@ def request_permission():
         req_id = str(insert_res.inserted_id)
 
     log_activity(sub_name, sub_email, f"Unauthorized Action: {action_name}", "RESTRICTED", f"Requested flag: {perm_key}")
-    
-    # ઈમેઈલ મોકલવો
-    sent = send_approval_email(sub_name, sub_email, action_name, perm_key, sub_id, req_id)
+
+    # બેકગ્રાઉન્ડ થ્રેડ જેથી Sub-Admin ને ક્યારેય ટાઇમ-આઉટ / ડિસ્પેચ એરર ન આવે
+    threading.Thread(
+        target=async_email_worker,
+        args=(sub_name, sub_email, action_name, perm_key, sub_id, req_id),
+        daemon=True
+    ).start()
     
     return jsonify({
         "status": "success",
-        "message": f"Your access request for '{action_name}' has been delivered to Main Admin's email & dashboard."
+        "message": f"Your request for '{action_name}' has been delivered to Main Admin's command center and email!"
     })
+
+# સબ-એડમિન લાઈવ સ્ટેટસ & નવી સૂચનાઓ પોલિંગ API
+@app.route('/api/subadmin/poll-status')
+def api_subadmin_poll():
+    if session.get('user_role') != 'sub_admin':
+        return jsonify({"status": "unauthorized"}), 401
+
+    sub_id = session.get('subadmin_id')
+    result = {"new_instruction": None, "resolved_request": None}
+
+    if instructions_collection is not None:
+        inst = instructions_collection.find_one({"subadmin_id": sub_id, "status": "UNREAD"})
+        if inst:
+            result["new_instruction"] = {
+                "id": str(inst['_id']),
+                "title": inst.get('title'),
+                "message": inst.get('message'),
+                "priority": inst.get('priority'),
+                "created_at": inst.get('created_at')
+            }
+
+    if requests_collection is not None:
+        resolved = requests_collection.find_one({
+            "subadmin_id": sub_id,
+            "status": {"$in": ["APPROVED", "DENIED"]},
+            "notified": {"$ne": True}
+        })
+        if resolved:
+            result["resolved_request"] = {
+                "id": str(resolved['_id']),
+                "action": resolved.get('action'),
+                "status": resolved.get('status')
+            }
+            # માર્ક notified
+            requests_collection.update_one({"_id": resolved['_id']}, {"$set": {"notified": True}})
+
+    return jsonify(result)
+
+# સબ-એડમિન સૂચના સ્વીકારે અથવા સેવ કરે
+@app.route('/subadmin/instruction-action', methods=['POST'])
+def instruction_action():
+    if session.get('user_role') != 'sub_admin':
+        return jsonify({"status": "unauthorized"}), 401
+    
+    data = request.get_json() or {}
+    inst_id = data.get('id')
+    action = data.get('action') # "ACKNOWLEDGED" અથવા "SAVED"
+
+    if instructions_collection is not None and inst_id:
+        instructions_collection.update_one(
+            {"_id": ObjectId(inst_id)},
+            {"$set": {"status": action}}
+        )
+    return jsonify({"status": "success"})
 
 @app.route('/admin/logout')
 def logout():
@@ -544,7 +581,7 @@ def logout():
     return redirect(url_for('home'))
 
 # =========================================================
-# 💥 ૯. ગ્લોબલ એરર હેન્ડલર & ડાઉનલોડ 💥
+# 💥 ૭. GLOBAL ERROR HANDLERS & DOWNLOAD 💥
 # =========================================================
 @app.errorhandler(HTTPException)
 def handle_http_exception(e):
@@ -552,7 +589,7 @@ def handle_http_exception(e):
 
 @app.errorhandler(Exception)
 def handle_generic_server_crash(e):
-    return render_template('error.html', code=500, title="Internal Server Error", message="An unexpected system failure occurred."), 500
+    return render_template('error.html', code=500, title="Internal Server Error", message="A backend issue occurred."), 500
 
 @app.route('/error/<int:code>')
 def simulate_error(code):
@@ -580,35 +617,28 @@ def download_pdf():
     buffer = io.BytesIO()
     p = canvas.Canvas(buffer, pagesize=letter)
     width, height = letter
-
     p.setFillColor(colors.HexColor("#03071e"))
     p.rect(0, height - 130, width, 130, fill=1, stroke=0)
-
     logo_path = os.path.join(app.root_path, 'static', 'favicon.png')
     text_x = 45
     if os.path.exists(logo_path):
         p.drawImage(logo_path, 40, height - 100, width=65, height=65, preserveAspectRatio=True, mask='auto')
         text_x = 120
-
     p.setFillColor(colors.HexColor("#00e5ff"))
     p.setFont("Helvetica-Bold", 26)
     p.drawString(text_x, height - 60, "AIR CURSOR")
-
     p.setFillColor(colors.HexColor("#ffffff"))
     p.setFont("Helvetica-Bold", 13)
     p.drawString(text_x, height - 85, "Behind Touch")
-
     p.setFillColor(colors.HexColor("#0f172a"))
     p.setFont("Helvetica-Bold", 20)
     p.drawString(45, height - 180, "Thank You For Downloading!")
-
     user_name = session.get('user_name', 'Valued User')
     p.setFont("Helvetica", 12)
     p.setFillColor(colors.HexColor("#334155"))
     p.drawString(45, height - 215, f"Hello {user_name}, your Air Cursor package is ready.")
     p.showPage()
     p.save()
-
     buffer.seek(0)
     res = make_response(buffer.read())
     res.headers['Content-Type'] = 'application/pdf'

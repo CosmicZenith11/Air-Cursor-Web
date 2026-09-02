@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air Cursor - Sub-Admin Workspace</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+    <script src="{{ url_for('static', filename='security.js') }}"></script>
+    <style>
+        :root {
+            --bg-body: #141517;
+            --card-bg: rgba(31, 33, 36, 0.75);
+            --card-border: rgba(197, 168, 128, 0.28);
+            --text-main: #E6E4E0;
+            --text-sub: rgba(230, 228, 224, 0.65);
+            --accent-gold: #C5A880;
+            --table-header: #1f2124;
+            --shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+        }
+        body.light-mode {
+            --bg-body: #F4F1EA;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --card-border: rgba(168, 137, 95, 0.35);
+            --text-main: #18191b;
+            --text-sub: #5a5c61;
+            --accent-gold: #9E7D53;
+            --table-header: #ebe7de;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; transition: 0.3s; }
+        body { background: var(--bg-body); color: var(--text-main); min-height: 100vh; padding: 35px 20px; }
+        .container { max-width: 1100px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid var(--card-border); padding-bottom: 20px; }
+        .brand h1 { font-size: 1.6rem; color: var(--accent-gold); font-weight: 800; }
+        .brand p { font-size: 0.85rem; color: var(--text-sub); }
+        .logout-btn { background: #ff385c; color: white; padding: 8px 20px; border-radius: 99px; text-decoration: none; font-weight: 700; }
+        
+        .box-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 25px; box-shadow: var(--shadow); margin-bottom: 30px; }
+        .actions-bar { display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
+        .action-btn { background: #1f2126; color: var(--text-main); border: 1px solid var(--card-border); padding: 10px 20px; border-radius: 12px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .action-btn:hover { background: rgba(197, 168, 128, 0.15); }
+        .locked-tag { font-size: 0.75rem; background: #ff4757; color: white; padding: 2px 7px; border-radius: 99px; }
+
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: var(--table-header); padding: 14px 16px; color: var(--text-sub); font-size: 0.8rem; text-transform: uppercase; border-bottom: 1px solid var(--card-border); }
+        td { padding: 16px; border-bottom: 1px solid var(--card-border); font-size: 0.92rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="brand">
+                <h1>AIR CURSOR (SUB-ADMIN PORTAL)</h1>
+                <p>Welcome, {{ subadmin_info.name }} • Role: Delegated Sub-Admin</p>
+            </div>
+            <div style="display:flex; gap:12px; align-items:center;">
+                <button onclick="document.body.classList.toggle('light-mode')" style="padding:8px 16px; border-radius:99px; cursor:pointer; background:#222; color:#fff; border:1px solid #444;">☀️/🌙</button>
+                <a href="/admin/logout" class="logout-btn">Log Out</a>
+            </div>
+        </div>
+
+        <!-- SUB-ADMIN ACTIONS -->
+        <div class="box-card">
+            <h2 style="font-size:1.15rem; margin-bottom:15px; color:var(--accent-gold);">Available Operations</h2>
+            <div class="actions-bar">
+                <!-- Action 1: View Leads -->
+                <button class="action-btn" onclick="handleAction('can_view_visitors', 'View Leads')">
+                    📋 View Leads {% if not subadmin_info.can_view_visitors %}<span class="locked-tag">🔒 Request Access</span>{% endif %}
+                </button>
+                <!-- Action 2: Delete Leads -->
+                <button class="action-btn" onclick="handleAction('can_delete_visitors', 'Delete Leads')">
+                    🗑️ Delete Leads {% if not subadmin_info.can_delete_visitors %}<span class="locked-tag">🔒 Request Access</span>{% endif %}
+                </button>
+                <!-- Action 3: Export System Logs -->
+                <button class="action-btn" onclick="handleAction('can_export_data', 'Export Data')">
+                    📊 Export Full Analytics {% if not subadmin_info.can_export_data %}<span class="locked-tag">🔒 Request Access</span>{% endif %}
+                </button>
+            </div>
+        </div>
+
+        <!-- LEADS DATA (જો પરમિશન હોય તો જ દેખાશે) -->
+        <div class="box-card">
+            <h2 style="font-size:1.15rem; margin-bottom:15px; color:var(--text-main);">Audited Visitor Leads</h2>
+            {% if subadmin_info.can_view_visitors %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Registration Date (UTC)</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in visitors %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td style="font-weight:700;">{{ u.name }}</td>
+                        <td>{{ u.email }}</td>
+                        <td style="color:var(--text-sub);">{{ u.registered_at or 'N/A' }}</td>
+                        <td>
+                            {% if subadmin_info.can_delete_visitors %}
+                                <a href="/admin/delete-lead/{{ u._id }}" onclick="return confirm('Delete?')" style="color:#ff4757; font-weight:bold;">Delete</a>
+                            {% else %}
+                                <span onclick="handleAction('can_delete_visitors', 'Delete Single Lead')" style="cursor:pointer; color:#888;">🔒 Delete</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="5" style="text-align:center; padding:30px; color:#888;">No leads registered.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div style="text-align:center; padding:45px 20px; color:#888;">
+                <p style="font-size:1.1rem; margin-bottom:12px;">🔒 Viewing leads is restricted by Main Admin.</p>
+                <button onclick="handleAction('can_view_visitors', 'View Leads')" style="background:var(--accent-gold); border:none; padding:10px 22px; border-radius:99px; font-weight:bold; cursor:pointer; color:#141517;">
+                    Request Access from Main Admin
+                </button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Script to Trigger Email Request -->
+    <script>
+        const myPermissions = {
+            can_view_visitors: {{ 'true' if subadmin_info.can_view_visitors else 'false' }},
+            can_delete_visitors: {{ 'true' if subadmin_info.can_delete_visitors else 'false' }},
+            can_export_data: {{ 'true' if subadmin_info.can_export_data else 'false' }}
+        };
+
+        function handleAction(permKey, actionName) {
+            if (myPermissions[permKey]) {
+                alert("Action Allowed: Executing " + actionName);
+            } else {
+                if (confirm("You do not have permission for '" + actionName + "'. Send a direct approval request to Main Admin's email?")) {
+                    fetch('/subadmin/request-permission', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ action: actionName, permission_key: permKey })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        alert(data.message);
+                    })
+                    .catch(err => alert("Error sending request."));
+                }
+            }
+        }
+    </script>
+</body>
+</html>

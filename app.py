@@ -95,7 +95,7 @@ def log_activity(sub_name, sub_email, action, status="ALLOWED", details=""):
             print(f"❌ Log Error: {e}")
 
 # =========================================================
-# 💥 ૩. ASYNC BACKGROUND EMAIL ENGINE 💥
+# 💥 ૩. SPAM-SAFE ASYNC BACKGROUND EMAIL ENGINE 💥
 # =========================================================
 def async_email_worker(subadmin_name, subadmin_email, action_name, perm_key, subadmin_id, req_id):
     if not SMTP_APP_PASSWORD or not SMTP_EMAIL:
@@ -106,15 +106,23 @@ def async_email_worker(subadmin_name, subadmin_email, action_name, perm_key, sub
     accept_url = f"{app_base_url}/admin/grant-permission?sub_id={subadmin_id}&perm={perm_key}&passcode={MASTER_PASSCODE}&req_id={req_id}"
     ignore_url = f"{app_base_url}/admin/deny-permission?sub_id={subadmin_id}&action={action_name}&req_id={req_id}"
 
+    # Anti-Spam Headers & Clean Subject
     msg = MIMEMultipart("alternative")
-    msg['Subject'] = f"🛡️ [Air Cursor Security] Sub-Admin Access Request: {action_name}"
-    msg['From'] = f"Air Cursor Command <{SMTP_EMAIL}>"
+    msg['Subject'] = f"Air Cursor Security: Sub-Admin Request for {action_name}"
+    msg['From'] = f"Air Cursor Security Team <{SMTP_EMAIL}>"
     msg['To'] = main_email
+    msg['Reply-To'] = SMTP_EMAIL
+    msg['X-Mailer'] = "AirCursor-Security-Dispatcher/2.0"
+
+    # Plain text version (Essential for avoiding SPAM folder)
+    text_content = f"Hello {main_name},\n\nSub-Admin {subadmin_name} ({subadmin_email}) has requested access for: {action_name} ({perm_key}).\n\nApprove Access: {accept_url}\nIgnore Request: {ignore_url}\n\nAir Cursor Security Automation"
+    msg.attach(MIMEText(text_content, "plain"))
 
     html_content = f"""
     <!DOCTYPE html>
     <html>
-    <body style="margin:0; padding:0; background-color:#0d0e12; font-family:'Segoe UI', sans-serif; color:#E6E4E0;">
+    <head><meta charset="UTF-8"></head>
+    <body style="margin:0; padding:0; background-color:#0d0e12; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color:#E6E4E0;">
         <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:#0d0e12; padding:40px 15px;">
             <tr>
                 <td align="center">
@@ -142,11 +150,19 @@ def async_email_worker(subadmin_name, subadmin_email, action_name, perm_key, sub
                                 <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                     <tr>
                                         <td align="center">
-                                            <a href="{accept_url}" target="_blank" style="display:inline-block; padding:12px 30px; background:linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%); color:#101115; text-decoration:none; border-radius:99px; font-weight:800; font-size:14px; margin-right:12px;">✓ Approve & Grant</a>
-                                            <a href="{ignore_url}" target="_blank" style="display:inline-block; padding:12px 28px; background-color:#202228; color:#ff4757; text-decoration:none; border-radius:99px; font-weight:700; font-size:14px; border:1px solid rgba(255,71,87,0.4);">✕ Ignore / Dismiss</a>
+                                            <a href="{accept_url}" target="_blank" style="display:inline-block; padding:12px 30px; background:linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%); color:#101115; text-decoration:none; border-radius:99px; font-weight:800; font-size:14px; margin-right:12px;">Approve & Grant</a>
+                                            <a href="{ignore_url}" target="_blank" style="display:inline-block; padding:12px 28px; background-color:#202228; color:#ff4757; text-decoration:none; border-radius:99px; font-weight:700; font-size:14px; border:1px solid rgba(255,71,87,0.4);">Ignore / Dismiss</a>
                                         </td>
                                     </tr>
                                 </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:20px 35px; background-color:#101115; border-top:1px solid rgba(255,255,255,0.05); text-align:center;">
+                                <p style="font-size:11px; color:#60626a; margin:0;">
+                                    © 2026 Air Cursor Technologies • Behind Touch Platform<br>
+                                    Automated dispatch sent to Root Administrator ({main_email})
+                                </p>
                             </td>
                         </tr>
                     </table>
@@ -162,7 +178,7 @@ def async_email_worker(subadmin_name, subadmin_email, action_name, perm_key, sub
         server.login(SMTP_EMAIL, SMTP_APP_PASSWORD)
         server.sendmail(SMTP_EMAIL, main_email, msg.as_string())
         server.quit()
-        print(f"✅ Email delivered asynchronously to {main_email}")
+        print(f"✅ Primary Inbox Email delivered asynchronously to {main_email}")
     except Exception as e:
         print(f"⚠️ SMTP background dispatch warning: {e}")
 
@@ -648,7 +664,7 @@ def handle_generic_server_crash(e):
 
 @app.route('/error/<int:code>')
 def simulate_error(code):
-    if code in default_exceptions:
+    if code in defaultexceptions:
         abort(code)
     return render_template('error.html', code=code, title="Custom Status", message="Non-standard status code."), 400
 

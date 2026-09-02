@@ -52,13 +52,13 @@
         .btn-gold:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(197, 168, 128, 0.3); }
 
         /* 💥 WEBSITE THEMED LUXURY MODAL POPUPS 💥 */
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); justify-content: center; align-items: center; z-index: 10000; padding: 20px; }
-        .modal-box { background: #1a1b20; border: 1px solid var(--card-border); border-radius: 28px; padding: 35px 30px; width: 100%; max-width: 440px; text-align: center; color: #fff; box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 30px rgba(197,168,128,0.15); animation: popIn 0.25s ease-out; }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); justify-content: center; align-items: center; z-index: 10000; padding: 20px; }
+        .modal-box { background: #1a1b20; border: 1px solid var(--card-border); border-radius: 28px; padding: 35px 30px; width: 100%; max-width: 450px; text-align: center; color: #fff; box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 30px rgba(197,168,128,0.15); animation: popIn 0.25s ease-out; }
         @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
         
-        .modal-emoji { font-size: 3.2rem; margin-bottom: 12px; display: block; line-height: 1; }
+        .modal-emoji { font-size: 3.4rem; margin-bottom: 14px; display: block; line-height: 1; }
         .modal-title { color: var(--accent-gold); font-size: 1.4rem; font-weight: 800; margin-bottom: 10px; letter-spacing: -0.3px; }
-        .modal-msg { color: var(--text-sub); font-size: 0.95rem; line-height: 1.55; margin-bottom: 25px; }
+        .modal-msg { color: var(--text-sub); font-size: 0.95rem; line-height: 1.6; margin-bottom: 25px; }
         .modal-btns { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
         .btn-cancel { background: #282a30; color: #aaa; border: 1px solid rgba(255,255,255,0.1); padding: 10px 22px; border-radius: 99px; font-weight: 600; cursor: pointer; }
         .btn-cancel:hover { background: #33363e; color: #fff; }
@@ -114,7 +114,7 @@
                         <td style="color:var(--text-sub);">{{ u.registered_at or 'N/A' }}</td>
                         <td>
                             {% if subadmin_info.can_delete_visitors %}
-                                <a href="/admin/delete-lead/{{ u._id }}" onclick="return confirm('Delete record?')" style="color:#ff4757; font-weight:bold;">Delete</a>
+                                <a href="javascript:void(0)" onclick="confirmDeleteLead('{{ u._id }}')" style="color:#ff4757; font-weight:bold; text-decoration:none;">Delete</a>
                             {% else %}
                                 <span onclick="handleAction('can_delete_visitors', 'Delete Single Lead')" style="cursor:pointer; color:#888;">🔒 Delete</span>
                             {% endif %}
@@ -136,6 +136,7 @@
         </div>
     </div>
 
+    <!-- 💥 1. CUSTOM CONFIRMATION POPUP 💥 -->
     <div id="customConfirmModal" class="modal-overlay">
         <div class="modal-box">
             <span id="modalEmoji" class="modal-emoji">🔒</span>
@@ -148,11 +149,12 @@
         </div>
     </div>
 
+    <!-- 💥 2. CUSTOM SUCCESS / NOTICE POPUP (SEND SUCCESSFULLY) 💥 -->
     <div id="customNoticeModal" class="modal-overlay">
         <div class="modal-box">
-            <span id="noticeEmoji" class="modal-emoji">✅</span>
-            <div id="noticeTitle" class="modal-title">Notification</div>
-            <div id="noticeMessage" class="modal-msg">Operation processed successfully.</div>
+            <span id="noticeEmoji" class="modal-emoji">📩</span>
+            <div id="noticeTitle" class="modal-title">Send Successfully!</div>
+            <div id="noticeMessage" class="modal-msg">Your permission request has been dispatched to Main Admin.</div>
             <div class="modal-btns">
                 <button onclick="closeNoticeModal()" class="btn-gold" style="width: 100%;">👍 Understood</button>
             </div>
@@ -166,28 +168,28 @@
             can_export_data: {{ 'true' if subadmin_info.can_export_data else 'false' }}
         };
 
-        let pendingAction = null;
+        let pendingCallback = null;
 
         function showCustomConfirm(title, message, emoji, confirmBtnText, onConfirm) {
             document.getElementById('modalEmoji').innerText = emoji || '🔒';
             document.getElementById('modalTitle').innerText = title;
             document.getElementById('modalMessage').innerText = message;
-            document.getElementById('modalConfirmBtn').innerText = confirmBtnText || '✉️ Send Approval Request';
+            document.getElementById('modalConfirmBtn').innerText = confirmBtnText || 'Confirm';
             
-            pendingAction = onConfirm;
+            pendingCallback = onConfirm;
             document.getElementById('customConfirmModal').style.display = 'flex';
         }
 
         function closeConfirmModal() {
             document.getElementById('customConfirmModal').style.display = 'none';
-            pendingAction = null;
+            pendingCallback = null;
         }
 
         document.getElementById('modalConfirmBtn').onclick = function() {
-            if (pendingAction) {
-                const actionToRun = pendingAction;
+            if (pendingCallback) {
+                const cb = pendingCallback;
                 closeConfirmModal();
-                actionToRun();
+                cb();
             }
         };
 
@@ -202,13 +204,25 @@
             document.getElementById('customNoticeModal').style.display = 'none';
         }
 
+        function confirmDeleteLead(id) {
+            showCustomConfirm(
+                'Delete Lead Record',
+                'Are you sure you want to permanently delete this visitor record?',
+                '🗑️',
+                '🗑️ Delete Now',
+                function() {
+                    window.location.href = '/admin/delete-lead/' + id;
+                }
+            );
+        }
+
         function handleAction(permKey, actionName) {
             if (myPermissions[permKey]) {
-                showCustomNotice('⚡', 'Access Granted', 'You have active privileges for ' + actionName + '. Proceeding with operation...');
+                showCustomNotice('⚡', 'Access Granted', 'You have verified privileges for ' + actionName + '. Proceeding with operation...');
             } else {
                 showCustomConfirm(
                     'Access Restricted',
-                    'You do not have permission for \'' + actionName + '\'. Would you like to send a direct approval request to Main Admin\'s email?',
+                    'You do not have permission for \'' + actionName + '\'. Would you like to send a direct approval request to Main Admin\'s email and dashboard?',
                     '🔒',
                     '✉️ Send Request to Main Admin',
                     function() {
@@ -219,10 +233,11 @@
                         })
                         .then(res => res.json())
                         .then(data => {
-                            showCustomNotice('📩', 'Request Dispatched', data.message);
+                            // 💥 SEND SUCCESSFULLY POPUP WITH EMOJI 💥
+                            showCustomNotice('📩', 'Request Sent Successfully!', data.message);
                         })
                         .catch(err => {
-                            showCustomNotice('❌', 'Request Failed', 'Unable to send request to Main Admin.');
+                            showCustomNotice('❌', 'Dispatch Error', 'Unable to reach Main Admin. Please try again.');
                         });
                     }
                 );

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air Cursor - Central Command</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+    <script src="{{ url_for('static', filename='security.js') }}"></script>
+    <style>
+        :root {
+            --bg-body: #141517;
+            --card-bg: rgba(31, 33, 36, 0.75);
+            --card-border: rgba(197, 168, 128, 0.28);
+            --text-main: #E6E4E0;
+            --text-sub: rgba(230, 228, 224, 0.65);
+            --accent-gold: #C5A880;
+            --table-header: #1f2124;
+            --row-hover: rgba(197, 168, 128, 0.05);
+            --shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            --btn-theme-bg: #282a2e;
+            --btn-theme-color: #C5A880;
+        }
+
+        body.light-mode {
+            --bg-body: #F4F1EA;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --card-border: rgba(168, 137, 95, 0.35);
+            --text-main: #18191b;
+            --text-sub: #5a5c61;
+            --accent-gold: #9E7D53;
+            --table-header: #ebe7de;
+            --row-hover: rgba(158, 125, 83, 0.08);
+            --shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+            --btn-theme-bg: #e6e1d5;
+            --btn-theme-color: #18191b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 40px 24px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 35px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .brand-block h1 {
+            font-size: 1.8rem;
+            color: var(--accent-gold);
+            letter-spacing: -0.5px;
+            font-weight: 800;
+        }
+
+        .brand-block p {
+            font-size: 0.9rem;
+            color: var(--text-sub);
+            margin-top: 4px;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .theme-toggle-btn {
+            background: var(--btn-theme-bg);
+            color: var(--btn-theme-color);
+            border: 1px solid var(--card-border);
+            padding: 9px 18px;
+            border-radius: 99px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logout-btn {
+            background: #ff385c;
+            color: #ffffff;
+            border: none;
+            padding: 9px 22px;
+            border-radius: 99px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(255, 56, 92, 0.3);
+        }
+
+        .metrics-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 35px;
+        }
+
+        .metric-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-size: 2.3rem;
+            font-weight: 800;
+            color: var(--accent-gold);
+        }
+
+        .table-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            overflow-x: auto;
+        }
+
+        .table-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background: var(--table-header);
+            padding: 15px 18px;
+            font-size: 0.82rem;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        td {
+            padding: 18px;
+            border-bottom: 1px solid var(--card-border);
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        tr:hover td {
+            background: var(--row-hover);
+        }
+
+        .badge-verified {
+            display: inline-block;
+            background: rgba(0, 229, 255, 0.12);
+            color: #00e5ff;
+            padding: 4px 12px;
+            border-radius: 99px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            border: 1px solid rgba(0, 229, 255, 0.3);
+        }
+
+        .del-action {
+            color: #ff4757;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 6px 14px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 71, 87, 0.35);
+        }
+
+        .del-action:hover {
+            background: #ff4757;
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- હેડર અને થીમ સ્વિચર -->
+        <div class="top-nav">
+            <div class="brand-block">
+                <h1>AIR CURSOR COMMAND</h1>
+                <p>Protected Enterprise Management System</p>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle-btn" onclick="toggleTheme()" id="themeBtn">
+                    <span id="themeIcon">☀️</span> <span id="themeText">Light Mode</span>
+                </button>
+                <a href="/admin/logout" class="logout-btn">Exit Session</a>
+            </div>
+        </div>
+
+        <!-- આંકડાકીય કાર્ડ્સ -->
+        <div class="metrics-row">
+            <div class="metric-card">
+                <div class="metric-label">Total Leads Captured</div>
+                <div class="metric-value">{{ visitors|length }}</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">MongoDB Atlas Status</div>
+                <div class="metric-value" style="color: #2ed573; font-size: 1.6rem; line-height: 2.3rem;">Active & Encrypted</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Access Restrictions</div>
+                <div class="metric-value" style="color: #00e5ff; font-size: 1.6rem; line-height: 2.3rem;">Windows Only</div>
+            </div>
+        </div>
+
+        <!-- યુઝર્સ ટેબલ -->
+        <div class="table-card">
+            <div class="table-title">
+                <span>Registered Leads Data</span>
+                <span style="font-size: 0.85rem; color: var(--text-sub); font-weight: normal;">Live Synced with MongoDB</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Full Name</th>
+                        <th>Email Address</th>
+                        <th>Registration Date (UTC)</th>
+                        <th>Device Verification</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in visitors %}
+                    <tr>
+                        <td style="color: var(--text-sub);">{{ loop.index }}</td>
+                        <td style="font-weight: 700;">{{ u.name }}</td>
+                        <td>{{ u.email }}</td>
+                        <td style="color: var(--text-sub); font-size: 0.88rem;">{{ u.registered_at or 'Direct Entry' }}</td>
+                        <td><span class="badge-verified">Verified Windows</span></td>
+                        <td>
+                            <a href="/admin/delete/{{ u._id }}" onclick="return confirm('Do you want to permanently delete this lead?')" class="del-action">Delete</a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: var(--text-sub); padding: 50px;">
+                            No visitor records recorded yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Light / Dark Mode Toggle Logic -->
+    <script>
+        function applyTheme(isLight) {
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+            if (isLight) {
+                document.body.classList.add('light-mode');
+                themeIcon.innerText = '🌙';
+                themeText.innerText = 'Dark Mode';
+            } else {
+                document.body.classList.remove('light-mode');
+                themeIcon.innerText = '☀️';
+                themeText.innerText = 'Light Mode';
+            }
+        }
+
+        function toggleTheme() {
+            const isCurrentlyLight = document.body.classList.contains('light-mode');
+            const newTheme = !isCurrentlyLight;
+            localStorage.setItem('aircursor_admin_theme', newTheme ? 'light' : 'dark');
+            applyTheme(newTheme);
+        }
+
+        // પહેલાં પસંદ કરેલો થીમ યાદ રાખવો
+        (function initTheme() {
+            const saved = localStorage.getItem('aircursor_admin_theme');
+            if (saved === 'light') {
+                applyTheme(true);
+            } else {
+                applyTheme(false);
+            }
+        })();
+    </script>
+</body>
+</html>

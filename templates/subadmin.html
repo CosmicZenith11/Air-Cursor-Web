@@ -59,82 +59,34 @@
         }
         .nav-pill-item:hover .dock-tooltip, .dock-avatar-wrapper:hover .dock-tooltip { opacity: 1; visibility: visible; transform: translateY(-50%) translateX(0); }
 
-        /* 💥 EXACT CYAN RING FOR SUB-ADMIN (MATCHES IMAGE-5) 💥 */
         .sub-admin-avatar-frame {
-            position: relative;
-            width: 86px;
-            height: 86px;
-            border-radius: 50%;
-            padding: 4.5px;
-            background: #00bcd4;
-            box-shadow: 0 0 15px rgba(0, 188, 212, 0.45);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
+            position: relative; width: 86px; height: 86px; border-radius: 50%; padding: 4.5px;
+            background: #00bcd4; box-shadow: 0 0 15px rgba(0, 188, 212, 0.45);
+            display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
         }
-
-        .sub-admin-avatar-frame img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-            display: block;
-            background: #0d0e12;
-        }
+        .sub-admin-avatar-frame img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; background: #0d0e12; }
 
         .dock-avatar-frame-sub {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            padding: 3px;
-            background: #00bcd4;
-            box-shadow: 0 0 10px rgba(0, 188, 212, 0.4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 48px; height: 48px; border-radius: 50%; padding: 3px;
+            background: #00bcd4; box-shadow: 0 0 10px rgba(0, 188, 212, 0.4);
+            display: flex; align-items: center; justify-content: center;
         }
-        .dock-avatar-frame-sub img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-        }
+        .dock-avatar-frame-sub img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
 
-        /* 💥 EXACT ANIMATED DAY/NIGHT TOGGLE 💥 */
         .day-night-toggle {
-            width: 82px;
-            height: 38px;
-            border-radius: 999px;
-            position: relative;
-            cursor: pointer;
-            overflow: hidden;
-            border: 2px solid var(--dock-border);
+            width: 82px; height: 38px; border-radius: 999px; position: relative; cursor: pointer;
+            overflow: hidden; border: 2px solid var(--dock-border);
             box-shadow: 0 4px 15px rgba(0,0,0,0.5), inset 0 2px 4px rgba(0,0,0,0.6);
-            transition: all 0.5s ease;
-            background: #0f1c3f;
-            user-select: none;
-            display: inline-block;
+            transition: all 0.5s ease; background: #0f1c3f; user-select: none; display: inline-block;
         }
-        body.light-mode .day-night-toggle {
-            background: #4ab7f7;
-            border-color: rgba(168, 137, 95, 0.4);
-        }
-        .landscape {
-            position: absolute;
-            bottom: 0; left: 0; right: 0; height: 15px;
-            background: #174b68;
-            border-radius: 50% 50% 0 0 / 100% 100% 0 0;
-            transition: background 0.5s ease;
-            z-index: 2;
-        }
+        body.light-mode .day-night-toggle { background: #4ab7f7; border-color: rgba(168, 137, 95, 0.4); }
+        .landscape { position: absolute; bottom: 0; left: 0; right: 0; height: 15px; background: #174b68; border-radius: 50% 50% 0 0 / 100% 100% 0 0; transition: background 0.5s ease; z-index: 2; }
         body.light-mode .landscape { background: #2ea886; }
         .palm { position: absolute; left: 9px; bottom: -2px; font-size: 13px; z-index: 3; }
         .celestial-body {
             position: absolute; top: 5px; right: 6px; width: 24px; height: 24px;
             border-radius: 50%; background: #fdf5d6; box-shadow: 0 0 10px #fffae6;
-            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55), background 0.5s ease;
-            z-index: 4;
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55), background 0.5s ease; z-index: 4;
         }
         .crater { position: absolute; border-radius: 50%; background: #ded4b1; opacity: 0.6; }
         .c1 { width: 4px; height: 4px; top: 5px; left: 6px; }
@@ -158,14 +110,8 @@
         .btn-gold { background: linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%); color: #0c0d11; border: none; padding: 10px 22px; border-radius: 99px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
 
         .btn-cancel {
-            background: #252830;
-            color: #E6E4E0;
-            border: 1px solid rgba(255,255,255,0.15);
-            padding: 10px 24px;
-            border-radius: 99px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.88rem;
+            background: #252830; color: #E6E4E0; border: 1px solid rgba(255,255,255,0.15);
+            padding: 10px 24px; border-radius: 99px; font-weight: 600; cursor: pointer; font-size: 0.88rem;
         }
         .btn-cancel:hover { background: #333642; color: #fff; }
 
@@ -191,7 +137,6 @@
 </head>
 <body>
 
-    <!-- CAPSULE NAVBAR -->
     <nav class="dock-capsule">
         <div class="dock-logo"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="12 8 8 12 12 16 16 12 12 8"></polygon></svg></div>
         <div class="dock-nav-group">
@@ -203,7 +148,6 @@
             <div class="nav-pill-item" onclick="switchSection('sec-sub-settings', this)"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg><div class="dock-tooltip">6. Profile & Settings</div></div>
         </div>
 
-        <!-- Avatar with Cyan Ring -->
         <div class="dock-avatar-wrapper" onclick="switchSection('sec-sub-settings', document.querySelectorAll('.nav-pill-item')[5])">
             <div class="dock-avatar-frame-sub">
                 <img src="{{ sub_avatar }}" alt="Avatar" id="subDockAvatar">
@@ -212,7 +156,6 @@
         </div>
     </nav>
 
-    <!-- MAIN VIEWPORT -->
     <main class="main-viewport">
         <!-- 1. HOME -->
         <section id="sec-sub-home" class="view-section active-view">
@@ -225,7 +168,6 @@
                     <button class="btn-refresh" onclick="triggerSubSync(this)">
                         <svg class="refresh-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg> Refresh
                     </button>
-                    <!-- Day/Night Animated Toggle Switch -->
                     <div class="day-night-toggle" onclick="toggleTheme()">
                         <div class="sky-elements"><div class="star star-1">✦</div><div class="star star-2">★</div><div class="star star-3">•</div></div>
                         <div class="landscape"><div class="palm">🌴</div></div>
@@ -246,7 +188,7 @@
             </div>
         </section>
 
-        <!-- 2. ANALYTICAL CHARTS -->
+        <!-- 2. ANALYTICAL CHARTS (INCLUDING DEDICATED CAPTCHA GRAPH) -->
         <section id="sec-sub-charts" class="view-section">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid var(--card-border); padding-bottom:15px;">
                 <h1 style="color:var(--accent-gold); font-size:1.6rem;">📊 VISUAL ANALYTICS</h1>
@@ -257,9 +199,11 @@
                     <h3 style="color:var(--accent-gold); margin-bottom:15px;">📈 Weekly Traffic Curve</h3>
                     <div style="height:250px;"><canvas id="subLineChart"></canvas></div>
                 </div>
+
+                <!-- 💥 DEDICATED CAPTCHA GRAPH FOR SUB-ADMIN 💥 -->
                 <div class="chart-box">
-                    <h3 style="color:var(--accent-gold); margin-bottom:15px;">🛡️ Security Verification Status</h3>
-                    <div style="height:250px;"><canvas id="subPieChart"></canvas></div>
+                    <h3 style="color:var(--accent-gold); margin-bottom:15px;">🛡️ CAPTCHA Gatekeeper Breakdown</h3>
+                    <div style="height:250px;"><canvas id="subCaptchaChart"></canvas></div>
                 </div>
             </div>
         </section>
@@ -286,7 +230,7 @@
             </div>
         </section>
 
-        <!-- 4. LEADS -->
+        <!-- 4. LEADS & CAPTCHA TABLE -->
         <section id="sec-sub-leads" class="view-section">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid var(--card-border); padding-bottom:15px;">
                 <h1 style="color:var(--accent-gold); font-size:1.6rem;">VISITOR LEADS ARCHIVE</h1>
@@ -323,6 +267,37 @@
                 </div>
                 {% endif %}
             </div>
+
+            <!-- 💥 CAPTCHA AUDIT TABLE FOR SUB-ADMIN 💥 -->
+            <div class="box-card" style="border-color: rgba(0, 229, 255, 0.25);">
+                <div class="box-title">
+                    <span style="color:#00e5ff;">🛡️ CAPTCHA Gatekeeper Audit Logs</span>
+                </div>
+                <table>
+                    <thead>
+                        <tr><th>Time (UTC)</th><th>Client IP</th><th>Verification Status</th><th>Attempted Code</th><th>Device</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for c in captcha_logs %}
+                        <tr>
+                            <td style="color:var(--text-sub); font-size:0.85rem;">{{ c.timestamp }}</td>
+                            <td style="font-family:monospace; color:#fff;">{{ c.ip_address }}</td>
+                            <td>
+                                {% if c.status == 'PASSED' %}
+                                    <span class="badge" style="color:#2ed573; background:rgba(46,213,115,0.15);">PASSED</span>
+                                {% else %}
+                                    <span class="badge" style="color:#ff4757; background:rgba(255,71,87,0.15);">FAILED</span>
+                                {% endif %}
+                            </td>
+                            <td style="font-family:monospace; font-weight:bold; color:var(--accent-gold);">{{ c.attempted_code }}</td>
+                            <td style="color:var(--text-sub); font-size:0.8rem;">Windows PC</td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="5" style="text-align:center; padding:25px; color:var(--text-sub);">No CAPTCHA logs recorded yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </section>
 
         <!-- 6. SUB-ADMIN PROFILE & SETTINGS -->
@@ -332,7 +307,6 @@
                 <p style="color:var(--text-sub); font-size:0.85rem;">Device Avatar & Credential Change Request</p>
             </div>
             <div class="charts-grid">
-                <!-- 💥 UNIFORM PROFILE BOX WITH CYAN RING & REMOVE BUTTON 💥 -->
                 <div class="chart-box">
                     <div style="font-size:1.15rem; font-weight:700; color:var(--text-main); margin-bottom:18px; display:flex; align-items:center; gap:8px;">
                         <span>👤</span> <span>Profile Picture (Device Upload)</span>
@@ -376,7 +350,6 @@
         </section>
     </main>
 
-    <!-- 💥 MESSAGE MAIN ADMIN MODAL (FIXED CANCEL PILL BUTTON) 💥 -->
     <div id="msgModal" class="modal-overlay">
         <div class="modal-box" style="text-align:left;">
             <h2 style="color:var(--accent-gold); margin-bottom:15px; text-align:center;">💬 Send Note to Main Admin</h2>
@@ -395,7 +368,6 @@
         </div>
     </div>
 
-    <!-- UNIVERSAL CUSTOM MODAL (NO BROWSER ALERTS) -->
     <div id="subCustomAppModal" class="modal-overlay">
         <div class="modal-box">
             <span id="sEmoji" style="font-size:3.2rem; display:block; margin-bottom:10px;">⚠️</span>
@@ -409,7 +381,6 @@
     </div>
 
     <script>
-        // 💥 GLOBAL BROWSER POPUP INTERCEPTOR (NO BROWSER ALERTS!) 💥
         let subModalCallback = null;
         function showSubModal(emoji, title, msg, btnText, showCancel, onConfirm) {
             document.getElementById('sEmoji').innerText = emoji || '⚠️';
@@ -429,7 +400,6 @@
             closeSubModal();
         };
 
-        // Override standard window.alert
         window.alert = function(message) {
             showSubModal('🔔', 'Notification', message, 'OK', false, null);
         };
@@ -498,7 +468,6 @@
             }
         }
 
-        // 💥 AVATAR UPLOAD & REMOVE 💥
         function uploadSubAvatar(e) {
             const file = e.target.files[0];
             if (file) {
@@ -551,6 +520,7 @@
         function renderSubCharts() {
             if (subChartsLoaded) return;
             subChartsLoaded = true;
+
             new Chart(document.getElementById('subLineChart'), {
                 type: 'line',
                 data: {
@@ -559,13 +529,24 @@
                 },
                 options: { responsive: true, maintainAspectRatio: false }
             });
-            new Chart(document.getElementById('subPieChart'), {
+
+            // 💥 SUB-ADMIN CAPTCHA GRAPH 💥
+            new Chart(document.getElementById('subCaptchaChart'), {
                 type: 'doughnut',
                 data: {
-                    labels: ['Verified Windows PC', 'Prohibited Blocked'],
-                    datasets: [{ data: [{{ visitors|length }}, 5], backgroundColor: ['#00e5ff', '#ff4757'], borderWidth: 0 }]
+                    labels: ['Passed (Genuine Users)', 'Failed / Blocked Attempts'],
+                    datasets: [{
+                        data: [{{ captcha_passed }}, {{ captcha_failed }}],
+                        backgroundColor: ['#2ed573', '#ff4757'],
+                        borderColor: '#16171d',
+                        borderWidth: 3
+                    }]
                 },
-                options: { responsive: true, maintainAspectRatio: false }
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#E6E4E0' }, position: 'bottom' } }
+                }
             });
         }
     </script>

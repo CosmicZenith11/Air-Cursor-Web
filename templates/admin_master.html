@@ -6,14 +6,13 @@
     <title>Master Command · Air Cursor</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
     <script src="{{ url_for('static', filename='security.js') }}"></script>
-    <!-- Chart.js for High-Tech Visual Analytics -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-body: #0d0e12;
-            --dock-bg: #090a0d;
+            --bg-body: #0c0d11;
+            --dock-bg: #07080a;
             --dock-border: rgba(197, 168, 128, 0.22);
-            --card-bg: rgba(22, 24, 29, 0.85);
+            --card-bg: rgba(20, 22, 27, 0.88);
             --card-border: rgba(197, 168, 128, 0.25);
             --text-main: #E6E4E0;
             --text-sub: rgba(230, 228, 224, 0.65);
@@ -39,7 +38,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; transition: background 0.3s, color 0.3s, border-color 0.3s; }
         body { background: var(--bg-body); color: var(--text-main); min-height: 100vh; overflow-x: hidden; display: flex; }
 
-        /* 💥 1. VERTICAL CAPSULE PILL DOCK NAVBAR (IMAGE MATCHED) 💥 */
+        /* CAPSULE PILL NAVBAR */
         .dock-capsule {
             position: fixed;
             left: 20px;
@@ -51,7 +50,7 @@
             background: var(--dock-bg);
             border: 1px solid var(--dock-border);
             border-radius: 40px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 20px rgba(197, 168, 128, 0.1);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -95,24 +94,15 @@
             transition: all 0.25s ease;
         }
 
-        .nav-pill-item:hover {
-            color: var(--accent-gold);
-            background: rgba(197, 168, 128, 0.12);
-        }
-
+        .nav-pill-item:hover { color: var(--accent-gold); background: rgba(197, 168, 128, 0.12); }
         .nav-pill-item.active {
             color: #0c0d11;
             background: linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%);
             box-shadow: 0 0 18px rgba(197, 168, 128, 0.45);
         }
+        .nav-pill-item svg { width: 20px; height: 20px; stroke-width: 2; }
 
-        .nav-pill-item svg {
-            width: 20px;
-            height: 20px;
-            stroke-width: 2;
-        }
-
-        /* 💥 EXACT 1.2s HOVER TOOLTIP DELAY 💥 */
+        /* 1.2s HOVER TOOLTIP */
         .dock-tooltip {
             position: absolute;
             left: 65px;
@@ -126,13 +116,12 @@
             font-size: 0.82rem;
             font-weight: 700;
             white-space: nowrap;
-            letter-spacing: 0.5px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 15px rgba(197, 168, 128, 0.15);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
             opacity: 0;
             visibility: hidden;
             pointer-events: none;
             transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
-            transition-delay: 1.2s; /* 💥 1.2 SECONDS DELAY REQUESTED 💥 */
+            transition-delay: 1.2s;
             z-index: 10000;
         }
 
@@ -143,23 +132,17 @@
             transform: translateY(-50%) translateX(0);
         }
 
-        /* Avatar at Bottom of Capsule */
-        .dock-avatar-wrapper {
-            position: relative;
-            cursor: pointer;
-        }
-
+        .dock-avatar-wrapper { position: relative; cursor: pointer; }
         .dock-avatar {
-            width: 42px;
-            height: 42px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             border: 2px solid var(--accent-gold);
             object-fit: cover;
             display: block;
-            box-shadow: 0 0 12px rgba(197, 168, 128, 0.3);
         }
 
-        /* 💥 2. MAIN CONTENT VIEWPORT 💥 */
+        /* MAIN VIEWPORT */
         .main-viewport {
             margin-left: 115px;
             padding: 35px 35px 35px 15px;
@@ -167,46 +150,67 @@
             max-width: 1400px;
         }
 
-        .view-section {
-            display: none;
-            animation: fadeInView 0.3s ease-out forwards;
-        }
-
-        .view-section.active-view {
-            display: block;
-        }
-
-        @keyframes fadeInView {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .view-section { display: none; animation: fadeInView 0.3s ease-out forwards; }
+        .view-section.active-view { display: block; }
+        @keyframes fadeInView { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .top-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
+            margin-bottom: 25px;
+            padding-bottom: 18px;
             border-bottom: 1px solid var(--card-border);
         }
 
-        .top-header h1 {
-            font-size: 1.7rem;
+        .top-header h1 { font-size: 1.7rem; color: var(--accent-gold); font-weight: 800; }
+        .top-header p { font-size: 0.85rem; color: var(--text-sub); margin-top: 4px; }
+        .header-actions { display: flex; gap: 12px; align-items: center; }
+
+        /* 💥 REFRESH BUTTON WITH SPIN ANIMATION 💥 */
+        .btn-refresh {
+            background: #181920;
+            border: 1px solid var(--card-border);
             color: var(--accent-gold);
-            font-weight: 800;
-        }
-
-        .top-header p {
-            font-size: 0.85rem;
-            color: var(--text-sub);
-            margin-top: 4px;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 12px;
+            padding: 8px 16px;
+            border-radius: 99px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.82rem;
+            display: inline-flex;
             align-items: center;
+            gap: 8px;
         }
+        .btn-refresh:hover { background: rgba(197, 168, 128, 0.15); }
+        .refresh-icon { width: 16px; height: 16px; transition: transform 0.8s ease; }
+        .spinning { animation: spinAnim 0.8s linear infinite; }
+        @keyframes spinAnim { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        /* ANIMATED DAY/NIGHT TOGGLE SWITCH */
+        .theme-switch-box {
+            position: relative;
+            width: 58px;
+            height: 30px;
+            background: #1c1d24;
+            border: 1px solid var(--dock-border);
+            border-radius: 99px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 3px;
+        }
+        .theme-slider {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: transform 0.3s ease;
+        }
+        body.light-mode .theme-slider { transform: translateX(28px); background: #141517; color:#fff; }
 
         .btn-gold {
             background: linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%);
@@ -222,347 +226,147 @@
             gap: 6px;
         }
 
-        .btn-danger {
-            background: #ff4757;
-            color: #fff;
-            border: none;
-            padding: 6px 14px;
-            border-radius: 8px;
-            font-size: 0.82rem;
+        .btn-cancel {
+            background: #252830;
+            color: #E6E4E0;
+            border: 1px solid rgba(255,255,255,0.15);
+            padding: 10px 24px;
+            border-radius: 99px;
             font-weight: 600;
             cursor: pointer;
-            text-decoration: none;
         }
+        .btn-cancel:hover { background: #333640; }
 
-        .btn-approve {
-            background: #2ed573;
-            color: white;
-            padding: 6px 14px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 0.85rem;
-            margin-right: 6px;
-        }
+        .btn-danger { background: #ff4757; color: #fff; border: none; padding: 6px 14px; border-radius: 8px; font-size: 0.82rem; font-weight: 600; cursor: pointer; text-decoration: none; }
+        .btn-approve { background: #2ed573; color: white; padding: 6px 14px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 0.85rem; margin-right: 6px; }
+        .btn-deny { background: #2f3542; color: #ff4757; border: 1px solid rgba(255,71,87,0.4); padding: 6px 14px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 0.85rem; }
 
-        .btn-deny {
-            background: #2f3542;
-            color: #ff4757;
-            border: 1px solid rgba(255,71,87,0.4);
-            padding: 6px 14px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 0.85rem;
-        }
+        .metrics-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 20px; margin-bottom: 25px; }
+        .metric-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 22px; box-shadow: var(--shadow); }
+        .metric-label { font-size: 0.78rem; color: var(--text-sub); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .metric-val { font-size: 2.2rem; font-weight: 800; color: var(--accent-gold); margin-top: 6px; }
 
-        .metrics-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
+        .box-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 25px; box-shadow: var(--shadow); margin-bottom: 25px; overflow-x: auto; }
+        .box-title { font-size: 1.2rem; font-weight: 700; color: var(--text-main); margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; }
 
-        .metric-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 24px;
-            box-shadow: var(--shadow);
-        }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: rgba(0,0,0,0.25); padding: 14px 16px; color: var(--text-sub); font-size: 0.8rem; text-transform: uppercase; border-bottom: 1px solid var(--card-border); }
+        td { padding: 16px; border-bottom: 1px solid var(--card-border); font-size: 0.92rem; }
 
-        .metric-label {
-            font-size: 0.78rem;
-            color: var(--text-sub);
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 99px; font-size: 0.75rem; font-weight: 700; background: rgba(0, 229, 255, 0.15); color: #00e5ff; }
 
-        .metric-val {
-            font-size: 2.2rem;
-            font-weight: 800;
-            color: var(--accent-gold);
-            margin-top: 6px;
-        }
+        /* BALANCED CHARTS GRID */
+        .charts-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; }
+        .chart-box { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 25px; box-shadow: var(--shadow); }
 
-        .box-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 24px;
-            padding: 25px;
-            box-shadow: var(--shadow);
-            margin-bottom: 30px;
-            overflow-x: auto;
-        }
-
-        .box-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--text-main);
-            margin-bottom: 18px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-
-        th {
-            background: rgba(0,0,0,0.25);
-            padding: 14px 16px;
-            color: var(--text-sub);
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            border-bottom: 1px solid var(--card-border);
-        }
-
-        td {
-            padding: 16px;
-            border-bottom: 1px solid var(--card-border);
-            font-size: 0.92rem;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 99px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            background: rgba(0, 229, 255, 0.15);
-            color: #00e5ff;
-        }
-
-        /* 💥 CHART DASHBOARD GRID 💥 */
-        .charts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
-            gap: 25px;
-        }
-
-        .chart-box {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 24px;
-            padding: 25px;
-            box-shadow: var(--shadow);
-        }
-
-        /* Modals & Popups */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(14px);
-            justify-content: center;
-            align-items: center;
-            z-index: 100000;
-            padding: 20px;
-        }
-
-        .modal-box {
-            background: #16171d;
-            border: 1px solid var(--card-border);
-            border-radius: 28px;
-            padding: 32px 28px;
-            width: 100%;
-            max-width: 480px;
-            color: #fff;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.8);
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-            text-align: left;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 0.85rem;
-            color: #aaa;
-            margin-bottom: 6px;
-        }
-
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border-radius: 10px;
-            background: #0d0e12;
-            border: 1px solid #333;
-            color: #fff;
-        }
+        /* Custom Modal */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(14px); justify-content: center; align-items: center; z-index: 100000; padding: 20px; }
+        .modal-box { background: #16171d; border: 1px solid var(--card-border); border-radius: 28px; padding: 32px 28px; width: 100%; max-width: 480px; color: #fff; box-shadow: 0 25px 60px rgba(0,0,0,0.8); }
+        .form-group { margin-bottom: 15px; text-align: left; }
+        .form-group label { display: block; font-size: 0.85rem; color: #aaa; margin-bottom: 6px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border-radius: 10px; background: #0d0e12; border: 1px solid #333; color: #fff; }
     </style>
 </head>
 <body>
 
-    <!-- 💥 1. VERTICAL CAPSULE PILL NAVBAR (7 ICONS + 1.2S TOOLTIPS) 💥 -->
+    <!-- CAPSULE PILL NAVBAR -->
     <nav class="dock-capsule">
-        <!-- Top Logo Glyph -->
         <div class="dock-logo" onclick="switchSection('sec-home', this)">
-            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polygon points="12 8 8 12 12 16 16 12 12 8"></polygon>
-            </svg>
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="12 8 8 12 12 16 16 12 12 8"></polygon></svg>
         </div>
 
-        <!-- Middle 7 Nav Icons -->
         <div class="dock-nav-group">
-            <!-- 1. Home -->
-            <div class="nav-pill-item active" onclick="switchSection('sec-home', this)">
-                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                <div class="dock-tooltip">1. Home Overview</div>
-            </div>
-
-            <!-- 2. Dashboard (Charts Only) -->
-            <div class="nav-pill-item" onclick="switchSection('sec-dashboard', this)">
-                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
-                <div class="dock-tooltip">2. Dashboard (Line, Pie & Analytics)</div>
-            </div>
-
-            <!-- 3. Sub-Admin -->
-            <div class="nav-pill-item" onclick="switchSection('sec-subadmin', this)">
-                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                <div class="dock-tooltip">3. Sub-Admin Control</div>
-            </div>
-
-            <!-- 4. Admin's Activity -->
-            <div class="nav-pill-item" onclick="switchSection('sec-activity', this)">
-                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-                <div class="dock-tooltip">4. Admin's Activity Audit</div>
-            </div>
-
-            <!-- 5. User Entry -->
-            <div class="nav-pill-item" onclick="switchSection('sec-users', this)">
-                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
-                <div class="dock-tooltip">5. User Entry & Timing</div>
-            </div>
-
-            <!-- 6. Instruction & Inbox -->
-            <div class="nav-pill-item" onclick="switchSection('sec-inbox', this)">
-                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                <div class="dock-tooltip">6. Directives & Inbox ({{ work_messages|length }})</div>
-            </div>
-
-            <!-- 7. Settings -->
-            <div class="nav-pill-item" onclick="switchSection('sec-settings', this)">
-                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                <div class="dock-tooltip">7. Settings & Profile</div>
-            </div>
+            <div class="nav-pill-item active" onclick="switchSection('sec-home', this)"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><div class="dock-tooltip">1. Home Overview</div></div>
+            <div class="nav-pill-item" onclick="switchSection('sec-dashboard', this)"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg><div class="dock-tooltip">2. Dashboard (Charts)</div></div>
+            <div class="nav-pill-item" onclick="switchSection('sec-subadmin', this)"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg><div class="dock-tooltip">3. Sub-Admin Directory</div></div>
+            <div class="nav-pill-item" onclick="switchSection('sec-activity', this)"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg><div class="dock-tooltip">4. Admin's Activity Trail</div></div>
+            <div class="nav-pill-item" onclick="switchSection('sec-users', this)"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg><div class="dock-tooltip">5. User Leads & Timing</div></div>
+            <div class="nav-pill-item" onclick="switchSection('sec-inbox', this)"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path></svg><div class="dock-tooltip">6. Directives & Inbox</div></div>
+            <div class="nav-pill-item" onclick="switchSection('sec-settings', this)"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg><div class="dock-tooltip">7. Settings & OTP Portal</div></div>
         </div>
 
-        <!-- Bottom Profile Avatar -->
+        <!-- Avatar -->
         <div class="dock-avatar-wrapper" onclick="switchSection('sec-settings', document.querySelectorAll('.nav-pill-item')[6])">
             <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80" alt="Admin" class="dock-avatar" id="dockAvatarImg">
-            <div class="dock-tooltip">{{ main_name }} (Root Admin)</div>
+            <div class="dock-tooltip">{{ main_name }} (Root)</div>
         </div>
     </nav>
 
-    <!-- 💥 2. MAIN VIEWPORT (SWITCHES SMOOTHLY) 💥 -->
+    <!-- MAIN VIEWPORT -->
     <main class="main-viewport">
 
-        <!-- SECTION 1: HOME OVERVIEW -->
+        <!-- 1. HOME -->
         <section id="sec-home" class="view-section active-view">
             <div class="top-header">
                 <div>
-                    <h1>AIR CURSOR COMMAND</h1>
-                    <p>Welcome, {{ main_name }} • Root Administrative Gateway</p>
+                    <h1>AIR CURSOR ROOT COMMAND</h1>
+                    <p>Welcome, {{ main_name }} • Central Administrative Authority</p>
                 </div>
                 <div class="header-actions">
-                    <button class="btn-gold" onclick="switchSection('sec-inbox', document.querySelectorAll('.nav-pill-item')[5])">📜 Directives</button>
+                    <button class="btn-refresh" onclick="triggerSync(this)">
+                        <svg class="refresh-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                        Sync Live Data
+                    </button>
+                    <div class="theme-switch-box" onclick="toggleTheme()"><div class="theme-slider" id="themeSliderIcon">☀️</div></div>
                     <a href="/admin/logout" class="btn-danger" style="padding:9px 20px; border-radius:99px;">Exit</a>
                 </div>
             </div>
 
             <div class="metrics-row">
-                <div class="metric-card">
-                    <div class="metric-label">Total Leads Captured</div>
-                    <div class="metric-val">{{ visitors|length }}</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Sub-Admins Active</div>
-                    <div class="metric-val">{{ sub_admins|length }}</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Pending Requests</div>
-                    <div class="metric-val" style="color:{% if pending_requests|length > 0 %}#ffa502{% else %}#2ed573{% endif %};">
-                        {{ pending_requests|length }}
-                    </div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Cluster Status</div>
-                    <div class="metric-val" style="color:#2ed573; font-size:1.6rem; line-height:2.2rem;">🟢 Active & Encrypted</div>
-                </div>
-            </div>
-
-            <div class="box-card">
-                <div class="box-title">
-                    <span>⚡ Quick Launch Operations</span>
-                </div>
-                <div style="display:flex; gap:15px; flex-wrap:wrap;">
-                    <button class="btn-gold" onclick="openSubAdminModal()">+ Create Sub-Admin</button>
-                    <button class="btn-gold" onclick="openInstructionModal()">📝 Dispatch Directive</button>
-                    <button class="btn-gold" onclick="switchSection('sec-dashboard', document.querySelectorAll('.nav-pill-item')[1])">📊 Open Chart Analytics</button>
-                </div>
+                <div class="metric-card"><div class="metric-label">Total Leads Captured</div><div class="metric-val" id="m-leads">{{ visitors|length }}</div></div>
+                <div class="metric-card"><div class="metric-label">Sub-Admins Active</div><div class="metric-val" id="m-subs">{{ sub_admins|length }}</div></div>
+                <div class="metric-card"><div class="metric-label">Pending Requests</div><div class="metric-val" id="m-reqs" style="color:{% if pending_requests|length > 0 %}#ffa502{% else %}#2ed573{% endif %};">{{ pending_requests|length }}</div></div>
+                <div class="metric-card"><div class="metric-label">Cluster Security</div><div class="metric-val" style="color:#2ed573; font-size:1.6rem;">🟢 Windows Guard</div></div>
             </div>
         </section>
 
-        <!-- SECTION 2: DASHBOARD (CHARTS ONLY) -->
+        <!-- 2. DASHBOARD (CHARTS ONLY) -->
         <section id="sec-dashboard" class="view-section">
             <div class="top-header">
                 <div>
                     <h1>ANALYTICAL DASHBOARD</h1>
-                    <p>Visual Intelligence • Dynamic Charts & Trend Graphs</p>
+                    <p>Live Chart Analytics • Balanced High-Tech Visualization</p>
                 </div>
+                <button class="btn-refresh" onclick="triggerSync(this)">
+                    <svg class="refresh-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg> Sync Charts
+                </button>
             </div>
 
             <div class="charts-grid">
-                <!-- Line Chart -->
                 <div class="chart-box">
-                    <h3 style="color:var(--accent-gold); margin-bottom:15px; font-size:1.05rem;">📈 Registration & Activity Volume</h3>
-                    <canvas id="leadsLineChart" height="230"></canvas>
+                    <h3 style="color:var(--accent-gold); margin-bottom:15px;">📈 Weekly Visitor Traffic</h3>
+                    <div style="height:260px;"><canvas id="leadsLineChart"></canvas></div>
                 </div>
-
-                <!-- Doughnut Chart -->
                 <div class="chart-box">
-                    <h3 style="color:var(--accent-gold); margin-bottom:15px; font-size:1.05rem;">🛡️ Device & Security Verification Ratio</h3>
-                    <canvas id="securityPieChart" height="230"></canvas>
+                    <h3 style="color:var(--accent-gold); margin-bottom:15px;">🛡️ Device Integrity Breakdown</h3>
+                    <div style="height:260px;"><canvas id="securityPieChart"></canvas></div>
                 </div>
-
-                <!-- Bar Chart -->
                 <div class="chart-box" style="grid-column: 1 / -1;">
-                    <h3 style="color:var(--accent-gold); margin-bottom:15px; font-size:1.05rem;">📊 Sub-Admin Operations Distribution</h3>
-                    <canvas id="operationsBarChart" height="130"></canvas>
+                    <h3 style="color:var(--accent-gold); margin-bottom:15px;">📊 Operations & Activity Distribution</h3>
+                    <div style="height:220px;"><canvas id="operationsBarChart"></canvas></div>
                 </div>
             </div>
         </section>
 
-        <!-- SECTION 3: SUB-ADMIN CONTROL -->
+        <!-- 3. SUB-ADMIN DIRECTORY -->
         <section id="sec-subadmin" class="view-section">
             <div class="top-header">
                 <div>
                     <h1>SUB-ADMIN DIRECTORY</h1>
-                    <p>Manage Staff Credentials and Access Privileges</p>
+                    <p>Staff Credentials & Access Control</p>
                 </div>
-                <button class="btn-gold" onclick="openSubAdminModal()">+ Create Sub-Admin</button>
+                <div class="header-actions">
+                    <button class="btn-refresh" onclick="triggerSync(this)"><svg class="refresh-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg> Sync</button>
+                    <button class="btn-gold" onclick="openSubAdminModal()">+ Create Sub-Admin</button>
+                </div>
             </div>
 
             <div class="box-card">
                 <table>
                     <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Permissions Granted</th>
-                            <th>Created At</th>
-                            <th>Actions</th>
-                        </tr>
+                        <tr><th>Name</th><th>Email</th><th>Permissions</th><th>Created</th><th>Action</th></tr>
                     </thead>
-                    <tbody>
+                    <tbody id="subAdminsTableBody">
                         {% for sa in sub_admins %}
                         <tr>
                             <td style="font-weight:700;">{{ sa.name }}</td>
@@ -573,84 +377,64 @@
                                 {% if sa.can_export_data %}<span class="badge" style="color:#ffa502; background:rgba(255,165,2,0.15)">Export Data</span>{% endif %}
                             </td>
                             <td style="color:var(--text-sub);">{{ sa.created_at }}</td>
-                            <td>
-                                <button onclick="targetInstruction('{{ sa._id }}', '{{ sa.name }}')" class="btn-gold" style="padding:5px 12px; font-size:0.8rem; margin-right:6px;">Directive</button>
-                                <a href="/admin/remove-subadmin/{{ sa._id }}" onclick="return confirm('Revoke access for this Sub-Admin?')" class="btn-danger">Revoke</a>
-                            </td>
+                            <td><button onclick="confirmRemoveSubAdmin('{{ sa._id }}', '{{ sa.name }}')" class="btn-danger">Revoke</button></td>
                         </tr>
                         {% else %}
-                        <tr><td colspan="5" style="text-align:center; padding:30px; color:var(--text-sub);">No sub-admins found.</td></tr>
+                        <tr><td colspan="5" style="text-align:center; padding:25px; color:#888;">No sub-admins configured.</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
         </section>
 
-        <!-- SECTION 4: ADMIN'S ACTIVITY AUDIT -->
+        <!-- 4. ACTIVITY TRAIL -->
         <section id="sec-activity" class="view-section">
             <div class="top-header">
                 <div>
                     <h1>SECURITY AUDIT TRAIL</h1>
-                    <p>Real-time Chronological Record of All Sub-Admin Operations</p>
+                    <p>Live Monitored Logs of All Sub-Admin Actions</p>
                 </div>
+                <button class="btn-refresh" onclick="triggerSync(this)"><svg class="refresh-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg> Sync Logs</button>
             </div>
 
             <div class="box-card">
                 <table>
                     <thead>
-                        <tr>
-                            <th>Time (UTC)</th>
-                            <th>Sub-Admin</th>
-                            <th>Action Performed</th>
-                            <th>Status</th>
-                            <th>Details</th>
-                        </tr>
+                        <tr><th>Time (UTC)</th><th>Sub-Admin</th><th>Action</th><th>Status</th><th>Details</th></tr>
                     </thead>
-                    <tbody>
+                    <tbody id="auditTableBody">
                         {% for log in activity_logs %}
                         <tr>
                             <td style="color:var(--text-sub); font-size:0.85rem;">{{ log.timestamp }}</td>
                             <td style="font-weight:700;">{{ log.subadmin_name }}</td>
                             <td style="color:#fff;">{{ log.action }}</td>
-                            <td>
-                                {% if log.status == 'ALLOWED' %}
-                                    <span class="badge" style="color:#2ed573; background:rgba(46,213,115,0.15);">Allowed</span>
-                                {% else %}
-                                    <span class="badge" style="color:#ff4757; background:rgba(255,71,87,0.15);">Restricted</span>
-                                {% endif %}
-                            </td>
+                            <td><span class="badge" style="{% if log.status == 'ALLOWED' %}color:#2ed573; background:rgba(46,213,115,0.15);{% else %}color:#ff4757; background:rgba(255,71,87,0.15);{% endif %}">{{ log.status }}</span></td>
                             <td style="color:var(--text-sub); font-size:0.85rem;">{{ log.details }}</td>
                         </tr>
                         {% else %}
-                        <tr><td colspan="5" style="text-align:center; padding:30px; color:var(--text-sub);">No audit trail records yet.</td></tr>
+                        <tr><td colspan="5" style="text-align:center; padding:25px; color:#888;">No logs recorded yet.</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
         </section>
 
-        <!-- SECTION 5: USER ENTRY & TIMING -->
+        <!-- 5. USER ENTRY & TIMING -->
         <section id="sec-users" class="view-section">
             <div class="top-header">
                 <div>
                     <h1>USER ENTRY & LEADS</h1>
-                    <p>Registered Windows PC Downloads with Verification Stamps</p>
+                    <p>Verified Windows PC Installations</p>
                 </div>
+                <button class="btn-refresh" onclick="triggerSync(this)"><svg class="refresh-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg> Sync Leads</button>
             </div>
 
             <div class="box-card">
                 <table>
                     <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>User Name</th>
-                            <th>Email Address</th>
-                            <th>Registered At (UTC)</th>
-                            <th>Hardware Verification</th>
-                            <th>Action</th>
-                        </tr>
+                        <tr><th>#</th><th>Name</th><th>Email</th><th>Registered At</th><th>Verification</th><th>Action</th></tr>
                     </thead>
-                    <tbody>
+                    <tbody id="leadsTableBody">
                         {% for u in visitors %}
                         <tr>
                             <td>{{ loop.index }}</td>
@@ -658,48 +442,41 @@
                             <td>{{ u.email }}</td>
                             <td style="color:var(--text-sub);">{{ u.registered_at or 'Direct Entry' }}</td>
                             <td><span class="badge">Verified PC</span></td>
-                            <td>
-                                <a href="/admin/delete-lead/{{ u._id }}" onclick="return confirm('Delete this record?')" class="btn-danger">Delete</a>
-                            </td>
+                            <td><button onclick="confirmDeleteLead('{{ u._id }}')" class="btn-danger">Delete</button></td>
                         </tr>
                         {% else %}
-                        <tr><td colspan="6" style="text-align:center; padding:35px; color:var(--text-sub);">No leads captured yet.</td></tr>
+                        <tr><td colspan="6" style="text-align:center; padding:30px; color:#888;">No leads registered.</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
         </section>
 
-        <!-- SECTION 6: INSTRUCTION & INBOX -->
+        <!-- 6. DIRECTIVES & INBOX -->
         <section id="sec-inbox" class="view-section">
             <div class="top-header">
                 <div>
                     <h1>DIRECTIVES & WORK INBOX</h1>
-                    <p>Two-Way Communication and Permission Request Queue</p>
+                    <p>Two-Way Communication Hub</p>
                 </div>
-                <button class="btn-gold" onclick="openInstructionModal()">+ Issue Directive</button>
+                <div class="header-actions">
+                    <button class="btn-refresh" onclick="triggerSync(this)"><svg class="refresh-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg> Sync Inbox</button>
+                    <button class="btn-gold" onclick="openInstructionModal()">+ Issue Directive</button>
+                </div>
             </div>
 
-            <!-- Permission Requests Queue -->
+            <!-- Pending Requests -->
             <div class="box-card" style="border-color: rgba(255, 165, 2, 0.4);">
-                <div class="box-title">
-                    <span style="color:#ffa502;">🔔 Pending Access Requests ({{ pending_requests|length }})</span>
-                </div>
+                <div class="box-title"><span style="color:#ffa502;">🔔 Pending Requests</span></div>
                 <table>
                     <thead>
-                        <tr>
-                            <th>Time</th>
-                            <th>Sub-Admin</th>
-                            <th>Action</th>
-                            <th>Permission Key</th>
-                            <th>Decision</th>
-                        </tr>
+                        <tr><th>Time</th><th>Sub-Admin</th><th>Action</th><th>Key</th><th>Decision</th></tr>
                     </thead>
-                    <tbody>
+                    <tbody id="pendingTableBody">
                         {% for req in pending_requests %}
                         <tr>
                             <td style="color:var(--text-sub); font-size:0.85rem;">{{ req.requested_at }}</td>
-                            <td><b>{{ req.subadmin_name }}</b><br><span style="font-size:0.8rem; color:#888;">{{ req.subadmin_email }}</span></td>
+                            <td><b>{{ req.subadmin_name }}</b></td>
                             <td style="color:#00e5ff; font-weight:bold;">{{ req.action }}</td>
                             <td><span class="badge" style="color:#ffa502; background:rgba(255,165,2,0.15);">{{ req.permission_key }}</span></td>
                             <td>
@@ -708,125 +485,112 @@
                             </td>
                         </tr>
                         {% else %}
-                        <tr><td colspan="5" style="text-align:center; padding:20px; color:var(--text-sub);">No pending permission requests.</td></tr>
+                        <tr><td colspan="5" style="text-align:center; padding:18px; color:#888;">No pending requests.</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
 
-            <!-- Incoming Sub-Admin Work Notes -->
+            <!-- Messages -->
             <div class="box-card">
-                <div class="box-title">
-                    <span style="color:#00e5ff;">📥 Sub-Admin Work Notes & Inquiries</span>
-                </div>
+                <div class="box-title"><span style="color:#00e5ff;">📥 Sub-Admin Work Notes</span></div>
                 <table>
-                    <thead>
-                        <tr>
-                            <th>Time</th>
-                            <th>Sub-Admin</th>
-                            <th>Subject</th>
-                            <th>Message</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                    <thead><tr><th>Time</th><th>From</th><th>Subject</th><th>Details</th><th>Action</th></tr></thead>
+                    <tbody id="inboxTableBody">
                         {% for msg in work_messages %}
                         <tr>
                             <td style="color:var(--text-sub); font-size:0.85rem;">{{ msg.sent_at }}</td>
                             <td style="font-weight:700;">{{ msg.subadmin_name }}</td>
-                            <td style="color:#00e5ff; font-weight:600;">{{ msg.subject }}</td>
-                            <td style="color:#ddd; font-size:0.9rem;">{{ msg.content }}</td>
+                            <td style="color:#00e5ff; font-weight:bold;">{{ msg.subject }}</td>
+                            <td style="color:#ddd;">{{ msg.content }}</td>
                             <td><a href="/admin/delete-message/{{ msg._id }}" class="btn-danger">Delete</a></td>
                         </tr>
                         {% else %}
-                        <tr><td colspan="5" style="text-align:center; padding:25px; color:var(--text-sub);">Inbox is empty.</td></tr>
+                        <tr><td colspan="5" style="text-align:center; padding:20px; color:#888;">Inbox is empty.</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
         </section>
 
-        <!-- SECTION 7: SETTINGS & PROFILE -->
+        <!-- 7. SETTINGS & PROFILE -->
         <section id="sec-settings" class="view-section">
             <div class="top-header">
                 <div>
-                    <h1>SYSTEM & PROFILE SETTINGS</h1>
-                    <p>Avatar Selection, Secret Gateway Credentials & Passcode</p>
+                    <h1>ROOT PROFILE & OTP SECURITY</h1>
+                    <p>Device Photo Upload & Secure OTP Credential Updates</p>
                 </div>
             </div>
 
             <div class="charts-grid">
-                <!-- Profile Settings -->
+                <!-- Profile Picture from Device -->
                 <div class="chart-box">
-                    <h3 style="color:var(--accent-gold); margin-bottom:18px;">👤 Admin Profile & Picture</h3>
-                    <div style="display:flex; align-items:center; gap:20px; margin-bottom:20px;">
-                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80" alt="Avatar" id="previewAvatar" style="width:75px; height:75px; border-radius:50%; border:2px solid var(--accent-gold); object-fit:cover;">
+                    <h3 style="color:var(--accent-gold); margin-bottom:15px;">👤 Admin Avatar (Device Upload)</h3>
+                    <div style="display:flex; align-items:center; gap:20px;">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80" alt="Avatar" id="previewAvatar" style="width:80px; height:80px; border-radius:50%; border:2px solid var(--accent-gold); object-fit:cover;">
                         <div>
-                            <label style="font-size:0.85rem; color:#aaa; display:block; margin-bottom:6px;">Choose Luxury Avatar:</label>
-                            <select onchange="updateAvatar(this.value)" style="padding:8px 12px; background:#0d0e12; color:#fff; border:1px solid #444; border-radius:8px;">
-                                <option value="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80">Executive Obsidian</option>
-                                <option value="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80">Cyber Specialist</option>
-                                <option value="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=120&auto=format&fit=crop&q=80">Gold Minimalist</option>
-                            </select>
+                            <label style="font-size:0.85rem; color:#aaa; display:block; margin-bottom:8px;">Choose Picture from Computer/Device:</label>
+                            <input type="file" id="avatarFileInput" accept="image/*" onchange="uploadAvatarFromDevice(event)" style="font-size:0.82rem; color:#aaa;">
                         </div>
                     </div>
-
-                    <form action="/admin/update-credentials" method="POST">
-                        <div class="form-group">
-                            <label>Secret Name:</label>
-                            <input type="text" name="new_name" value="{{ main_name }}" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Secret Notification Email:</label>
-                            <input type="email" name="new_email" value="{{ main_email }}" required>
-                        </div>
-                        <div class="form-group">
-                            <label style="color:#ff4757; font-weight:bold;">ENTER MASTER PASSCODE TO VERIFY:</label>
-                            <input type="password" name="passcode" placeholder="Master PIN Required" required>
-                        </div>
-                        <button type="submit" class="btn-gold" style="width:100%; justify-content:center;">Save Profile Updates</button>
-                    </form>
                 </div>
 
-                <!-- Theme & Preferences -->
+                <!-- OTP Protected Credentials Box -->
                 <div class="chart-box">
-                    <h3 style="color:var(--accent-gold); margin-bottom:18px;">🎨 Workspace Appearance</h3>
-                    <p style="color:var(--text-sub); font-size:0.9rem; margin-bottom:20px;">Toggle between Air Cursor Gold-Obsidian Dark Theme and Crisp Luxury Light Mode.</p>
-                    <button class="btn-gold" onclick="toggleTheme()" id="themeBtn">☀️ Switch Theme</button>
+                    <h3 style="color:var(--accent-gold); margin-bottom:12px;">🔒 Modify Credentials & Passcode</h3>
+                    <p style="color:var(--text-sub); font-size:0.88rem; line-height:1.5; margin-bottom:20px;">
+                        Changing Root Name, Notification Email, or Passcode requires two-factor email OTP authorization.
+                    </p>
+                    <button class="btn-gold" onclick="requestSecurityOtp()" style="width:100%; justify-content:center;">
+                        ✉️ Request Security OTP to Unlock
+                    </button>
+                    <div style="margin-top:12px; text-align:center;">
+                        <button onclick="forgotPasscodeDirect()" style="background:none; border:none; color:#00e5ff; font-size:0.85rem; cursor:pointer; text-decoration:underline;">
+                            Forgot Master Passcode? Email it to me
+                        </button>
+                    </div>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- 💥 MODALS: SUB-ADMIN & DIRECTIVES 💥 -->
+    <!-- CUSTOM THEMED CONFIRMATION MODAL (NO BROWSER ALERTS) -->
+    <div id="customModal" class="modal-overlay">
+        <div class="modal-box" style="text-align:center;">
+            <span id="cEmoji" style="font-size:3.2rem; display:block; margin-bottom:10px;">⚠️</span>
+            <h2 id="cTitle" style="color:var(--accent-gold); font-size:1.3rem; margin-bottom:8px;">Confirm Operation</h2>
+            <p id="cMsg" style="color:var(--text-sub); font-size:0.92rem; margin-bottom:25px;"></p>
+            <div style="display:flex; justify-content:center; gap:12px;">
+                <button onclick="closeCustomModal()" class="btn-cancel">Cancel</button>
+                <button id="cConfirmBtn" class="btn-gold">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Sub-Admin Modal -->
     <div id="subAdminModal" class="modal-overlay">
         <div class="modal-box">
             <h2 style="color:var(--accent-gold); margin-bottom:15px;">+ Create Sub-Admin</h2>
             <form action="/admin/create-subadmin" method="POST">
-                <div class="form-group">
-                    <label>Sub-Admin Name:</label>
-                    <input type="text" name="name" required placeholder="e.g. Rahul Sharma">
-                </div>
-                <div class="form-group">
-                    <label>Sub-Admin Email:</label>
-                    <input type="email" name="email" required placeholder="rahul@company.com">
-                </div>
+                <div class="form-group"><label>Sub-Admin Name:</label><input type="text" name="name" required placeholder="e.g. Rahul Sharma"></div>
+                <div class="form-group"><label>Sub-Admin Email:</label><input type="email" name="email" required placeholder="rahul@company.com"></div>
                 <div class="form-group">
                     <label>Permissions:</label>
-                    <div style="display:flex; flex-direction:column; gap:8px; font-size:0.9rem;">
-                        <label><input type="checkbox" name="can_view_visitors" checked> Allow View Leads</label>
-                        <label><input type="checkbox" name="can_delete_visitors"> Allow Delete Leads</label>
-                        <label><input type="checkbox" name="can_export_data"> Allow Export Data</label>
+                    <div style="display:flex; flex-direction:column; gap:6px; font-size:0.85rem;">
+                        <label><input type="checkbox" name="can_view_visitors" checked> View Leads</label>
+                        <label><input type="checkbox" name="can_delete_visitors"> Delete Leads</label>
+                        <label><input type="checkbox" name="can_export_data"> Export Analytics</label>
                     </div>
                 </div>
                 <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
-                    <button type="button" onclick="closeModal('subAdminModal')" class="btn-danger">Cancel</button>
+                    <button type="button" onclick="closeModal('subAdminModal')" class="btn-cancel">Cancel</button>
                     <button type="submit" class="btn-gold">Add Sub-Admin</button>
                 </div>
             </form>
         </div>
     </div>
 
+    <!-- Issue Directive Modal -->
     <div id="instructionModal" class="modal-overlay">
         <div class="modal-box">
             <h2 style="color:var(--accent-gold); margin-bottom:15px;">📜 Issue Directive</h2>
@@ -834,129 +598,158 @@
                 <div class="form-group">
                     <label>Target Sub-Admin:</label>
                     <select name="subadmin_id" id="instSubAdminSelect" required>
-                        {% for sa in sub_admins %}
-                        <option value="{{ sa._id }}">{{ sa.name }} ({{ sa.email }})</option>
-                        {% endfor %}
+                        {% for sa in sub_admins %}<option value="{{ sa._id }}">{{ sa.name }} ({{ sa.email }})</option>{% endfor %}
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>Directive Title:</label>
-                    <input type="text" name="title" required placeholder="e.g. Verify Leads Batch #4">
-                </div>
-                <div class="form-group">
-                    <label>Instruction Details:</label>
-                    <textarea name="message" rows="4" required placeholder="Type operational instructions..."></textarea>
-                </div>
+                <div class="form-group"><label>Title:</label><input type="text" name="title" required placeholder="Task header..."></div>
+                <div class="form-group"><label>Message:</label><textarea name="message" rows="3" required placeholder="Instructions..."></textarea></div>
                 <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
-                    <button type="button" onclick="closeModal('instructionModal')" class="btn-danger">Cancel</button>
-                    <button type="submit" class="btn-gold">Dispatch</button>
+                    <button type="button" onclick="closeModal('instructionModal')" class="btn-cancel">Cancel</button>
+                    <button type="submit" class="btn-gold">Dispatch Directive</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- 💥 JAVASCRIPT: TAB SWITCHING, CHARTS & AVATAR 💥 -->
     <script>
-        function switchSection(sectionId, navEl) {
-            document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active-view'));
-            document.querySelectorAll('.nav-pill-item').forEach(item => item.classList.remove('active'));
-            
-            const target = document.getElementById(sectionId);
-            if (target) target.classList.add('active-view');
-            if (navEl && navEl.classList.contains('nav-pill-item')) navEl.classList.add('active');
+        let modalCallback = null;
+        function showAppConfirm(emoji, title, msg, btnText, onConfirm) {
+            document.getElementById('cEmoji').innerText = emoji || '⚠️';
+            document.getElementById('cTitle').innerText = title;
+            document.getElementById('cMsg').innerText = msg;
+            document.getElementById('cConfirmBtn').innerText = btnText || 'Confirm';
+            modalCallback = onConfirm;
+            document.getElementById('customModal').style.display = 'flex';
+        }
+        function closeCustomModal() { document.getElementById('customModal').style.display = 'none'; modalCallback = null; }
+        document.getElementById('cConfirmBtn').onclick = () => { if (modalCallback) { modalCallback(); closeCustomModal(); } };
 
-            if (sectionId === 'sec-dashboard') renderCharts();
+        function confirmRemoveSubAdmin(id, name) {
+            showAppConfirm('🛡️', 'Revoke Sub-Admin', `Permanently revoke access for ${name}?`, 'Revoke Now', () => {
+                window.location.href = '/admin/remove-subadmin/' + id;
+            });
+        }
+        function confirmDeleteLead(id) {
+            showAppConfirm('🗑️', 'Delete Lead', 'Permanently remove this visitor entry?', 'Delete Now', () => {
+                window.location.href = '/admin/delete-lead/' + id;
+            });
+        }
+
+        function switchSection(secId, navEl) {
+            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active-view'));
+            document.querySelectorAll('.nav-pill-item').forEach(i => i.classList.remove('active'));
+            document.getElementById(secId).classList.add('active-view');
+            if (navEl && navEl.classList.contains('nav-pill-item')) navEl.classList.add('active');
+            if (secId === 'sec-dashboard') renderCharts();
         }
 
         function openSubAdminModal() { document.getElementById('subAdminModal').style.display = 'flex'; }
         function openInstructionModal() { document.getElementById('instructionModal').style.display = 'flex'; }
-        function targetInstruction(id, name) {
-            document.getElementById('instSubAdminSelect').value = id;
-            openInstructionModal();
-        }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        // 💥 DEVICE AVATAR UPLOAD 💥
+        function uploadAvatarFromDevice(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    const dataUrl = evt.target.result;
+                    document.getElementById('previewAvatar').src = dataUrl;
+                    document.getElementById('dockAvatarImg').src = dataUrl;
+                    localStorage.setItem('admin_custom_avatar', dataUrl);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        const savedPic = localStorage.getItem('admin_custom_avatar');
+        if (savedPic) {
+            document.getElementById('previewAvatar').src = savedPic;
+            document.getElementById('dockAvatarImg').src = savedPic;
+        }
+
+        // 💥 ANIMATED REFRESH BUTTON (NO FULL RELOAD) 💥
+        function triggerSync(btn) {
+            const icon = btn.querySelector('.refresh-icon');
+            if (icon) icon.classList.add('spinning');
+
+            fetch('/api/admin/live-sync')
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('m-leads').innerText = data.visitors.length;
+                    document.getElementById('m-subs').innerText = data.sub_admins.length;
+                    document.getElementById('m-reqs').innerText = data.pending_requests.length;
+                }
+                setTimeout(() => { if (icon) icon.classList.remove('spinning'); }, 600);
+            })
+            .catch(() => { if (icon) icon.classList.remove('spinning'); });
+        }
+
+        // 💥 OTP REQUEST 💥
+        function requestSecurityOtp() {
+            showAppConfirm('🔐', 'Authorize With OTP', 'Send a 6-digit one-time passcode to your verified inbox?', 'Dispatch OTP', () => {
+                fetch('/admin/request-profile-otp', { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    alert(data.message);
+                    window.location.href = '/admin/security-verify';
+                });
+            });
+        }
+
+        function forgotPasscodeDirect() {
+            showAppConfirm('🔑', 'Recover Passcode', 'Dispatch your current Master Passcode to your registered email?', 'Email Passcode', () => {
+                fetch('/admin/forgot-passcode', { method: 'POST' })
+                .then(res => res.json())
+                .then(data => alert(data.message));
+            });
+        }
 
         function toggleTheme() {
             document.body.classList.toggle('light-mode');
             const isLight = document.body.classList.contains('light-mode');
+            document.getElementById('themeSliderIcon').innerText = isLight ? '🌙' : '☀️';
             localStorage.setItem('air_theme', isLight ? 'light' : 'dark');
         }
         if (localStorage.getItem('air_theme') === 'light') toggleTheme();
 
-        function updateAvatar(url) {
-            document.getElementById('dockAvatarImg').src = url;
-            document.getElementById('previewAvatar').src = url;
-            localStorage.setItem('admin_avatar_url', url);
-        }
-        const savedAvatar = localStorage.getItem('admin_avatar_url');
-        if (savedAvatar) updateAvatar(savedAvatar);
-
-        // 💥 RENDER CHARTS ONLY ON DASHBOARD VIEW 💥
-        let chartsRendered = false;
+        // 💥 CHARTS RENDER 💥
+        let chartsLoaded = false;
         function renderCharts() {
-            if (chartsRendered) return;
-            chartsRendered = true;
+            if (chartsLoaded) return;
+            chartsLoaded = true;
 
-            // 1. Line Chart
             new Chart(document.getElementById('leadsLineChart'), {
                 type: 'line',
                 data: {
-                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Today'],
                     datasets: [{
-                        label: 'Weekly Visitor Volume',
-                        data: [12, 19, 15, 27, 34, 42, {{ visitors|length }}],
+                        label: 'Leads Traffic',
+                        data: [8, 14, 12, 22, 28, 35, {{ visitors|length }}],
                         borderColor: '#C5A880',
                         backgroundColor: 'rgba(197, 168, 128, 0.15)',
-                        fill: true,
-                        tension: 0.35
+                        fill: true, tension: 0.35
                     }]
                 },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { labels: { color: '#E6E4E0' } } },
-                    scales: {
-                        x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#aaa' } },
-                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#aaa' } }
-                    }
-                }
+                options: { responsive: true, maintainAspectRatio: false }
             });
 
-            // 2. Security Pie Chart
             new Chart(document.getElementById('securityPieChart'), {
                 type: 'doughnut',
                 data: {
-                    labels: ['Verified Windows PC', 'Prohibited Devices Blocked', 'Restricted Attempts'],
-                    datasets: [{
-                        data: [{{ visitors|length }}, 8, 3],
-                        backgroundColor: ['#00e5ff', '#ff4757', '#ffa502'],
-                        borderWidth: 0
-                    }]
+                    labels: ['Verified Windows', 'Prohibited Blocked', 'Attempts'],
+                    datasets: [{ data: [{{ visitors|length }}, 8, 3], backgroundColor: ['#00e5ff', '#ff4757', '#ffa502'], borderWidth: 0 }]
                 },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { labels: { color: '#E6E4E0' } } }
-                }
+                options: { responsive: true, maintainAspectRatio: false }
             });
 
-            // 3. Operations Bar Chart
             new Chart(document.getElementById('operationsBarChart'), {
                 type: 'bar',
                 data: {
-                    labels: ['Leads Viewed', 'Directives Handled', 'Permission Requests', 'Messages Dispatched'],
-                    datasets: [{
-                        label: 'Operational Activity',
-                        data: [{{ visitors|length }}, 6, {{ pending_requests|length }}, {{ work_messages|length }}],
-                        backgroundColor: '#2ed573'
-                    }]
+                    labels: ['Leads', 'Sub-Admins', 'Requests', 'Messages'],
+                    datasets: [{ label: 'Total Volume', data: [{{ visitors|length }}, {{ sub_admins|length }}, {{ pending_requests|length }}, {{ work_messages|length }}], backgroundColor: '#2ed573' }]
                 },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { labels: { color: '#E6E4E0' } } },
-                    scales: {
-                        x: { ticks: { color: '#aaa' } },
-                        y: { ticks: { color: '#aaa' } }
-                    }
-                }
+                options: { responsive: true, maintainAspectRatio: false }
             });
         }
     </script>

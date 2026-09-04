@@ -2,6 +2,7 @@ import os
 import re
 import io
 import random
+import string
 import smtplib
 import threading
 from email.mime.text import MIMEText
@@ -46,6 +47,7 @@ requests_collection = None
 instructions_collection = None
 messages_collection = None
 otp_collection = None
+captcha_logs_collection = None
 
 if MONGO_URI:
     try:
@@ -59,6 +61,7 @@ if MONGO_URI:
         instructions_collection = db['admin_instructions']
         messages_collection = db['subadmin_messages']
         otp_collection = db['security_otps']
+        captcha_logs_collection = db['captcha_logs']
 
         if config_collection.count_documents({"type": "main_admin"}) == 0:
             config_collection.insert_one({
@@ -102,6 +105,19 @@ def log_activity(sub_name, sub_email, action, status="ALLOWED", details=""):
         except Exception as e:
             print(f"❌ Log Error: {e}")
 
+def log_captcha_attempt(status, user_input):
+    if captcha_logs_collection is not None:
+        try:
+            captcha_logs_collection.insert_one({
+                "ip_address": request.headers.get('X-Forwarded-For', request.remote_addr),
+                "user_agent": request.headers.get('User-Agent', ''),
+                "status": status,
+                "attempted_code": user_input,
+                "timestamp": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
+            })
+        except Exception as e:
+            print(f"❌ Captcha Log Error: {e}")
+
 # =========================================================
 # 💥 ૩. ANTI-SPAM ASYNC EMAIL ENGINE 💥
 # =========================================================
@@ -130,7 +146,7 @@ def send_system_email(to_email, subject, plain_text, html_body):
         return False
 
 # =========================================================
-# 💥 ૪. DEVICE RESTRICTION & HONEYPOT 💥
+# 💥 ૪. DEVICE RESTRICTION & CAPTCHA GATEWAY 💥
 # =========================================================
 def is_windows_pc(ua_string):
     if not ua_string:
@@ -163,9 +179,45 @@ def add_security_headers(response):
     response.headers['X-XSS-Protection'] = '1; mode=block'
     return response
 
+# 💥 CAPTCHA API & GATEKEEPER 💥
+@app.route('/api/captcha/new')
+def get_new_captcha():
+    chars = string.ascii_uppercase + "23456789"
+    code = ''.join(random.choice(chars) for _ in range(5))
+    session['captcha_code'] = code
+    return jsonify({"status": "success", "captcha": code})
+
 @app.route('/')
 def home():
+    # હોમપેજ ખુલતા પહેલા CAPTCHA વેરિફિકેશન
+    if not session.get('captcha_verified'):
+        chars = string.ascii_uppercase + "23456789"
+        code = ''.join(random.choice(chars) for _ in range(5))
+        session['captcha_code'] = code
+        return render_template('captcha_gate.html', captcha_code=code)
+    
     return render_template('index.html')
+
+@app.route('/verify-captcha', methods=['POST'])
+def verify_captcha():
+    data = request.get_json() or {}
+    user_val = data.get('captcha', '').strip().upper()
+    correct_val = session.get('captcha_code', '').upper()
+
+    if correct_val and user_val == correct_val:
+        session['captcha_verified'] = True
+        log_captcha_attempt("PASSED", user_val)
+        return jsonify({"status": "success", "message": "Verification Successful! Unlocking site..."})
+    else:
+        log_captcha_attempt("FAILED", user_val)
+        chars = string.ascii_uppercase + "23456789"
+        new_code = ''.join(random.choice(chars) for _ in range(5))
+        session['captcha_code'] = new_code
+        return jsonify({
+            "status": "failed",
+            "message": "Incorrect Captcha Code. Please try again.",
+            "new_captcha": new_code
+        }), 400
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -230,6 +282,10 @@ def main_admin_dashboard():
     activity_logs = list(audit_collection.find().sort('_id', -1).limit(50)) if audit_collection is not None else []
     pending_requests = list(requests_collection.find({"status": "PENDING"}).sort('_id', -1)) if requests_collection is not None else []
     work_messages = list(messages_collection.find().sort('_id', -1).limit(40)) if messages_collection is not None else []
+    captcha_logs = list(captcha_logs_collection.find().sort('_id', -1).limit(40)) if captcha_logs_collection is not None else []
+
+    captcha_passed = captcha_logs_collection.count_documents({"status": "PASSED"}) if captcha_logs_collection is not None else 0
+    captcha_failed = captcha_logs_collection.count_documents({"status": "FAILED"}) if captcha_logs_collection is not None else 0
 
     main_name, main_email, _, main_avatar = get_main_admin()
 
@@ -240,12 +296,14 @@ def main_admin_dashboard():
         activity_logs=activity_logs,
         pending_requests=pending_requests,
         work_messages=work_messages,
+        captcha_logs=captcha_logs,
+        captcha_passed=captcha_passed,
+        captcha_failed=captcha_failed,
         main_name=main_name,
         main_email=main_email,
         main_avatar=main_avatar or DEFAULT_AVATAR
     )
 
-# 💥 Avatar Management API 💥
 @app.route('/api/admin/avatar/upload', methods=['POST'])
 def api_admin_avatar_upload():
     if session.get('user_role') != 'main_admin':
@@ -268,7 +326,6 @@ def api_admin_avatar_remove():
         return jsonify({"status": "success", "default_avatar": DEFAULT_AVATAR})
     return jsonify({"status": "error"}), 400
 
-# 💥 OTP Workflow for Credentials 💥
 @app.route('/admin/request-profile-otp', methods=['POST'])
 def request_profile_otp():
     if session.get('user_role') != 'main_admin':
@@ -384,6 +441,7 @@ def api_admin_live_sync():
     activity_logs = list(audit_collection.find().sort('_id', -1).limit(50)) if audit_collection is not None else []
     pending_requests = list(requests_collection.find({"status": "PENDING"}).sort('_id', -1)) if requests_collection is not None else []
     work_messages = list(messages_collection.find().sort('_id', -1).limit(40)) if messages_collection is not None else []
+    captcha_logs = list(captcha_logs_collection.find().sort('_id', -1).limit(40)) if captcha_logs_collection is not None else []
 
     def serialize(docs):
         res = []
@@ -399,7 +457,8 @@ def api_admin_live_sync():
         "sub_admins": serialize(sub_admins),
         "activity_logs": serialize(activity_logs),
         "pending_requests": serialize(pending_requests),
-        "work_messages": serialize(work_messages)
+        "work_messages": serialize(work_messages),
+        "captcha_logs": serialize(captcha_logs)
     })
 
 @app.route('/admin/send-instruction', methods=['POST'])
@@ -550,6 +609,11 @@ def subadmin_dashboard():
 
     visitors = list(visitors_collection.find().sort('_id', -1)) if visitors_collection is not None else []
     instructions = list(instructions_collection.find({"subadmin_id": sub_id}).sort('_id', -1)) if instructions_collection is not None else []
+    captcha_logs = list(captcha_logs_collection.find().sort('_id', -1).limit(40)) if captcha_logs_collection is not None else []
+
+    captcha_passed = captcha_logs_collection.count_documents({"status": "PASSED"}) if captcha_logs_collection is not None else 0
+    captcha_failed = captcha_logs_collection.count_documents({"status": "FAILED"}) if captcha_logs_collection is not None else 0
+
     sub_avatar = sub_info.get("avatar", DEFAULT_AVATAR)
 
     return render_template(
@@ -557,6 +621,9 @@ def subadmin_dashboard():
         subadmin_info=sub_info,
         visitors=visitors,
         instructions=instructions,
+        captcha_logs=captcha_logs,
+        captcha_passed=captcha_passed,
+        captcha_failed=captcha_failed,
         sub_avatar=sub_avatar or DEFAULT_AVATAR
     )
 

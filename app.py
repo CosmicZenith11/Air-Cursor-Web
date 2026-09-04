@@ -1,6 +1,7 @@
 import os
 import re
 import io
+import json
 import random
 import string
 import smtplib
@@ -179,7 +180,6 @@ def add_security_headers(response):
     response.headers['X-XSS-Protection'] = '1; mode=block'
     return response
 
-# 💥 CAPTCHA API & GATEKEEPER 💥
 @app.route('/api/captcha/new')
 def get_new_captcha():
     chars = string.ascii_uppercase + "23456789"
@@ -189,13 +189,11 @@ def get_new_captcha():
 
 @app.route('/')
 def home():
-    # હોમપેજ ખુલતા પહેલા CAPTCHA વેરિફિકેશન
     if not session.get('captcha_verified'):
         chars = string.ascii_uppercase + "23456789"
         code = ''.join(random.choice(chars) for _ in range(5))
         session['captcha_code'] = code
         return render_template('captcha_gate.html', captcha_code=code)
-    
     return render_template('index.html')
 
 @app.route('/verify-captcha', methods=['POST'])
@@ -304,6 +302,112 @@ def main_admin_dashboard():
         main_avatar=main_avatar or DEFAULT_AVATAR
     )
 
+# 💥 ૧. BACKUP DOWNLOAD FOR GOOGLE DRIVE SYNC 💥
+@app.route('/admin/download-backup')
+def download_backup():
+    if session.get('user_role') != 'main_admin':
+        abort(404)
+
+    def serialize(cursor):
+        res = []
+        for item in cursor:
+            c = dict(item)
+            c['_id'] = str(c['_id'])
+            res.append(c)
+        return res
+
+    backup_data = {
+        "timestamp": datetime.utcnow().isoformat(),
+        "visitors": serialize(visitors_collection.find()) if visitors_collection is not None else [],
+        "sub_admins": serialize(subadmins_collection.find()) if subadmins_collection is not None else [],
+        "audit_logs": serialize(audit_collection.find()) if audit_collection is not None else [],
+        "messages": serialize(messages_collection.find()) if messages_collection is not None else [],
+        "requests": serialize(requests_collection.find()) if requests_collection is not None else [],
+        "captcha_logs": serialize(captcha_logs_collection.find()) if captcha_logs_collection is not None else []
+    }
+
+    json_str = json.dumps(backup_data, indent=2)
+    response = make_response(json_str)
+    response.headers['Content-Type'] = 'application/json'
+    filename = f"AirCursor_Backup_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.json"
+    response.headers['Content-Disposition'] = f'attachment; filename={filename}'
+    return response
+
+# 💥 ૨. WIPE ALL DATABASE DATA (PRESERVES COLLECTIONS & ROOT ADMIN) 💥
+@app.route('/api/admin/wipe-all-data', methods=['POST'])
+def wipe_all_data():
+    role = session.get('user_role')
+    if role not in ['main_admin', 'sub_admin']:
+        return jsonify({"status": "unauthorized"}), 401
+
+    data = request.get_json() or {}
+    typed_confirm = data.get('confirm_text', '').strip()
+
+    if typed_confirm != "delete all data from database":
+        return jsonify({"status": "error", "message": "Verification text does not match!"}), 400
+
+    # Only wipe data records, never delete the collections/folders themselves
+    if visitors_collection is not None:
+        visitors_collection.delete_many({})
+    if audit_collection is not None:
+        audit_collection.delete_many({})
+    if messages_collection is not None:
+        messages_collection.delete_many({})
+    if requests_collection is not None:
+        requests_collection.delete_many({})
+    if captcha_logs_collection is not None:
+        captcha_logs_collection.delete_many({})
+    if instructions_collection is not None:
+        instructions_collection.delete_many({})
+
+    executor = "Main Admin" if role == 'main_admin' else session.get('subadmin_name', 'Sub-Admin')
+    log_activity(executor, session.get('subadmin_email', DEFAULT_MAIN_EMAIL), "Wiped All Cluster Records", "RESTRICTED", "All table data cleared")
+
+    return jsonify({"status": "success", "message": "All database records have been securely wiped."})
+
+# 💥 ૩. DELETE ENTIRE DATABASE & WEBSITE RESET (MAIN ADMIN ONLY) 💥
+@app.route('/api/admin/destroy-system', methods=['POST'])
+def destroy_system():
+    if session.get('user_role') != 'main_admin':
+        return jsonify({"status": "unauthorized"}), 401
+
+    data = request.get_json() or {}
+    typed_confirm = data.get('confirm_text', '').strip()
+    passcode = data.get('passcode', '').strip()
+
+    _, _, active_passcode, _ = get_main_admin()
+
+    if typed_confirm != "delete entire website and database":
+        return jsonify({"status": "error", "message": "Invalid confirmation statement!"}), 400
+
+    if passcode != active_passcode:
+        return jsonify({"status": "error", "message": "Incorrect Master Passcode!"}), 403
+
+    # Wipe all collections
+    if visitors_collection is not None: visitors_collection.delete_many({})
+    if subadmins_collection is not None: subadmins_collection.delete_many({})
+    if audit_collection is not None: audit_collection.delete_many({})
+    if messages_collection is not None: messages_collection.delete_many({})
+    if requests_collection is not None: requests_collection.delete_many({})
+    if captcha_logs_collection is not None: captcha_logs_collection.delete_many({})
+    if instructions_collection is not None: instructions_collection.delete_many({})
+    if otp_collection is not None: otp_collection.delete_many({})
+
+    # Safeguard Root Admin from Render Environment Variables!
+    if config_collection is not None:
+        config_collection.delete_many({})
+        config_collection.insert_one({
+            "type": "main_admin",
+            "name": DEFAULT_MAIN_NAME,
+            "email": DEFAULT_MAIN_EMAIL,
+            "passcode": MASTER_PASSCODE,
+            "avatar": DEFAULT_AVATAR
+        })
+
+    session.clear()
+    return jsonify({"status": "success", "message": "Complete system reset successful. Redirecting..."})
+
+# 💥 AVATAR APIs 💥
 @app.route('/api/admin/avatar/upload', methods=['POST'])
 def api_admin_avatar_upload():
     if session.get('user_role') != 'main_admin':
@@ -326,6 +430,7 @@ def api_admin_avatar_remove():
         return jsonify({"status": "success", "default_avatar": DEFAULT_AVATAR})
     return jsonify({"status": "error"}), 400
 
+# 💥 OTP Workflow 💥
 @app.route('/admin/request-profile-otp', methods=['POST'])
 def request_profile_otp():
     if session.get('user_role') != 'main_admin':

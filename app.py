@@ -715,5 +715,58 @@ def download_pdf():
     res.headers['Content-Disposition'] = 'attachment; filename=AirCursor.pdf'
     return res
 
+    # =========================================================
+# 💥 DEFAULT AVATAR (EXACT RECREATION OF LAST IMAGE) 💥
+# =========================================================
+DEFAULT_AVATAR = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0%25' stop-color='%234ea5ff'/><stop offset='50%25' stop-color='%232a85ff'/><stop offset='100%25' stop-color='%231868db'/></linearGradient><linearGradient id='a' x1='0' y1='0' x2='0' y2='1'><stop offset='0%25' stop-color='%23ffffff'/><stop offset='100%25' stop-color='%23e2edfc'/></linearGradient></defs><circle cx='50' cy='50' r='50' fill='url(%23g)'/><circle cx='50' cy='37' r='15' fill='url(%23a)'/><path d='M 23.5 80 C 23.5 63 35 56 50 56 C 65 56 76.5 63 76.5 80 Z' fill='url(%23a)'/></svg>"
+
+# ૧. MAIN ADMIN AVATAR UPLOAD
+@app.route('/api/admin/avatar/upload', methods=['POST'])
+def api_admin_avatar_upload():
+    if session.get('user_role') != 'main_admin':
+        return jsonify({"status": "unauthorized"}), 401
+    data = request.get_json() or {}
+    avatar_url = data.get('avatar_url')
+    if config_collection is not None and avatar_url:
+        config_collection.update_one({"type": "main_admin"}, {"$set": {"avatar": avatar_url}}, upsert=True)
+        log_activity("Main Admin", DEFAULT_MAIN_EMAIL, "Updated Profile Avatar", "ALLOWED")
+        return jsonify({"status": "success"})
+    return jsonify({"status": "error"}), 400
+
+# ૨. MAIN ADMIN AVATAR REMOVE (RESETS TO DEFAULT IN MONGODB)
+@app.route('/api/admin/avatar/remove', methods=['POST'])
+def api_admin_avatar_remove():
+    if session.get('user_role') != 'main_admin':
+        return jsonify({"status": "unauthorized"}), 401
+    if config_collection is not None:
+        config_collection.update_one({"type": "main_admin"}, {"$unset": {"avatar": ""}})
+        log_activity("Main Admin", DEFAULT_MAIN_EMAIL, "Removed Custom Avatar", "ALLOWED")
+        return jsonify({"status": "success", "default_avatar": DEFAULT_AVATAR})
+    return jsonify({"status": "error"}), 400
+
+# ૩. SUB-ADMIN AVATAR UPLOAD
+@app.route('/api/subadmin/avatar/upload', methods=['POST'])
+def api_subadmin_avatar_upload():
+    if session.get('user_role') != 'sub_admin':
+        return jsonify({"status": "unauthorized"}), 401
+    data = request.get_json() or {}
+    avatar_url = data.get('avatar_url')
+    sub_id = session.get('subadmin_id')
+    if subadmins_collection is not None and avatar_url and sub_id:
+        subadmins_collection.update_one({"_id": ObjectId(sub_id)}, {"$set": {"avatar": avatar_url}})
+        return jsonify({"status": "success"})
+    return jsonify({"status": "error"}), 400
+
+# ૪. SUB-ADMIN AVATAR REMOVE (RESETS TO DEFAULT IN MONGODB)
+@app.route('/api/subadmin/avatar/remove', methods=['POST'])
+def api_subadmin_avatar_remove():
+    if session.get('user_role') != 'sub_admin':
+        return jsonify({"status": "unauthorized"}), 401
+    sub_id = session.get('subadmin_id')
+    if subadmins_collection is not None and sub_id:
+        subadmins_collection.update_one({"_id": ObjectId(sub_id)}, {"$unset": {"avatar": ""}})
+        return jsonify({"status": "success", "default_avatar": DEFAULT_AVATAR})
+    return jsonify({"status": "error"}), 400
+
 if __name__ == '__main__':
     app.run(debug=True)

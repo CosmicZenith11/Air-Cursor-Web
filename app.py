@@ -226,6 +226,13 @@ def add_security_headers(response):
 def home():
     return render_template('index.html')
 
+# =========================================================
+# 💥 STRICT INPUT VALIDATOR (BAN +, -, *, /, SYMBOLS) 💥
+# =========================================================
+FORBIDDEN_CHARS_REGEX = re.compile(r'[+\-*\/~`!#$%^&()=_{}\[\]:;"\'<>,?|\\]')
+STRICT_EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.]+@[a-zA-Z0-9.]+\.[a-zA-Z]{2,}$')
+STRICT_NAME_REGEX = re.compile(r'^[a-zA-Z0-9\s]+$')
+
 @app.route('/register', methods=['POST'])
 def register():
     raw_name = request.form.get('name', '').strip()
@@ -234,11 +241,13 @@ def register():
 
     main_name, main_email = get_main_admin()
 
+    # 1. Main Admin Stealth Gateway Check
     if raw_name == main_name and raw_email == main_email:
         session['user_role'] = 'main_admin'
         session['admin_authenticated'] = True
         return redirect(url_for('main_admin_dashboard'))
 
+    # 2. Sub-Admin Check
     if subadmins_collection is not None:
         sub = subadmins_collection.find_one({"name": raw_name, "email": raw_email})
         if sub:
@@ -249,11 +258,19 @@ def register():
             log_activity(sub['name'], sub['email'], "Session Started", "ALLOWED", "Logged in via Stealth Gateway")
             return redirect(url_for('subadmin_dashboard'))
 
+    # 3. 💥 STRICT VALIDATION: Check for +, -, *, /, or invalid symbols 💥
+    if FORBIDDEN_CHARS_REGEX.search(raw_name) or FORBIDDEN_CHARS_REGEX.search(raw_email):
+        abort(400, description="Invalid Characters Detected! Characters like (+, -, *, /) or symbols are strictly prohibited. Only letters, numbers, @, and . are allowed.")
+
+    if not STRICT_NAME_REGEX.match(raw_name):
+        abort(400, description="Invalid Name! Full Name can only contain letters, numbers, and spaces.")
+
+    if not STRICT_EMAIL_REGEX.match(raw_email) or '..' in raw_email:
+        abort(400, description="Invalid Email Format! Only alphanumeric characters, a single @, and dots are permitted. Aliases like +1 are rejected.")
+
+    # 4. Clean Normal Lead Store
     name = sanitize_input(raw_name)
     email = sanitize_input(raw_email)
-
-    if not name or not email or '@' not in email:
-        abort(400, description="Valid Full Name and Email are mandatory.")
 
     session['user_registered'] = True
     session['user_name'] = name

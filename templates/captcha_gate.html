@@ -150,7 +150,7 @@
             .then(res => res.json().then(data => ({ status: res.status, body: data })))
             .then(result => {
                 if (result.status === 200) {
-                    window.location.reload(); // હોમ સ્ક્રીન અનલોક થઈ જશે
+                    window.location.reload();
                 } else {
                     const err = document.getElementById('errorMsg');
                     err.innerText = result.body.message || 'Incorrect Code.';

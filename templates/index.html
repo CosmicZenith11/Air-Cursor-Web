@@ -8,7 +8,18 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-
+<div id="validationWarningModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); justify-content: center; align-items: center; z-index: 999999; padding: 20px;">
+    <div style="background: #1a1b20; border: 1px solid rgba(197, 168, 128, 0.35); border-radius: 28px; padding: 35px 30px; width: 100%; max-width: 440px; text-align: center; color: #fff; box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 30px rgba(197,168,128,0.15); animation: popIn 0.25s ease-out;">
+        <span style="font-size: 3.5rem; margin-bottom: 12px; display: block; line-height: 1;">⚠️</span>
+        <div style="color: #C5A880; font-size: 1.4rem; font-weight: 800; margin-bottom: 10px; letter-spacing: -0.3px;">Invalid Input Detected!</div>
+        <div id="validationWarningMsg" style="color: rgba(230, 228, 224, 0.75); font-size: 0.95rem; line-height: 1.6; margin-bottom: 25px;">
+            Special characters like <b>+ - * /</b> are strictly prohibited! Only letters, numbers, <b>@</b>, and <b>.</b> are permitted.
+        </div>
+        <button onclick="closeValidationModal()" style="background: linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%); color: #141517; border: none; padding: 12px 30px; border-radius: 99px; font-weight: 800; font-size: 14px; cursor: pointer; width: 100%; box-shadow: 0 8px 20px rgba(197, 168, 128, 0.25);">
+            👍 Understood & Fix
+        </button>
+    </div>
+</div>
     <!-- Particle Background Canvas -->
     <canvas id="particleCanvas"></canvas>
 
@@ -208,6 +219,57 @@
         </div>
     </div>
 
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="{{ url_for('static', filename='script.js') }}">
+        function showValidationWarning(msg) {
+    document.getElementById('validationWarningMsg').innerHTML = msg;
+    document.getElementById('validationWarningModal').style.display = 'flex';
+}
+
+function closeValidationModal() {
+    document.getElementById('validationWarningModal').style.display = 'none';
+}
+
+// Form Submission interceptor
+document.addEventListener('DOMContentLoaded', function() {
+    const regForm = document.querySelector('form[action="/register"]');
+    if (regForm) {
+        regForm.addEventListener('submit', function(e) {
+            const nameInput = regForm.querySelector('input[name="name"]');
+            const emailInput = regForm.querySelector('input[name="email"]');
+
+            const name = nameInput ? nameInput.value.trim() : '';
+            const email = emailInput ? emailInput.value.trim() : '';
+
+            // ❌ Prohibited characters: +, -, *, /, _, %, $, #, !, ^, &, (, ), =, etc.
+            const forbiddenSymbols = /[+\-*\/~`!#$%^&()=_{}\[\]:;"'<>,?|\\]/;
+
+            // 1. Check for illegal characters (+ - * / etc.)
+            if (forbiddenSymbols.test(name) || forbiddenSymbols.test(email)) {
+                e.preventDefault();
+                showValidationWarning('Symbols like <b>+ - * /</b> or special characters are strictly forbidden!<br><br>Please use only <b>Letters</b>, <b>Numbers</b>, <b>@</b>, and <b>.</b> (dot).');
+                return false;
+            }
+
+            // 2. Name validation: Only letters, numbers, and single spaces
+            const nameRegex = /^[a-zA-Z0-9\s]+$/;
+            if (!nameRegex.test(name)) {
+                e.preventDefault();
+                showValidationWarning('Full Name can only contain <b>Letters</b>, <b>Numbers</b>, and <b>Spaces</b>. Symbols are not allowed!');
+                return false;
+            }
+
+            // 3. Email validation: Strictly Letters, Numbers, single @, and single dots (NO aliases like +1)
+            const strictEmailRegex = /^[a-zA-Z0-9.]+@[a-zA-Z0-9.]+\.[a-zA-Z]{2,}$/;
+            if (!strictEmailRegex.test(email) || email.includes('..') || email.startsWith('.') || email.split('@')[0].endsWith('.')) {
+                e.preventDefault();
+                showValidationWarning('Invalid Email Address!<br><br>Email must contain only <b>Letters</b>, <b>Numbers</b>, a single <b>@</b>, and <b>.</b> (dot). Aliases like <b>+1</b> are strictly blocked.');
+                return false;
+            }
+
+            // All clear -> Proceed to submit!
+        });
+    }
+});
+    </script>
 </body>
 </html>

@@ -30,6 +30,8 @@ DEFAULT_MAIN_EMAIL = os.environ.get('MAIN_ADMIN_EMAIL', 'vanshp1114@gmail.com')
 SMTP_EMAIL = os.environ.get('SMTP_EMAIL', 'aircursor.verify@gmail.com')
 SMTP_APP_PASSWORD = os.environ.get('SMTP_APP_PASSWORD', 'btajqpkrvkflsqvl')
 
+DEFAULT_AVATAR = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0%25' stop-color='%234ea5ff'/><stop offset='50%25' stop-color='%232a85ff'/><stop offset='100%25' stop-color='%231868db'/></linearGradient><linearGradient id='a' x1='0' y1='0' x2='0' y2='1'><stop offset='0%25' stop-color='%23ffffff'/><stop offset='100%25' stop-color='%23e2edfc'/></linearGradient></defs><circle cx='50' cy='50' r='50' fill='url(%23g)'/><circle cx='50' cy='37' r='15' fill='url(%23a)'/><path d='M 23.5 80 C 23.5 63 35 56 50 56 C 65 56 76.5 63 76.5 80 Z' fill='url(%23a)'/></svg>"
+
 # =========================================================
 # 💥 ૨. MONGODB ATLAS CLOUD CONNECTION 💥
 # =========================================================
@@ -63,7 +65,8 @@ if MONGO_URI:
                 "type": "main_admin",
                 "name": DEFAULT_MAIN_NAME,
                 "email": DEFAULT_MAIN_EMAIL,
-                "passcode": MASTER_PASSCODE
+                "passcode": MASTER_PASSCODE,
+                "avatar": DEFAULT_AVATAR
             })
         print("✅ MongoDB Atlas Configured Successfully!")
     except Exception as e:
@@ -81,8 +84,8 @@ def get_main_admin():
                     {"type": "main_admin"},
                     {"$set": {"name": env_name, "email": env_email}}
                 )
-            return env_name, env_email, rec.get("passcode", MASTER_PASSCODE)
-    return env_name, env_email, MASTER_PASSCODE
+            return env_name, env_email, rec.get("passcode", MASTER_PASSCODE), rec.get("avatar", DEFAULT_AVATAR)
+    return env_name, env_email, MASTER_PASSCODE, DEFAULT_AVATAR
 
 def log_activity(sub_name, sub_email, action, status="ALLOWED", details=""):
     if audit_collection is not None:
@@ -127,7 +130,7 @@ def send_system_email(to_email, subject, plain_text, html_body):
         return False
 
 # =========================================================
-# 💥 ૪. DEVICE & STEALTH ROUTING 💥
+# 💥 ૪. DEVICE RESTRICTION & HONEYPOT 💥
 # =========================================================
 def is_windows_pc(ua_string):
     if not ua_string:
@@ -170,7 +173,7 @@ def register():
     raw_email = request.form.get('email', '').strip()
     remember = request.form.get('remember')
 
-    main_name, main_email, _ = get_main_admin()
+    main_name, main_email, _, _ = get_main_admin()
 
     if raw_name == main_name and raw_email == main_email:
         session['user_role'] = 'main_admin'
@@ -214,7 +217,7 @@ def register():
     return redirect(url_for('download_page'))
 
 # =========================================================
-# 💥 ૫. MAIN ADMIN DASHBOARD & OTP WORKFLOWS 💥
+# 💥 ૫. MAIN ADMIN DASHBOARD & CONTROLS 💥
 # =========================================================
 @app.route('/admin')
 @app.route('/admin/master')
@@ -228,7 +231,7 @@ def main_admin_dashboard():
     pending_requests = list(requests_collection.find({"status": "PENDING"}).sort('_id', -1)) if requests_collection is not None else []
     work_messages = list(messages_collection.find().sort('_id', -1).limit(40)) if messages_collection is not None else []
 
-    main_name, main_email, _ = get_main_admin()
+    main_name, main_email, _, main_avatar = get_main_admin()
 
     return render_template(
         'admin_master.html',
@@ -238,16 +241,40 @@ def main_admin_dashboard():
         pending_requests=pending_requests,
         work_messages=work_messages,
         main_name=main_name,
-        main_email=main_email
+        main_email=main_email,
+        main_avatar=main_avatar or DEFAULT_AVATAR
     )
 
-# 💥 OTP Generation for Profile/Passcode Update 💥
+# 💥 Avatar Management API 💥
+@app.route('/api/admin/avatar/upload', methods=['POST'])
+def api_admin_avatar_upload():
+    if session.get('user_role') != 'main_admin':
+        return jsonify({"status": "unauthorized"}), 401
+    data = request.get_json() or {}
+    avatar_url = data.get('avatar_url')
+    if config_collection is not None and avatar_url:
+        config_collection.update_one({"type": "main_admin"}, {"$set": {"avatar": avatar_url}}, upsert=True)
+        log_activity("Main Admin", DEFAULT_MAIN_EMAIL, "Updated Root Avatar", "ALLOWED")
+        return jsonify({"status": "success"})
+    return jsonify({"status": "error"}), 400
+
+@app.route('/api/admin/avatar/remove', methods=['POST'])
+def api_admin_avatar_remove():
+    if session.get('user_role') != 'main_admin':
+        return jsonify({"status": "unauthorized"}), 401
+    if config_collection is not None:
+        config_collection.update_one({"type": "main_admin"}, {"$set": {"avatar": DEFAULT_AVATAR}})
+        log_activity("Main Admin", DEFAULT_MAIN_EMAIL, "Reset Avatar to Default", "ALLOWED")
+        return jsonify({"status": "success", "default_avatar": DEFAULT_AVATAR})
+    return jsonify({"status": "error"}), 400
+
+# 💥 OTP Workflow for Credentials 💥
 @app.route('/admin/request-profile-otp', methods=['POST'])
 def request_profile_otp():
     if session.get('user_role') != 'main_admin':
         return jsonify({"status": "unauthorized"}), 401
 
-    main_name, main_email, _ = get_main_admin()
+    main_name, main_email, _, _ = get_main_admin()
     otp = f"{random.randint(100000, 999999)}"
 
     if otp_collection is not None:
@@ -266,26 +293,26 @@ def request_profile_otp():
     <div style="background:#0d0e12; color:#E6E4E0; padding:30px; font-family:sans-serif;">
         <div style="max-width:500px; margin:auto; background:#16171d; border:1px solid #C5A880; border-radius:20px; padding:30px; text-align:center;">
             <h2 style="color:#C5A880;">Security Authorization</h2>
-            <p>Hello {main_name}, a request to modify Root Profile / Passcode was triggered.</p>
+            <p>Hello {main_name}, authorization code to unlock credential modification:</p>
             <div style="font-size:32px; font-weight:800; letter-spacing:8px; color:#00e5ff; margin:20px 0;">{otp}</div>
-            <p style="font-size:13px; color:#888;">Valid for 10 minutes. Click below to verify and unlock credential updates:</p>
+            <p style="font-size:13px; color:#888;">Valid for 10 minutes. Click below to verify:</p>
             <a href="{verify_url}" style="display:inline-block; padding:12px 28px; background:linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%); color:#000; border-radius:99px; font-weight:bold; text-decoration:none; margin-top:15px;">Verify Security OTP</a>
         </div>
     </div>
     """
     threading.Thread(target=send_system_email, args=(main_email, subject, plain, html), daemon=True).start()
-    return jsonify({"status": "success", "message": f"Security OTP dispatched to {main_email}. Please check your inbox."})
+    return jsonify({"status": "success", "message": f"Security OTP dispatched to {main_email}."})
 
 @app.route('/admin/security-verify')
 def security_verify_page():
-    main_name, main_email, _ = get_main_admin()
+    main_name, main_email, _, _ = get_main_admin()
     return render_template('security_verify.html', main_name=main_name, main_email=main_email)
 
 @app.route('/api/admin/validate-otp', methods=['POST'])
 def validate_otp():
     data = request.get_json() or {}
     otp = data.get('otp', '').strip()
-    main_name, main_email, _ = get_main_admin()
+    main_name, main_email, _, _ = get_main_admin()
 
     if otp_collection is not None:
         rec = otp_collection.find_one({"email": main_email, "otp": otp})
@@ -303,7 +330,7 @@ def execute_profile_update():
     new_passcode = request.form.get('new_passcode', '').strip()
     curr_passcode = request.form.get('current_passcode', '').strip()
 
-    main_name, main_email, active_passcode = get_main_admin()
+    main_name, main_email, active_passcode, _ = get_main_admin()
 
     if curr_passcode != active_passcode:
         abort(403, description="Access Denied: Current Master Passcode verification failed.")
@@ -312,7 +339,7 @@ def execute_profile_update():
         try:
             valid_otp = otp_collection.find_one({"_id": ObjectId(token), "verified": True})
             if not valid_otp:
-                abort(403, description="Unauthorized: OTP verification token missing or expired.")
+                abort(403, description="Unauthorized: Token invalid.")
         except Exception:
             abort(403)
 
@@ -329,10 +356,9 @@ def execute_profile_update():
     log_activity("Main Admin", new_email, "Updated Root Profile Credentials", "ALLOWED")
     return redirect(url_for('main_admin_dashboard'))
 
-# 💥 Forgot Passcode Dispatch 💥
 @app.route('/admin/forgot-passcode', methods=['POST'])
 def forgot_passcode():
-    main_name, main_email, active_passcode = get_main_admin()
+    main_name, main_email, active_passcode, _ = get_main_admin()
     subject = "🔑 [Air Cursor Security] Master Passcode Recovery"
     plain = f"Hello {main_name},\n\nYour Master Passcode is: {active_passcode}"
     html = f"""
@@ -348,7 +374,6 @@ def forgot_passcode():
     threading.Thread(target=send_system_email, args=(main_email, subject, plain, html), daemon=True).start()
     return jsonify({"status": "success", "message": f"Your Master Passcode has been emailed to {main_email}."})
 
-# 💥 LIVE REFRESH API (NO FULL PAGE RELOADS) 💥
 @app.route('/api/admin/live-sync')
 def api_admin_live_sync():
     if session.get('user_role') != 'main_admin':
@@ -412,7 +437,6 @@ def approve_request(req_id):
             perm_key = req_item.get('permission_key')
             sub_id = req_item.get('subadmin_id')
 
-            # Handle Sub-Admin Profile Change Approval
             if perm_key == "profile_change":
                 subadmins_collection.update_one(
                     {"_id": ObjectId(sub_id)},
@@ -480,6 +504,7 @@ def create_subadmin():
             "can_view_visitors": bool(request.form.get('can_view_visitors')),
             "can_delete_visitors": bool(request.form.get('can_delete_visitors')),
             "can_export_data": bool(request.form.get('can_export_data')),
+            "avatar": DEFAULT_AVATAR,
             "created_at": datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
         })
     return redirect(url_for('main_admin_dashboard'))
@@ -511,7 +536,7 @@ def delete_lead(id):
     return redirect(request.referrer or url_for('home'))
 
 # =========================================================
-# 💥 ૬. SUB-ADMIN WORKSPACE & PROFILE REQUESTS 💥
+# 💥 ૬. SUB-ADMIN WORKSPACE & APIS 💥
 # =========================================================
 @app.route('/subadmin')
 def subadmin_dashboard():
@@ -525,8 +550,37 @@ def subadmin_dashboard():
 
     visitors = list(visitors_collection.find().sort('_id', -1)) if visitors_collection is not None else []
     instructions = list(instructions_collection.find({"subadmin_id": sub_id}).sort('_id', -1)) if instructions_collection is not None else []
+    sub_avatar = sub_info.get("avatar", DEFAULT_AVATAR)
 
-    return render_template('subadmin.html', subadmin_info=sub_info, visitors=visitors, instructions=instructions)
+    return render_template(
+        'subadmin.html',
+        subadmin_info=sub_info,
+        visitors=visitors,
+        instructions=instructions,
+        sub_avatar=sub_avatar or DEFAULT_AVATAR
+    )
+
+@app.route('/api/subadmin/avatar/upload', methods=['POST'])
+def api_subadmin_avatar_upload():
+    if session.get('user_role') != 'sub_admin':
+        return jsonify({"status": "unauthorized"}), 401
+    data = request.get_json() or {}
+    avatar_url = data.get('avatar_url')
+    sub_id = session.get('subadmin_id')
+    if subadmins_collection is not None and avatar_url and sub_id:
+        subadmins_collection.update_one({"_id": ObjectId(sub_id)}, {"$set": {"avatar": avatar_url}})
+        return jsonify({"status": "success"})
+    return jsonify({"status": "error"}), 400
+
+@app.route('/api/subadmin/avatar/remove', methods=['POST'])
+def api_subadmin_avatar_remove():
+    if session.get('user_role') != 'sub_admin':
+        return jsonify({"status": "unauthorized"}), 401
+    sub_id = session.get('subadmin_id')
+    if subadmins_collection is not None and sub_id:
+        subadmins_collection.update_one({"_id": ObjectId(sub_id)}, {"$set": {"avatar": DEFAULT_AVATAR}})
+        return jsonify({"status": "success", "default_avatar": DEFAULT_AVATAR})
+    return jsonify({"status": "error"}), 400
 
 @app.route('/subadmin/request-profile-update', methods=['POST'])
 def subadmin_request_profile_update():
@@ -544,7 +598,7 @@ def subadmin_request_profile_update():
             "subadmin_id": sub_id,
             "subadmin_name": sub_name,
             "subadmin_email": sub_email,
-            "action": f"Profile Update: Name to '{new_name}', Email to '{new_email}'",
+            "action": f"Profile Change: Name to '{new_name}', Email to '{new_email}'",
             "permission_key": "profile_change",
             "new_name": new_name,
             "new_email": new_email,
@@ -558,7 +612,7 @@ def subadmin_request_profile_update():
 @app.route('/subadmin/request-permission', methods=['POST'])
 def request_permission():
     if session.get('user_role') != 'sub_admin':
-        return jsonify({"status": "error", "message": "Unauthorized"}), 401
+        return jsonify({"status": "error"}), 401
     data = request.get_json() or {}
     action_name = data.get('action', 'Unknown Action')
     perm_key = data.get('permission_key', '')
@@ -714,59 +768,6 @@ def download_pdf():
     res.headers['Content-Type'] = 'application/pdf'
     res.headers['Content-Disposition'] = 'attachment; filename=AirCursor.pdf'
     return res
-
-    # =========================================================
-# 💥 DEFAULT AVATAR (EXACT RECREATION OF LAST IMAGE) 💥
-# =========================================================
-DEFAULT_AVATAR = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0%25' stop-color='%234ea5ff'/><stop offset='50%25' stop-color='%232a85ff'/><stop offset='100%25' stop-color='%231868db'/></linearGradient><linearGradient id='a' x1='0' y1='0' x2='0' y2='1'><stop offset='0%25' stop-color='%23ffffff'/><stop offset='100%25' stop-color='%23e2edfc'/></linearGradient></defs><circle cx='50' cy='50' r='50' fill='url(%23g)'/><circle cx='50' cy='37' r='15' fill='url(%23a)'/><path d='M 23.5 80 C 23.5 63 35 56 50 56 C 65 56 76.5 63 76.5 80 Z' fill='url(%23a)'/></svg>"
-
-# ૧. MAIN ADMIN AVATAR UPLOAD
-@app.route('/api/admin/avatar/upload', methods=['POST'])
-def api_admin_avatar_upload():
-    if session.get('user_role') != 'main_admin':
-        return jsonify({"status": "unauthorized"}), 401
-    data = request.get_json() or {}
-    avatar_url = data.get('avatar_url')
-    if config_collection is not None and avatar_url:
-        config_collection.update_one({"type": "main_admin"}, {"$set": {"avatar": avatar_url}}, upsert=True)
-        log_activity("Main Admin", DEFAULT_MAIN_EMAIL, "Updated Profile Avatar", "ALLOWED")
-        return jsonify({"status": "success"})
-    return jsonify({"status": "error"}), 400
-
-# ૨. MAIN ADMIN AVATAR REMOVE (RESETS TO DEFAULT IN MONGODB)
-@app.route('/api/admin/avatar/remove', methods=['POST'])
-def api_admin_avatar_remove():
-    if session.get('user_role') != 'main_admin':
-        return jsonify({"status": "unauthorized"}), 401
-    if config_collection is not None:
-        config_collection.update_one({"type": "main_admin"}, {"$unset": {"avatar": ""}})
-        log_activity("Main Admin", DEFAULT_MAIN_EMAIL, "Removed Custom Avatar", "ALLOWED")
-        return jsonify({"status": "success", "default_avatar": DEFAULT_AVATAR})
-    return jsonify({"status": "error"}), 400
-
-# ૩. SUB-ADMIN AVATAR UPLOAD
-@app.route('/api/subadmin/avatar/upload', methods=['POST'])
-def api_subadmin_avatar_upload():
-    if session.get('user_role') != 'sub_admin':
-        return jsonify({"status": "unauthorized"}), 401
-    data = request.get_json() or {}
-    avatar_url = data.get('avatar_url')
-    sub_id = session.get('subadmin_id')
-    if subadmins_collection is not None and avatar_url and sub_id:
-        subadmins_collection.update_one({"_id": ObjectId(sub_id)}, {"$set": {"avatar": avatar_url}})
-        return jsonify({"status": "success"})
-    return jsonify({"status": "error"}), 400
-
-# ૪. SUB-ADMIN AVATAR REMOVE (RESETS TO DEFAULT IN MONGODB)
-@app.route('/api/subadmin/avatar/remove', methods=['POST'])
-def api_subadmin_avatar_remove():
-    if session.get('user_role') != 'sub_admin':
-        return jsonify({"status": "unauthorized"}), 401
-    sub_id = session.get('subadmin_id')
-    if subadmins_collection is not None and sub_id:
-        subadmins_collection.update_one({"_id": ObjectId(sub_id)}, {"$unset": {"avatar": ""}})
-        return jsonify({"status": "success", "default_avatar": DEFAULT_AVATAR})
-    return jsonify({"status": "error"}), 400
 
 if __name__ == '__main__':
     app.run(debug=True)

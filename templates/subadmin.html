@@ -6,12 +6,13 @@
     <title>Sub-Admin Workspace · Air Cursor</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
     <script src="{{ url_for('static', filename='security.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-body: #0d0e12;
-            --dock-bg: #090a0d;
+            --bg-body: #0c0d11;
+            --dock-bg: #07080a;
             --dock-border: rgba(197, 168, 128, 0.22);
-            --card-bg: rgba(22, 24, 29, 0.85);
+            --card-bg: rgba(20, 22, 27, 0.88);
             --card-border: rgba(197, 168, 128, 0.25);
             --text-main: #E6E4E0;
             --text-sub: rgba(230, 228, 224, 0.65);
@@ -19,229 +20,126 @@
             --shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
         }
 
+        body.light-mode {
+            --bg-body: #F4F1EA;
+            --dock-bg: #1a1b20;
+            --dock-border: rgba(168, 137, 95, 0.35);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --card-border: rgba(168, 137, 95, 0.35);
+            --text-main: #18191b;
+            --text-sub: #5a5c61;
+            --accent-gold: #9E7D53;
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; transition: 0.3s; }
         body { background: var(--bg-body); color: var(--text-main); min-height: 100vh; overflow-x: hidden; display: flex; }
 
-        /* 💥 VERTICAL CAPSULE PILL NAVBAR 💥 */
         .dock-capsule {
-            position: fixed;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 70px;
-            height: 85vh;
-            max-height: 650px;
-            background: var(--dock-bg);
-            border: 1px solid var(--dock-border);
-            border-radius: 40px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            padding: 22px 0;
-            z-index: 9999;
+            position: fixed; left: 20px; top: 50%; transform: translateY(-50%);
+            width: 70px; height: 85vh; max-height: 680px;
+            background: var(--dock-bg); border: 1px solid var(--dock-border);
+            border-radius: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+            display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+            padding: 22px 0; z-index: 9999;
         }
 
-        .dock-logo {
-            width: 38px;
-            height: 38px;
-            background: rgba(197, 168, 128, 0.12);
-            border: 1px solid var(--dock-border);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--accent-gold);
-        }
-
-        .dock-nav-group {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            width: 100%;
-            align-items: center;
-        }
-
-        .nav-pill-item {
-            position: relative;
-            width: 46px;
-            height: 46px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: var(--text-sub);
-            border: 1px solid transparent;
-            transition: all 0.25s ease;
-        }
-
-        .nav-pill-item:hover {
-            color: var(--accent-gold);
-            background: rgba(197, 168, 128, 0.12);
-        }
-
-        .nav-pill-item.active {
-            color: #0c0d11;
-            background: linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%);
-            box-shadow: 0 0 18px rgba(197, 168, 128, 0.45);
-        }
-
+        .dock-logo { width: 38px; height: 38px; background: rgba(197, 168, 128, 0.12); border: 1px solid var(--dock-border); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--accent-gold); }
+        .dock-nav-group { display: flex; flex-direction: column; gap: 14px; width: 100%; align-items: center; }
+        .nav-pill-item { position: relative; width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-sub); transition: 0.25s; }
+        .nav-pill-item:hover { color: var(--accent-gold); background: rgba(197, 168, 128, 0.12); }
+        .nav-pill-item.active { color: #0c0d11; background: linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%); }
         .nav-pill-item svg { width: 20px; height: 20px; stroke-width: 2; }
 
-        /* 💥 EXACT 1.2s HOVER TOOLTIP DELAY 💥 */
         .dock-tooltip {
-            position: absolute;
-            left: 65px;
-            top: 50%;
-            transform: translateY(-50%) translateX(-8px);
-            background: #14151b;
-            border: 1px solid var(--dock-border);
-            color: #ffffff;
-            padding: 8px 16px;
-            border-radius: 12px;
-            font-size: 0.82rem;
-            font-weight: 700;
-            white-space: nowrap;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-            transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
-            transition-delay: 1.2s; /* 💥 1.2s HOVER DELAY 💥 */
-            z-index: 10000;
+            position: absolute; left: 65px; top: 50%; transform: translateY(-50%) translateX(-8px);
+            background: #14151b; border: 1px solid var(--dock-border); color: #fff;
+            padding: 8px 16px; border-radius: 12px; font-size: 0.82rem; font-weight: 700;
+            white-space: nowrap; opacity: 0; visibility: hidden; pointer-events: none;
+            transition: opacity 0.25s, transform 0.25s, visibility 0.25s; transition-delay: 1.2s; z-index: 10000;
         }
+        .nav-pill-item:hover .dock-tooltip, .dock-avatar-wrapper:hover .dock-tooltip { opacity: 1; visibility: visible; transform: translateY(-50%) translateX(0); }
 
-        .nav-pill-item:hover .dock-tooltip {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(-50%) translateX(0);
-        }
-
-        .dock-avatar {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            border: 2px solid var(--accent-gold);
-            object-fit: cover;
-        }
-
-        .main-viewport {
-            margin-left: 115px;
-            padding: 35px 35px 35px 15px;
-            width: calc(100vw - 125px);
-            max-width: 1300px;
-        }
-
-        .view-section { display: none; animation: fadeInView 0.3s ease forwards; }
+        .dock-avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent-gold); object-fit: cover; }
+        .main-viewport { margin-left: 115px; padding: 35px 35px 35px 15px; width: calc(100vw - 125px); max-width: 1350px; }
+        .view-section { display: none; animation: fadeIn 0.3s ease forwards; }
         .view-section.active-view { display: block; }
-        @keyframes fadeInView { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .box-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 24px;
-            padding: 25px;
-            box-shadow: var(--shadow);
-            margin-bottom: 25px;
-        }
+        .box-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 25px; box-shadow: var(--shadow); margin-bottom: 25px; overflow-x: auto; }
+        .btn-gold { background: linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%); color: #0c0d11; border: none; padding: 10px 22px; border-radius: 99px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
 
-        .btn-gold {
-            background: linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%);
-            color: #0c0d11;
-            border: none;
-            padding: 10px 22px;
+        /* 💥 CANCEL BUTTON PERFECT PILL LAYOUT 💥 */
+        .btn-cancel {
+            background: #252830;
+            color: #E6E4E0;
+            border: 1px solid rgba(255,255,255,0.15);
+            padding: 10px 24px;
             border-radius: 99px;
-            font-weight: 700;
+            font-weight: 600;
             cursor: pointer;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
+            font-size: 0.88rem;
         }
+        .btn-cancel:hover { background: #333642; color: #fff; }
+
+        .btn-refresh {
+            background: #181920; border: 1px solid var(--card-border); color: var(--accent-gold);
+            padding: 8px 16px; border-radius: 99px; cursor: pointer; font-weight: 700; font-size: 0.82rem;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .refresh-icon { width: 16px; height: 16px; transition: transform 0.8s ease; }
+        .spinning { animation: spinAnim 0.8s linear infinite; }
+        @keyframes spinAnim { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .charts-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; }
+        .chart-box { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 25px; box-shadow: var(--shadow); }
 
         table { width: 100%; border-collapse: collapse; }
         th { background: rgba(0,0,0,0.25); padding: 14px 16px; color: var(--text-sub); font-size: 0.8rem; text-transform: uppercase; border-bottom: 1px solid var(--card-border); text-align: left; }
         td { padding: 16px; border-bottom: 1px solid var(--card-border); font-size: 0.92rem; text-align: left; }
 
-        /* Modal Overlay */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(14px);
-            justify-content: center;
-            align-items: center;
-            z-index: 100000;
-            padding: 20px;
-        }
-        .modal-box {
-            background: #16171d;
-            border: 1px solid var(--card-border);
-            border-radius: 28px;
-            padding: 32px 28px;
-            width: 100%;
-            max-width: 460px;
-            color: #fff;
-        }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(14px); justify-content: center; align-items: center; z-index: 100000; padding: 20px; }
+        .modal-box { background: #16171d; border: 1px solid var(--card-border); border-radius: 28px; padding: 32px 28px; width: 100%; max-width: 460px; color: #fff; text-align: center; }
     </style>
 </head>
 <body>
 
-    <!-- 💥 VERTICAL CAPSULE PILL NAVBAR 💥 -->
+    <!-- CAPSULE NAVBAR -->
     <nav class="dock-capsule">
-        <div class="dock-logo">
-            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="12 8 8 12 12 16 16 12 12 8"></polygon></svg>
-        </div>
-
+        <div class="dock-logo"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="12 8 8 12 12 16 16 12 12 8"></polygon></svg></div>
         <div class="dock-nav-group">
-            <!-- 1. Home / Operations -->
-            <div class="nav-pill-item active" onclick="switchSection('sec-sub-home', this)">
-                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
-                <div class="dock-tooltip">1. Home Operations</div>
-            </div>
-
-            <!-- 2. Directives Board -->
-            <div class="nav-pill-item" onclick="switchSection('sec-sub-directives', this)">
-                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                <div class="dock-tooltip">2. Admin Directives ({{ instructions|length }})</div>
-            </div>
-
-            <!-- 3. Visitor Leads -->
-            <div class="nav-pill-item" onclick="switchSection('sec-sub-leads', this)">
-                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
-                <div class="dock-tooltip">3. Visitor Leads</div>
-            </div>
-
-            <!-- 4. Message Main Admin -->
-            <div class="nav-pill-item" onclick="openSendMessageModal()">
-                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                <div class="dock-tooltip">4. Message Main Admin</div>
-            </div>
+            <div class="nav-pill-item active" onclick="switchSection('sec-sub-home', this)"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><div class="dock-tooltip">1. Home Operations</div></div>
+            <div class="nav-pill-item" onclick="switchSection('sec-sub-charts', this)"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg><div class="dock-tooltip">2. Visual Analytics</div></div>
+            <div class="nav-pill-item" onclick="switchSection('sec-sub-directives', this)"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg><div class="dock-tooltip">3. Admin Directives</div></div>
+            <div class="nav-pill-item" onclick="switchSection('sec-sub-leads', this)"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg><div class="dock-tooltip">4. Visitor Leads</div></div>
+            <div class="nav-pill-item" onclick="openSendMessageModal()"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg><div class="dock-tooltip">5. Message Main Admin</div></div>
+            <div class="nav-pill-item" onclick="switchSection('sec-sub-settings', this)"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg><div class="dock-tooltip">6. Profile & Settings</div></div>
         </div>
 
-        <div class="dock-avatar-wrapper">
-            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80" alt="SubAdmin" class="dock-avatar">
-            <div class="dock-tooltip">{{ subadmin_info.name }} (Sub-Admin)</div>
+        <div class="dock-avatar-wrapper" onclick="switchSection('sec-sub-settings', document.querySelectorAll('.nav-pill-item')[5])">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80" alt="Avatar" class="dock-avatar" id="subDockAvatar">
+            <div class="dock-tooltip">{{ subadmin_info.name }}</div>
         </div>
     </nav>
 
-    <!-- 💥 MAIN VIEWPORT 💥 -->
+    <!-- MAIN VIEWPORT -->
     <main class="main-viewport">
-        <!-- Section 1: Home Operations -->
+        <!-- 1. HOME -->
         <section id="sec-sub-home" class="view-section active-view">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; border-bottom:1px solid var(--card-border); padding-bottom:15px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid var(--card-border); padding-bottom:15px;">
                 <div>
                     <h1 style="color:var(--accent-gold); font-size:1.6rem;">SUB-ADMIN WORKSPACE</h1>
-                    <p style="color:var(--text-sub); font-size:0.85rem;">Authenticated as: {{ subadmin_info.name }} ({{ subadmin_info.email }})</p>
+                    <p style="color:var(--text-sub); font-size:0.85rem;">{{ subadmin_info.name }} ({{ subadmin_info.email }})</p>
                 </div>
-                <a href="/admin/logout" style="background:#ff4757; color:#fff; padding:8px 20px; border-radius:99px; text-decoration:none; font-weight:bold;">Exit</a>
+                <div style="display:flex; gap:12px; align-items:center;">
+                    <button class="btn-refresh" onclick="triggerSubSync(this)">
+                        <svg class="refresh-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg> Refresh
+                    </button>
+                    <a href="/admin/logout" style="background:#ff4757; color:#fff; padding:8px 20px; border-radius:99px; text-decoration:none; font-weight:bold;">Exit</a>
+                </div>
             </div>
 
             <div class="box-card">
-                <h3 style="color:var(--accent-gold); margin-bottom:15px;">⚡ Delegated Actions</h3>
+                <h3 style="color:var(--accent-gold); margin-bottom:15px;">⚡ Operations Access</h3>
                 <div style="display:flex; gap:12px; flex-wrap:wrap;">
                     <button class="btn-gold" onclick="handleAction('can_view_visitors', 'View Leads')">📋 View Leads</button>
                     <button class="btn-gold" onclick="handleAction('can_delete_visitors', 'Delete Leads')">🗑️ Delete Leads</button>
@@ -251,22 +149,39 @@
             </div>
         </section>
 
-        <!-- Section 2: Directives Board -->
-        <section id="sec-sub-directives" class="view-section">
-            <div style="margin-bottom:25px; border-bottom:1px solid var(--card-border); padding-bottom:15px;">
-                <h1 style="color:var(--accent-gold); font-size:1.6rem;">📜 MAIN ADMIN DIRECTIVES</h1>
-                <p style="color:var(--text-sub); font-size:0.85rem;">Operational Tasks & Priority Instructions</p>
+        <!-- 2. ANALYTICAL CHARTS -->
+        <section id="sec-sub-charts" class="view-section">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid var(--card-border); padding-bottom:15px;">
+                <h1 style="color:var(--accent-gold); font-size:1.6rem;">📊 VISUAL ANALYTICS</h1>
+                <button class="btn-refresh" onclick="triggerSubSync(this)"><svg class="refresh-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg> Sync</button>
             </div>
+            <div class="charts-grid">
+                <div class="chart-box">
+                    <h3 style="color:var(--accent-gold); margin-bottom:15px;">📈 Weekly Traffic Curve</h3>
+                    <div style="height:250px;"><canvas id="subLineChart"></canvas></div>
+                </div>
+                <div class="chart-box">
+                    <h3 style="color:var(--accent-gold); margin-bottom:15px;">🛡️ Security Verification Status</h3>
+                    <div style="height:250px;"><canvas id="subPieChart"></canvas></div>
+                </div>
+            </div>
+        </section>
 
-            <div class="box-card">
+        <!-- 3. DIRECTIVES -->
+        <section id="sec-sub-directives" class="view-section">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid var(--card-border); padding-bottom:15px;">
+                <h1 style="color:var(--accent-gold); font-size:1.6rem;">📜 MAIN ADMIN DIRECTIVES</h1>
+                <button class="btn-refresh" onclick="triggerSubSync(this)"><svg class="refresh-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg> Refresh Directives</button>
+            </div>
+            <div class="box-card" id="directivesContainer">
                 {% for inst in instructions %}
                 <div style="background:#14151b; border-left:4px solid var(--accent-gold); border-radius:10px; padding:16px; margin-bottom:12px;">
                     <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
                         <b style="color:#00e5ff;">{{ inst.title }}</b>
-                        <span style="font-size:0.75rem; background:#333; padding:2px 8px; border-radius:6px; color:#fff;">{{ inst.priority }}</span>
+                        <span style="font-size:0.75rem; background:#333; padding:2px 8px; border-radius:6px;">{{ inst.priority }}</span>
                     </div>
                     <p style="font-size:0.9rem; color:#ddd; margin:6px 0;">{{ inst.message }}</p>
-                    <div style="font-size:0.75rem; color:#888;">Issued: {{ inst.created_at }} • Status: {{ inst.status }}</div>
+                    <div style="font-size:0.75rem; color:#888;">Issued: {{ inst.created_at }}</div>
                 </div>
                 {% else %}
                 <p style="color:var(--text-sub);">No directives assigned yet.</p>
@@ -274,25 +189,16 @@
             </div>
         </section>
 
-        <!-- Section 3: Leads Data -->
+        <!-- 4. LEADS -->
         <section id="sec-sub-leads" class="view-section">
-            <div style="margin-bottom:25px; border-bottom:1px solid var(--card-border); padding-bottom:15px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid var(--card-border); padding-bottom:15px;">
                 <h1 style="color:var(--accent-gold); font-size:1.6rem;">VISITOR LEADS ARCHIVE</h1>
-                <p style="color:var(--text-sub); font-size:0.85rem;">Audited User Entries</p>
+                <button class="btn-refresh" onclick="triggerSubSync(this)"><svg class="refresh-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg> Refresh</button>
             </div>
-
             <div class="box-card">
                 {% if subadmin_info.can_view_visitors %}
                 <table>
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Registration Date</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Registered At</th><th>Action</th></tr></thead>
                     <tbody>
                         {% for u in visitors %}
                         <tr>
@@ -302,14 +208,14 @@
                             <td style="color:var(--text-sub);">{{ u.registered_at or 'N/A' }}</td>
                             <td>
                                 {% if subadmin_info.can_delete_visitors %}
-                                    <a href="/admin/delete-lead/{{ u._id }}" onclick="return confirm('Delete record?')" style="color:#ff4757; font-weight:bold;">Delete</a>
+                                    <button onclick="confirmDeleteLead('{{ u._id }}')" style="background:#ff4757; color:#fff; border:none; padding:5px 12px; border-radius:6px; font-weight:bold; cursor:pointer;">Delete</button>
                                 {% else %}
                                     <span onclick="handleAction('can_delete_visitors', 'Delete Lead')" style="cursor:pointer; color:#888;">🔒 Delete</span>
                                 {% endif %}
                             </td>
                         </tr>
                         {% else %}
-                        <tr><td colspan="5" style="text-align:center; padding:25px; color:#888;">No leads registered.</td></tr>
+                        <tr><td colspan="5" style="text-align:center; padding:25px; color:#888;">No leads captured.</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -321,33 +227,100 @@
                 {% endif %}
             </div>
         </section>
+
+        <!-- 6. SUB-ADMIN PROFILE & SETTINGS -->
+        <section id="sec-sub-settings" class="view-section">
+            <div style="margin-bottom:20px; border-bottom:1px solid var(--card-border); padding-bottom:15px;">
+                <h1 style="color:var(--accent-gold); font-size:1.6rem;">SUB-ADMIN PROFILE SETTINGS</h1>
+                <p style="color:var(--text-sub); font-size:0.85rem;">Device Avatar & Credential Change Request</p>
+            </div>
+            <div class="charts-grid">
+                <div class="chart-box">
+                    <h3 style="color:var(--accent-gold); margin-bottom:15px;">👤 Profile Picture (Device Upload)</h3>
+                    <div style="display:flex; align-items:center; gap:20px;">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80" alt="Avatar" id="subPreviewAvatar" style="width:80px; height:80px; border-radius:50%; border:2px solid var(--accent-gold); object-fit:cover;">
+                        <div>
+                            <label style="font-size:0.85rem; color:#aaa; display:block; margin-bottom:8px;">Upload Image from Computer:</label>
+                            <input type="file" accept="image/*" onchange="uploadSubAvatar(event)" style="font-size:0.82rem; color:#aaa;">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-box">
+                    <h3 style="color:var(--accent-gold); margin-bottom:12px;">📝 Request Name / Email Modification</h3>
+                    <p style="color:var(--text-sub); font-size:0.85rem; margin-bottom:15px;">Sub-admin credentials can only be updated after approval by Root Main Admin.</p>
+                    <div style="margin-bottom:12px;">
+                        <label style="font-size:0.82rem; color:#aaa;">Requested Name:</label>
+                        <input type="text" id="reqSubName" value="{{ subadmin_info.name }}" style="width:100%; padding:10px; border-radius:8px; background:#0d0e12; border:1px solid #333; color:#fff;">
+                    </div>
+                    <div style="margin-bottom:15px;">
+                        <label style="font-size:0.82rem; color:#aaa;">Requested Email:</label>
+                        <input type="email" id="reqSubEmail" value="{{ subadmin_info.email }}" style="width:100%; padding:10px; border-radius:8px; background:#0d0e12; border:1px solid #333; color:#fff;">
+                    </div>
+                    <button class="btn-gold" onclick="submitProfileChangeRequest()" style="width:100%; justify-content:center;">✉️ Send Update Request to Main Admin</button>
+                </div>
+            </div>
+        </section>
     </main>
 
-    <!-- Message Modal -->
+    <!-- 💥 MESSAGE MAIN ADMIN MODAL (PERFECT CANCEL BUTTON) 💥 -->
     <div id="msgModal" class="modal-overlay">
-        <div class="modal-box">
-            <h2 style="color:var(--accent-gold); margin-bottom:15px;">💬 Message Main Admin</h2>
+        <div class="modal-box" style="text-align:left;">
+            <h2 style="color:var(--accent-gold); margin-bottom:15px; text-align:center;">💬 Send Note to Main Admin</h2>
             <div style="margin-bottom:12px;">
                 <label style="color:#aaa; font-size:0.85rem; display:block; margin-bottom:6px;">Subject:</label>
-                <input type="text" id="msgSubject" placeholder="e.g. Lead verification update" style="width:100%; padding:12px; border-radius:10px; background:#0d0e12; border:1px solid #333; color:#fff;">
+                <input type="text" id="msgSubject" placeholder="e.g. Completed today's review" style="width:100%; padding:12px; border-radius:10px; background:#0d0e12; border:1px solid #333; color:#fff;">
             </div>
-            <div style="margin-bottom:15px;">
-                <label style="color:#aaa; font-size:0.85rem; display:block; margin-bottom:6px;">Work Memo / Details:</label>
+            <div style="margin-bottom:18px;">
+                <label style="color:#aaa; font-size:0.85rem; display:block; margin-bottom:6px;">Work Details:</label>
                 <textarea id="msgContent" rows="4" placeholder="Type your message..." style="width:100%; padding:12px; border-radius:10px; background:#0d0e12; border:1px solid #333; color:#fff; font-family:inherit;"></textarea>
             </div>
-            <div style="display:flex; justify-content:flex-end; gap:10px;">
-                <button onclick="document.getElementById('msgModal').style.display='none'" class="btn-danger">Cancel</button>
-                <button onclick="submitMessageToAdmin()" class="btn-gold">Dispatch Note</button>
+            <div style="display:flex; justify-content:flex-end; gap:12px; align-items:center;">
+                <!-- 💥 FIXED SLEEK CANCEL PILL BUTTON 💥 -->
+                <button type="button" onclick="document.getElementById('msgModal').style.display='none'" class="btn-cancel">Cancel</button>
+                <button type="button" onclick="submitMessageToAdmin()" class="btn-gold">Dispatch Note</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CUSTOM SUB-ADMIN MODAL (REPLACES BROWSER ALERTS) -->
+    <div id="subCustomModal" class="modal-overlay">
+        <div class="modal-box">
+            <span id="sEmoji" style="font-size:3.2rem; display:block; margin-bottom:10px;">⚠️</span>
+            <h2 id="sTitle" style="color:var(--accent-gold); font-size:1.3rem; margin-bottom:8px;">Access Notice</h2>
+            <p id="sMsg" style="color:var(--text-sub); font-size:0.92rem; margin-bottom:25px;"></p>
+            <div style="display:flex; justify-content:center; gap:12px;">
+                <button onclick="closeSubModal()" class="btn-cancel">Cancel</button>
+                <button id="sConfirmBtn" class="btn-gold">Confirm</button>
             </div>
         </div>
     </div>
 
     <script>
-        function switchSection(secId, el) {
+        let subModalCb = null;
+        function showSubConfirm(emoji, title, msg, btnText, onConfirm) {
+            document.getElementById('sEmoji').innerText = emoji || '⚠️';
+            document.getElementById('sTitle').innerText = title;
+            document.getElementById('sMsg').innerText = msg;
+            document.getElementById('sConfirmBtn').innerText = btnText || 'Confirm';
+            subModalCb = onConfirm;
+            document.getElementById('subCustomModal').style.display = 'flex';
+        }
+        function closeSubModal() { document.getElementById('subCustomModal').style.display = 'none'; subModalCb = null; }
+        document.getElementById('sConfirmBtn').onclick = () => { if (subModalCb) { subModalCb(); closeSubModal(); } };
+
+        function confirmDeleteLead(id) {
+            showSubConfirm('🗑️', 'Delete Lead Record', 'Are you sure you want to permanently delete this lead?', 'Delete Lead', () => {
+                window.location.href = '/admin/delete-lead/' + id;
+            });
+        }
+
+        function switchSection(secId, navEl) {
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active-view'));
             document.querySelectorAll('.nav-pill-item').forEach(i => i.classList.remove('active'));
             document.getElementById(secId).classList.add('active-view');
-            if (el) el.classList.add('active');
+            if (navEl && navEl.classList.contains('nav-pill-item')) navEl.classList.add('active');
+            if (secId === 'sec-sub-charts') renderSubCharts();
         }
 
         function openSendMessageModal() { document.getElementById('msgModal').style.display = 'flex'; }
@@ -355,7 +328,7 @@
         function submitMessageToAdmin() {
             const subject = document.getElementById('msgSubject').value.trim();
             const content = document.getElementById('msgContent').value.trim();
-            if (!content) return alert('Enter message content');
+            if (!content) return;
 
             fetch('/subadmin/send-message', {
                 method: 'POST',
@@ -365,25 +338,89 @@
             .then(res => res.json())
             .then(data => {
                 document.getElementById('msgModal').style.display = 'none';
-                alert(data.message);
+                document.getElementById('msgSubject').value = '';
+                document.getElementById('msgContent').value = '';
+                showSubConfirm('📨', 'Delivered', data.message, 'Understood', () => {});
             });
+        }
+
+        function submitProfileChangeRequest() {
+            const name = document.getElementById('reqSubName').value.trim();
+            const email = document.getElementById('reqSubEmail').value.trim();
+            fetch('/subadmin/request-profile-update', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ name: name, email: email })
+            })
+            .then(res => res.json())
+            .then(data => showSubConfirm('✉️', 'Request Routed', data.message, 'OK', () => {}));
         }
 
         function handleAction(permKey, actionName) {
             const hasPerm = {{ 'true' if subadmin_info.can_view_visitors else 'false' }};
             if (permKey === 'can_view_visitors' && hasPerm) {
-                switchSection('sec-sub-leads', document.querySelectorAll('.nav-pill-item')[2]);
+                switchSection('sec-sub-leads', document.querySelectorAll('.nav-pill-item')[3]);
             } else {
-                if (confirm("You do not have permission for '" + actionName + "'. Send approval request to Main Admin?")) {
+                showSubConfirm('🔒', 'Access Restricted', `You do not have permission for '${actionName}'. Send an authorization request to Main Admin?`, 'Send Request', () => {
                     fetch('/subadmin/request-permission', {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify({ action: actionName, permission_key: permKey })
                     })
                     .then(res => res.json())
-                    .then(data => alert(data.message));
-                }
+                    .then(data => showSubConfirm('📩', 'Dispatched', data.message, 'OK', () => {}));
+                });
             }
+        }
+
+        function uploadSubAvatar(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    const url = evt.target.result;
+                    document.getElementById('subPreviewAvatar').src = url;
+                    document.getElementById('subDockAvatar').src = url;
+                    localStorage.setItem('subadmin_avatar', url);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        const savedSubPic = localStorage.getItem('subadmin_avatar');
+        if (savedSubPic) {
+            document.getElementById('subPreviewAvatar').src = savedSubPic;
+            document.getElementById('subDockAvatar').src = savedSubPic;
+        }
+
+        function triggerSubSync(btn) {
+            const icon = btn.querySelector('.refresh-icon');
+            if (icon) icon.classList.add('spinning');
+            setTimeout(() => {
+                if (icon) icon.classList.remove('spinning');
+                window.location.reload();
+            }, 600);
+        }
+
+        let subChartsLoaded = false;
+        function renderSubCharts() {
+            if (subChartsLoaded) return;
+            subChartsLoaded = true;
+            new Chart(document.getElementById('subLineChart'), {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Today'],
+                    datasets: [{ label: 'Traffic', data: [5, 10, 8, 15, 20, 25, {{ visitors|length }}], borderColor: '#C5A880', fill: true, backgroundColor: 'rgba(197,168,128,0.15)', tension: 0.35 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+            new Chart(document.getElementById('subPieChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Verified Windows PC', 'Prohibited Blocked'],
+                    datasets: [{ data: [{{ visitors|length }}, 5], backgroundColor: ['#00e5ff', '#ff4757'], borderWidth: 0 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
         }
     </script>
 </body>

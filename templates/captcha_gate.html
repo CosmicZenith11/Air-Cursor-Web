@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Check · Air Cursor</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+        body {
+            background-color: #0c0d11;
+            color: #E6E4E0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .captcha-card {
+            background: #16171d;
+            border: 1px solid rgba(197, 168, 128, 0.35);
+            border-radius: 28px;
+            padding: 40px 35px;
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 30px rgba(197,168,128,0.15);
+            animation: fadeIn 0.3s ease-out;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .shield-icon { font-size: 3.2rem; margin-bottom: 12px; display: block; }
+        h1 { font-size: 1.45rem; color: #C5A880; font-weight: 800; margin-bottom: 8px; }
+        p { font-size: 0.9rem; color: rgba(230, 228, 224, 0.7); line-height: 1.5; margin-bottom: 25px; }
+
+        .captcha-display-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            background: #090a0d;
+            border: 1px dashed rgba(197, 168, 128, 0.4);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        .captcha-text {
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: 8px;
+            color: #00e5ff;
+            text-decoration: line-through;
+            user-select: none;
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+            font-family: monospace;
+        }
+        .btn-reload {
+            background: none;
+            border: none;
+            color: #C5A880;
+            cursor: pointer;
+            font-size: 1.3rem;
+            transition: transform 0.3s ease;
+        }
+        .btn-reload:hover { transform: rotate(180deg); }
+
+        .captcha-input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            background: #090a0d;
+            border: 1px solid #333;
+            color: #fff;
+            font-size: 1.2rem;
+            text-align: center;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 4px;
+            margin-bottom: 18px;
+            outline: none;
+        }
+        .captcha-input:focus { border-color: #C5A880; box-shadow: 0 0 10px rgba(197,168,128,0.25); }
+
+        .btn-submit {
+            width: 100%;
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%);
+            color: #0c0d11;
+            border: none;
+            border-radius: 99px;
+            font-weight: 800;
+            font-size: 0.95rem;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(197, 168, 128, 0.25);
+            transition: transform 0.2s ease;
+        }
+        .btn-submit:hover { transform: translateY(-2px); }
+
+        .error-msg {
+            display: none;
+            color: #ff4757;
+            font-size: 0.85rem;
+            margin-top: 12px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="captcha-card">
+        <span class="shield-icon">🛡️</span>
+        <h1>Air Cursor Security Gate</h1>
+        <p>Please enter the security verification code displayed below to access the platform.</p>
+
+        <div class="captcha-display-box">
+            <span class="captcha-text" id="captchaDisplay">{{ captcha_code }}</span>
+            <button class="btn-reload" onclick="reloadCaptcha()" title="Refresh Captcha">🔄</button>
+        </div>
+
+        <input type="text" id="captchaInput" class="captcha-input" maxlength="5" placeholder="ENTER CODE" autocomplete="off" autofocus>
+        
+        <button class="btn-submit" onclick="submitCaptcha()">Verify & Enter</button>
+        <div id="errorMsg" class="error-msg">Incorrect Code. Try again.</div>
+    </div>
+
+    <script>
+        function reloadCaptcha() {
+            fetch('/api/captcha/new')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('captchaDisplay').innerText = data.captcha;
+                document.getElementById('captchaInput').value = '';
+                document.getElementById('errorMsg').style.display = 'none';
+            });
+        }
+
+        function submitCaptcha() {
+            const inputVal = document.getElementById('captchaInput').value.trim();
+            if (inputVal.length !== 5) {
+                const err = document.getElementById('errorMsg');
+                err.innerText = 'Please enter all 5 characters.';
+                err.style.display = 'block';
+                return;
+            }
+
+            fetch('/verify-captcha', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ captcha: inputVal })
+            })
+            .then(res => res.json().then(data => ({ status: res.status, body: data })))
+            .then(result => {
+                if (result.status === 200) {
+                    window.location.reload(); // હોમ સ્ક્રીન અનલોક થઈ જશે
+                } else {
+                    const err = document.getElementById('errorMsg');
+                    err.innerText = result.body.message || 'Incorrect Code.';
+                    err.style.display = 'block';
+                    if (result.body.new_captcha) {
+                        document.getElementById('captchaDisplay').innerText = result.body.new_captcha;
+                    }
+                    document.getElementById('captchaInput').value = '';
+                }
+            })
+            .catch(() => {
+                const err = document.getElementById('errorMsg');
+                err.innerText = 'Network error. Please try again.';
+                err.style.display = 'block';
+            });
+        }
+
+        document.getElementById('captchaInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') submitCaptcha();
+        });
+    </script>
+</body>
+</html>

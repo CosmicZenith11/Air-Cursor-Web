@@ -339,6 +339,41 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+const DEFAULT_AVATAR_IMG = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0%25' stop-color='%234ea5ff'/><stop offset='50%25' stop-color='%232a85ff'/><stop offset='100%25' stop-color='%231868db'/></linearGradient><linearGradient id='a' x1='0' y1='0' x2='0' y2='1'><stop offset='0%25' stop-color='%23ffffff'/><stop offset='100%25' stop-color='%23e2edfc'/></linearGradient></defs><circle cx='50' cy='50' r='50' fill='url(%23g)'/><circle cx='50' cy='37' r='15' fill='url(%23a)'/><path d='M 23.5 80 C 23.5 63 35 56 50 56 C 65 56 76.5 63 76.5 80 Z' fill='url(%23a)'/></svg>";
+
+function uploadAvatarFromDevice(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            const dataUrl = evt.target.result;
+            document.getElementById('previewAvatar').src = dataUrl;
+            document.getElementById('dockAvatarImg').src = dataUrl;
+            
+            // MongoDB Database ma save karvu
+            fetch('/api/admin/avatar/upload', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ avatar_url: dataUrl })
+            });
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function removeAdminAvatar() {
+    if (confirm('Are you sure you want to remove your custom photo and reset to default?')) {
+        fetch('/api/admin/avatar/remove', { method: 'POST' })
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('previewAvatar').src = data.default_avatar || DEFAULT_AVATAR_IMG;
+            document.getElementById('dockAvatarImg').src = data.default_avatar || DEFAULT_AVATAR_IMG;
+            document.getElementById('avatarFileInput').value = '';
+            alert('Profile picture removed and reset to default successfully.');
+        });
+    }
+}
+    
     // URL માં action=download_click હોય ત્યારે સેશન એક્સપાયર્ડ પોપઅપ
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('action') === 'download_click' && expiredModal) {

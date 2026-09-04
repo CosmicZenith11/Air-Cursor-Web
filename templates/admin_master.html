@@ -86,9 +86,9 @@
         }
 
         .main-admin-avatar-frame {
-            position: relative; width: 86px; height: 86px; border-radius: 50%; padding: 5px;
+            position: relative; width: 92px; height: 92px; border-radius: 50%; padding: 5px;
             background: conic-gradient(from 0deg, #dfac4a, #ffefb5, #c68a26, #fff4cc, #dfac4a, #986314, #ffdf85, #dfac4a);
-            box-shadow: 0 0 16px rgba(218, 165, 32, 0.55), inset 0 0 6px rgba(255, 235, 150, 0.6);
+            box-shadow: 0 0 20px rgba(218, 165, 32, 0.55);
             display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
         }
         .main-admin-avatar-frame::before {
@@ -164,7 +164,7 @@
 
         .btn-cancel { background: #252830; color: #E6E4E0; border: 1px solid rgba(255,255,255,0.15); padding: 10px 24px; border-radius: 99px; font-weight: 600; cursor: pointer; }
         .btn-cancel:hover { background: #333640; }
-        .btn-danger { background: #ff4757; color: #fff; border: none; padding: 6px 14px; border-radius: 8px; font-size: 0.82rem; font-weight: 600; cursor: pointer; text-decoration: none; }
+        .btn-danger { background: #ff4757; color: #fff; border: none; padding: 7px 18px; border-radius: 99px; font-size: 0.82rem; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
         .btn-approve { background: #2ed573; color: white; padding: 6px 14px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 0.85rem; margin-right: 6px; }
         .btn-deny { background: #2f3542; color: #ff4757; border: 1px solid rgba(255,71,87,0.4); padding: 6px 14px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 0.85rem; }
 
@@ -184,8 +184,26 @@
         .charts-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; }
         .chart-box { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 25px; box-shadow: var(--shadow); }
 
+        /* Danger Zone Styles (Matching DeepSeek Screenshot) */
+        .danger-item {
+            background: rgba(255, 71, 87, 0.04);
+            border: 1px solid rgba(255, 71, 87, 0.25);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .danger-info h4 { color: #ff4757; font-size: 1.05rem; margin-bottom: 5px; }
+        .danger-info p { color: var(--text-sub); font-size: 0.88rem; line-height: 1.5; }
+
+        /* Custom Modal System */
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(14px); justify-content: center; align-items: center; z-index: 100000; padding: 20px; }
-        .modal-box { background: #16171d; border: 1px solid var(--card-border); border-radius: 28px; padding: 32px 28px; width: 100%; max-width: 480px; color: #fff; box-shadow: 0 25px 60px rgba(0,0,0,0.8); }
+        .modal-box { background: #16171d; border: 1px solid var(--card-border); border-radius: 28px; padding: 32px 28px; width: 100%; max-width: 500px; color: #fff; box-shadow: 0 25px 60px rgba(0,0,0,0.8); }
         .form-group { margin-bottom: 15px; text-align: left; }
         .form-group label { display: block; font-size: 0.85rem; color: #aaa; margin-bottom: 6px; }
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border-radius: 10px; background: #0d0e12; border: 1px solid #333; color: #fff; }
@@ -205,7 +223,7 @@
             <div class="nav-pill-item" onclick="switchSection('sec-activity', this)"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg><div class="dock-tooltip">4. Admin's Activity Trail</div></div>
             <div class="nav-pill-item" onclick="switchSection('sec-users', this)"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg><div class="dock-tooltip">5. User Leads & Timing</div></div>
             <div class="nav-pill-item" onclick="switchSection('sec-inbox', this)"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path></svg><div class="dock-tooltip">6. Directives & Inbox</div></div>
-            <div class="nav-pill-item" onclick="switchSection('sec-settings', this)"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg><div class="dock-tooltip">7. Settings & OTP Portal</div></div>
+            <div class="nav-pill-item" onclick="switchSection('sec-settings', this)"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg><div class="dock-tooltip">7. Settings & Danger Zone</div></div>
         </div>
 
         <div class="dock-avatar-wrapper" onclick="switchSection('sec-settings', document.querySelectorAll('.nav-pill-item')[6])">
@@ -234,7 +252,7 @@
                         <div class="landscape"><div class="palm">🌴</div></div>
                         <div class="celestial-body"><div class="crater c1"></div><div class="crater c2"></div><div class="crater c3"></div></div>
                     </div>
-                    <a href="/admin/logout" class="btn-danger" style="padding:9px 20px; border-radius:99px;">Exit</a>
+                    <a href="/admin/logout" class="btn-danger" style="padding:9px 20px;">Exit</a>
                 </div>
             </div>
 
@@ -264,7 +282,6 @@
                     <div style="height:260px;"><canvas id="leadsLineChart"></canvas></div>
                 </div>
 
-                <!-- 💥 DEDICATED CAPTCHA GRAPH FOR MAIN ADMIN 💥 -->
                 <div class="chart-box">
                     <h3 style="color:var(--accent-gold); margin-bottom:15px;">🛡️ CAPTCHA Gatekeeper: Passed vs Failed</h3>
                     <div style="height:260px;"><canvas id="captchaPieChart"></canvas></div>
@@ -380,21 +397,13 @@
                 </table>
             </div>
 
-            <!-- 💥 CAPTCHA AUDIT TABLE 💥 -->
             <div class="box-card" style="border-color: rgba(0, 229, 255, 0.25);">
                 <div class="box-title">
                     <span style="color:#00e5ff;">🛡️ CAPTCHA Gatekeeper Audit Logs</span>
-                    <span style="font-size:0.85rem; color:var(--text-sub); font-weight:normal;">Real-time Gate Access</span>
                 </div>
                 <table>
                     <thead>
-                        <tr>
-                            <th>Time (UTC)</th>
-                            <th>Client IP</th>
-                            <th>Verification Status</th>
-                            <th>Attempted Code</th>
-                            <th>Hardware / Device</th>
-                        </tr>
+                        <tr><th>Time (UTC)</th><th>Client IP</th><th>Verification Status</th><th>Attempted Code</th><th>Device</th></tr>
                     </thead>
                     <tbody id="captchaTableBody">
                         {% for c in captcha_logs %}
@@ -403,9 +412,9 @@
                             <td style="font-family:monospace; color:#fff;">{{ c.ip_address }}</td>
                             <td>
                                 {% if c.status == 'PASSED' %}
-                                    <span class="badge" style="color:#2ed573; background:rgba(46,213,115,0.15); border:1px solid rgba(46,213,115,0.3);">PASSED</span>
+                                    <span class="badge" style="color:#2ed573; background:rgba(46,213,115,0.15);">PASSED</span>
                                 {% else %}
-                                    <span class="badge" style="color:#ff4757; background:rgba(255,71,87,0.15); border:1px solid rgba(255,71,87,0.3);">FAILED</span>
+                                    <span class="badge" style="color:#ff4757; background:rgba(255,71,87,0.15);">FAILED</span>
                                 {% endif %}
                             </td>
                             <td style="font-family:monospace; font-weight:bold; color:var(--accent-gold);">{{ c.attempted_code }}</td>
@@ -476,61 +485,192 @@
             </div>
         </section>
 
-        <!-- 7. SETTINGS & PROFILE -->
+        <!-- 7. SETTINGS, BACKUP & DEEPSEEK-STYLE DANGER ZONE -->
         <section id="sec-settings" class="view-section">
             <div class="top-header">
                 <div>
-                    <h1>ROOT PROFILE & OTP SECURITY</h1>
-                    <p>Device Photo Upload & Secure OTP Credential Updates</p>
+                    <h1>ROOT PROFILE & DANGER PROTOCOLS</h1>
+                    <p>Credential Management, Automated Backup Sync & Safe Deletion</p>
                 </div>
             </div>
 
-            <div class="charts-grid">
-                <div class="chart-box">
-                    <div style="font-size:1.15rem; font-weight:700; color:var(--text-main); margin-bottom:18px; display:flex; align-items:center; gap:8px;">
-                        <span>👤</span> <span>Admin Profile & Picture</span>
+            <!-- 💥 1. REDESIGNED LUXURY PROFILE PICTURE CARD (FIXES IMAGE_B9472B) 💥 -->
+            <div class="box-card">
+                <div class="box-title">
+                    <span>👤 Admin Profile & Picture</span>
+                    <span class="badge" style="background:rgba(197, 168, 128, 0.15); color:var(--accent-gold);">Root Authority</span>
+                </div>
+                
+                <div style="display:flex; align-items:center; gap:28px; flex-wrap:wrap;">
+                    <div class="main-admin-avatar-frame">
+                        <img src="{{ main_avatar }}" alt="Admin Avatar" id="previewAvatar">
                     </div>
-                    
-                    <div style="display:flex; align-items:center; gap:22px; flex-wrap:wrap;">
-                        <div class="main-admin-avatar-frame">
-                            <img src="{{ main_avatar }}" alt="Admin Avatar" id="previewAvatar">
-                        </div>
 
-                        <div style="flex:1; min-width:240px;">
-                            <label style="font-size:0.88rem; color:#aaa; display:block; margin-bottom:10px;">
-                                Choose Picture from Computer/Device:
-                            </label>
-                            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-                                <input type="file" id="avatarFileInput" accept="image/*" onchange="uploadAvatarFromDevice(event)" style="font-size:0.85rem; color:#aaa;">
-                                <button type="button" onclick="removeAdminAvatar()" class="btn-danger" style="padding:7px 16px; border-radius:99px; font-size:0.82rem; background:#ff4757; color:#fff; border:none; cursor:pointer;">
-                                    🗑️ Remove Photo
-                                </button>
-                            </div>
-                            <p style="font-size:0.75rem; color:var(--text-sub); margin-top:8px;">
-                                Removing photo reverts to default blue avatar.
-                            </p>
+                    <div style="flex:1; min-width:280px;">
+                        <h4 style="color:#fff; font-size:1.1rem; margin-bottom:5px;">{{ main_name }}</h4>
+                        <p style="color:var(--text-sub); font-size:0.85rem; margin-bottom:15px;">{{ main_email }} • Windows Secure Environment</p>
+                        
+                        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                            <!-- Hidden Native File Input -->
+                            <input type="file" id="avatarFileInput" accept="image/*" onchange="uploadAvatarFromDevice(event)" style="display:none;">
+                            
+                            <!-- Sleek Luxury Upload Button -->
+                            <button type="button" onclick="document.getElementById('avatarFileInput').click()" class="btn-gold" style="padding:8px 20px;">
+                                📁 Upload from Device
+                            </button>
+                            
+                            <!-- Refined Remove Button -->
+                            <button type="button" onclick="removeAdminAvatar()" class="btn-danger" style="padding:8px 20px; background:#202228; border:1px solid rgba(255,71,87,0.4); color:#ff4757;">
+                                🗑️ Remove Photo
+                            </button>
                         </div>
+                        <p style="font-size:0.75rem; color:var(--text-sub); margin-top:8px;">
+                            Removing photo instantly resets MongoDB record back to default blue avatar.
+                        </p>
                     </div>
                 </div>
+            </div>
 
-                <div class="chart-box">
-                    <h3 style="color:var(--accent-gold); margin-bottom:12px;">🔒 Modify Credentials & Passcode</h3>
-                    <p style="color:var(--text-sub); font-size:0.88rem; line-height:1.5; margin-bottom:20px;">
-                        Changing Root Name, Notification Email, or Passcode requires two-factor email OTP authorization.
-                    </p>
-                    <button class="btn-gold" onclick="requestSecurityOtp()" style="width:100%; justify-content:center;">
-                        ✉️ Request Security OTP to Unlock
+            <!-- 💥 2. GOOGLE DRIVE SYNC & BACKUP CARD 💥 -->
+            <div class="box-card" style="border-color: rgba(46, 213, 115, 0.35);">
+                <div class="box-title">
+                    <span style="color:#2ed573;">☁️ Google Drive Backup & System Snapshot</span>
+                </div>
+                <p style="color:var(--text-sub); font-size:0.9rem; line-height:1.6; margin-bottom:18px;">
+                    Download a complete snapshot of your cluster (Leads, Sub-Admins, Captcha Logs, Messages). You can sync this JSON file to Google Drive to restore everything in case of emergency data deletion!
+                </p>
+                <a href="/admin/download-backup" class="btn-gold" style="background:#2ed573; color:#0c0d11;">
+                    💾 Download Complete System Backup (.json)
+                </a>
+            </div>
+
+            <!-- 💥 3. CREDENTIALS & OTP MODIFICATION 💥 -->
+            <div class="box-card">
+                <div class="box-title">
+                    <span>🔒 Modify Secret Gateway Credentials</span>
+                </div>
+                <p style="color:var(--text-sub); font-size:0.88rem; line-height:1.5; margin-bottom:18px;">
+                    Modifying Root Name, Notification Email, or Master Passcode requires 2-step OTP authorization sent to your personal inbox.
+                </p>
+                <div style="display:flex; gap:15px; flex-wrap:wrap;">
+                    <button class="btn-gold" onclick="requestSecurityOtp()">✉️ Request Security OTP to Unlock</button>
+                    <button onclick="forgotPasscodeDirect()" style="background:none; border:none; color:#00e5ff; font-size:0.85rem; cursor:pointer; text-decoration:underline;">
+                        Forgot Master Passcode? Email it to me
                     </button>
-                    <div style="margin-top:12px; text-align:center;">
-                        <button onclick="forgotPasscodeDirect()" style="background:none; border:none; color:#00e5ff; font-size:0.85rem; cursor:pointer; text-decoration:underline;">
-                            Forgot Master Passcode? Email it to me
-                        </button>
+                </div>
+            </div>
+
+            <!-- 💥 4. DEEPSEEK-STYLE DANGER ZONE (MATCHING IMAGE_B94A67) 💥 -->
+            <div class="box-card" style="border:1px solid rgba(255, 71, 87, 0.45);">
+                <div class="box-title">
+                    <span style="color:#ff4757;">⚠️ High-Security Danger Zone</span>
+                    <span class="badge" style="background:rgba(255,71,87,0.15); color:#ff4757;">IRREVERSIBLE</span>
+                </div>
+
+                <!-- Danger Action 1: Wipe All Data Records -->
+                <div class="danger-item">
+                    <div class="danger-info">
+                        <h4>Wipe All Data From Database</h4>
+                        <p>Deletes all visitor leads, activity logs, captcha audit records, and messages. Database folders/structure remain completely intact.</p>
                     </div>
+                    <button onclick="openWipeDataModal()" class="btn-danger">Wipe Records</button>
+                </div>
+
+                <!-- Danger Action 2: Delete Entire Database & Website -->
+                <div class="danger-item" style="border-color: rgba(255, 71, 87, 0.6); background: rgba(255, 71, 87, 0.08);">
+                    <div class="danger-info">
+                        <h4>Delete Entire Website & Database</h4>
+                        <p>Permanently purges the entire cluster. Requires typed confirmation, Master Passcode, and 10s countdown. (Root Main Admin restored via Environment Variables).</p>
+                    </div>
+                    <button onclick="openDestroyWebsiteModal()" class="btn-danger" style="background:#ff2d42;">Destroy & Reset System</button>
                 </div>
             </div>
         </section>
     </main>
 
+    <!-- 💥 1. MODAL: WIPE DATA (REWRITE CHECK + 10s COUNTDOWN) 💥 -->
+    <div id="wipeDataModal" class="modal-overlay">
+        <div class="modal-box">
+            <!-- Stage 1: Text Rewrite Verification -->
+            <div id="wipeStage1">
+                <h3 style="color:#ff4757; font-size:1.3rem; margin-bottom:12px;">Delete all data from database</h3>
+                <div style="background:#111217; border-radius:14px; padding:15px; margin-bottom:18px; font-size:0.85rem; color:#aaa; text-align:left; line-height:1.6;">
+                    • All visitor leads will be permanently erased.<br>
+                    • All security audit trail logs will be purged.<br>
+                    • Sub-admin directives and inbox messages will be cleared.
+                </div>
+                <p style="font-size:0.88rem; color:#fff; text-align:left; margin-bottom:8px;">
+                    To verify, please type <b style="color:#ff4757;">delete all data from database</b> below:
+                </p>
+                <input type="text" id="wipeInputText" oninput="checkWipeInput()" placeholder="delete all data from database" style="width:100%; padding:12px; border-radius:10px; background:#0d0e12; border:1px solid #444; color:#fff; font-family:monospace; margin-bottom:20px;">
+                <div style="display:flex; justify-content:flex-end; gap:12px;">
+                    <button onclick="closeModal('wipeDataModal')" class="btn-cancel">Cancel</button>
+                    <button id="wipeConfirmBtn" onclick="goToWipeStage2()" class="btn-danger" style="opacity:0.4; pointer-events:none;">Continue</button>
+                </div>
+            </div>
+
+            <!-- Stage 2: 10s Countdown Final Lock -->
+            <div id="wipeStage2" style="display:none; text-align:center;">
+                <span style="font-size:3.5rem; display:block; margin-bottom:10px;">⚠️</span>
+                <h3 style="color:#ff4757; font-size:1.3rem; margin-bottom:10px;">Final Security Confirmation</h3>
+                <p style="color:var(--text-sub); font-size:0.92rem; line-height:1.6; margin-bottom:22px;">
+                    Are you 100% sure you want to wipe all records? This action cannot be rolled back. Please wait for countdown lock to disengage.
+                </p>
+                <div style="display:flex; justify-content:center; gap:12px;">
+                    <button onclick="closeModal('wipeDataModal')" class="btn-cancel">Cancel</button>
+                    <button id="wipe10sBtn" onclick="executeWipeData()" class="btn-danger" style="opacity:0.4; pointer-events:none; min-width:170px;">
+                        Proceed (10s)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 💥 2. MODAL: DESTROY SYSTEM (REWRITE + PASSCODE + 10s COUNTDOWN) 💥 -->
+    <div id="destroySystemModal" class="modal-overlay">
+        <div class="modal-box">
+            <!-- Stage 1: Text Rewrite + Passcode -->
+            <div id="destroyStage1">
+                <h3 style="color:#ff4757; font-size:1.3rem; margin-bottom:12px;">Delete Entire Website & Database</h3>
+                <div style="background:#111217; border-radius:14px; padding:15px; margin-bottom:18px; font-size:0.85rem; color:#aaa; text-align:left; line-height:1.6;">
+                    • Permanently destroys all collections and sub-admin accounts.<br>
+                    • Resets the entire platform back to zero state.<br>
+                    • Root Main Admin credentials will be restored from Environment Variables.
+                </div>
+                <p style="font-size:0.88rem; color:#fff; text-align:left; margin-bottom:6px;">
+                    To verify, please type <b style="color:#ff4757;">delete entire website and database</b>:
+                </p>
+                <input type="text" id="destroyInputText" oninput="checkDestroyInput()" placeholder="delete entire website and database" style="width:100%; padding:12px; border-radius:10px; background:#0d0e12; border:1px solid #444; color:#fff; font-family:monospace; margin-bottom:14px;">
+                
+                <p style="font-size:0.88rem; color:#fff; text-align:left; margin-bottom:6px;">
+                    Enter Root Master Passcode:
+                </p>
+                <input type="password" id="destroyPasscode" oninput="checkDestroyInput()" placeholder="Master Passcode" style="width:100%; padding:12px; border-radius:10px; background:#0d0e12; border:1px solid #444; color:#fff; margin-bottom:20px;">
+                
+                <div style="display:flex; justify-content:flex-end; gap:12px;">
+                    <button onclick="closeModal('destroySystemModal')" class="btn-cancel">Cancel</button>
+                    <button id="destroyConfirmBtn" onclick="goToDestroyStage2()" class="btn-danger" style="opacity:0.4; pointer-events:none;">Continue</button>
+                </div>
+            </div>
+
+            <!-- Stage 2: 10s Countdown Final Lock -->
+            <div id="destroyStage2" style="display:none; text-align:center;">
+                <span style="font-size:3.5rem; display:block; margin-bottom:10px;">💀</span>
+                <h3 style="color:#ff4757; font-size:1.3rem; margin-bottom:10px;">EMERGENCY CLUSTER DESTRUCTION</h3>
+                <p style="color:var(--text-sub); font-size:0.92rem; line-height:1.6; margin-bottom:22px;">
+                    All databases and website records will be terminated immediately. You will be logged out.
+                </p>
+                <div style="display:flex; justify-content:center; gap:12px;">
+                    <button onclick="closeModal('destroySystemModal')" class="btn-cancel">Cancel</button>
+                    <button id="destroy10sBtn" onclick="executeDestroySystem()" class="btn-danger" style="opacity:0.4; pointer-events:none; min-width:180px;">
+                        Destroy System (10s)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- UNIVERSAL CUSTOM NOTIFICATION MODAL -->
     <div id="universalAppModal" class="modal-overlay">
         <div class="modal-box" style="text-align:center;">
             <span id="uEmoji" style="font-size:3.2rem; display:block; margin-bottom:10px;">⚠️</span>
@@ -543,6 +683,7 @@
         </div>
     </div>
 
+    <!-- Create Sub-Admin Modal -->
     <div id="subAdminModal" class="modal-overlay">
         <div class="modal-box">
             <h2 style="color:var(--accent-gold); margin-bottom:15px;">+ Create Sub-Admin</h2>
@@ -565,6 +706,7 @@
         </div>
     </div>
 
+    <!-- Issue Directive Modal -->
     <div id="instructionModal" class="modal-overlay">
         <div class="modal-box">
             <h2 style="color:var(--accent-gold); margin-bottom:15px;">📜 Issue Directive</h2>
@@ -609,17 +751,6 @@
             showUniversalModal('🔔', 'Notification', message, 'OK', false, null);
         };
 
-        function confirmRemoveSubAdmin(id, name) {
-            showUniversalModal('🛡️', 'Revoke Sub-Admin', `Permanently revoke access for ${name}?`, 'Revoke Now', true, () => {
-                window.location.href = '/admin/remove-subadmin/' + id;
-            });
-        }
-        function confirmDeleteLead(id) {
-            showUniversalModal('🗑️', 'Delete Lead', 'Permanently remove this visitor entry?', 'Delete Now', true, () => {
-                window.location.href = '/admin/delete-lead/' + id;
-            });
-        }
-
         function switchSection(secId, navEl) {
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active-view'));
             document.querySelectorAll('.nav-pill-item').forEach(i => i.classList.remove('active'));
@@ -632,6 +763,7 @@
         function openInstructionModal() { document.getElementById('instructionModal').style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
+        // 💥 AVATAR UPLOAD & REMOVE 💥
         function uploadAvatarFromDevice(e) {
             const file = e.target.files[0];
             if (file) {
@@ -652,7 +784,7 @@
         }
 
         function removeAdminAvatar() {
-            showUniversalModal('🗑️', 'Reset Avatar', 'Remove custom picture and revert to default avatar?', 'Reset Avatar', true, () => {
+            showUniversalModal('🗑️', 'Reset Avatar', 'Remove custom picture and revert back to default avatar?', 'Reset Avatar', true, () => {
                 fetch('/api/admin/avatar/remove', { method: 'POST' })
                 .then(res => res.json())
                 .then(data => {
@@ -708,6 +840,133 @@
         }
         if (localStorage.getItem('air_theme') === 'light') toggleTheme();
 
+        // 💥 DANGER ZONE: WIPE DATA WORKFLOW (REWRITE + 10s TIMER) 💥
+        function openWipeDataModal() {
+            document.getElementById('wipeStage1').style.display = 'block';
+            document.getElementById('wipeStage2').style.display = 'none';
+            document.getElementById('wipeInputText').value = '';
+            document.getElementById('wipeConfirmBtn').style.opacity = '0.4';
+            document.getElementById('wipeConfirmBtn').style.pointerEvents = 'none';
+            document.getElementById('wipeDataModal').style.display = 'flex';
+        }
+
+        function checkWipeInput() {
+            const val = document.getElementById('wipeInputText').value.trim();
+            const btn = document.getElementById('wipeConfirmBtn');
+            if (val === "delete all data from database") {
+                btn.style.opacity = '1';
+                btn.style.pointerEvents = 'auto';
+            } else {
+                btn.style.opacity = '0.4';
+                btn.style.pointerEvents = 'none';
+            }
+        }
+
+        function goToWipeStage2() {
+            document.getElementById('wipeStage1').style.display = 'none';
+            document.getElementById('wipeStage2').style.display = 'block';
+
+            let timeLeft = 10;
+            const btn = document.getElementById('wipe10sBtn');
+            btn.style.opacity = '0.4';
+            btn.style.pointerEvents = 'none';
+            btn.innerText = `Proceed (${timeLeft}s)`;
+
+            const timer = setInterval(() => {
+                timeLeft--;
+                if (timeLeft > 0) {
+                    btn.innerText = `Proceed (${timeLeft}s)`;
+                } else {
+                    clearInterval(timer);
+                    btn.innerText = "Proceed & Wipe All Data";
+                    btn.style.opacity = '1';
+                    btn.style.pointerEvents = 'auto';
+                }
+            }, 1000);
+        }
+
+        function executeWipeData() {
+            fetch('/api/admin/wipe-all-data', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ confirm_text: "delete all data from database" })
+            })
+            .then(res => res.json())
+            .then(data => {
+                closeModal('wipeDataModal');
+                showUniversalModal('🗑️', 'Cluster Purged', data.message, 'OK', false, () => window.location.reload());
+            });
+        }
+
+        // 💥 DANGER ZONE: DESTROY SYSTEM WORKFLOW (REWRITE + PASSCODE + 10s TIMER) 💥
+        function openDestroyWebsiteModal() {
+            document.getElementById('destroyStage1').style.display = 'block';
+            document.getElementById('destroyStage2').style.display = 'none';
+            document.getElementById('destroyInputText').value = '';
+            document.getElementById('destroyPasscode').value = '';
+            document.getElementById('destroyConfirmBtn').style.opacity = '0.4';
+            document.getElementById('destroyConfirmBtn').style.pointerEvents = 'none';
+            document.getElementById('destroySystemModal').style.display = 'flex';
+        }
+
+        function checkDestroyInput() {
+            const val = document.getElementById('destroyInputText').value.trim();
+            const pass = document.getElementById('destroyPasscode').value.trim();
+            const btn = document.getElementById('destroyConfirmBtn');
+            if (val === "delete entire website and database" && pass.length >= 4) {
+                btn.style.opacity = '1';
+                btn.style.pointerEvents = 'auto';
+            } else {
+                btn.style.opacity = '0.4';
+                btn.style.pointerEvents = 'none';
+            }
+        }
+
+        function goToDestroyStage2() {
+            document.getElementById('destroyStage1').style.display = 'none';
+            document.getElementById('destroyStage2').style.display = 'block';
+
+            let timeLeft = 10;
+            const btn = document.getElementById('destroy10sBtn');
+            btn.style.opacity = '0.4';
+            btn.style.pointerEvents = 'none';
+            btn.innerText = `Destroy System (${timeLeft}s)`;
+
+            const timer = setInterval(() => {
+                timeLeft--;
+                if (timeLeft > 0) {
+                    btn.innerText = `Destroy System (${timeLeft}s)`;
+                } else {
+                    clearInterval(timer);
+                    btn.innerText = "CONFIRM SYSTEM DESTRUCTION";
+                    btn.style.opacity = '1';
+                    btn.style.pointerEvents = 'auto';
+                }
+            }, 1000);
+        }
+
+        function executeDestroySystem() {
+            const pass = document.getElementById('destroyPasscode').value.trim();
+            fetch('/api/admin/destroy-system', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    confirm_text: "delete entire website and database",
+                    passcode: pass
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                closeModal('destroySystemModal');
+                if (data.status === 'success') {
+                    showUniversalModal('💀', 'System Reset', data.message, 'Exit', false, () => window.location.href = '/');
+                } else {
+                    showUniversalModal('❌', 'Execution Error', data.message, 'OK', false, null);
+                }
+            });
+        }
+
+        // 💥 CHARTS INITIALIZATION 💥
         let chartsLoaded = false;
         function renderCharts() {
             if (chartsLoaded) return;
@@ -728,7 +987,6 @@
                 options: { responsive: true, maintainAspectRatio: false }
             });
 
-            // 💥 CAPTCHA DEDICATED GRAPH 💥
             new Chart(document.getElementById('captchaPieChart'), {
                 type: 'doughnut',
                 data: {

@@ -1,6 +1,7 @@
 import os
 import re
 import io
+import random
 import smtplib
 import threading
 from email.mime.text import MIMEText
@@ -20,7 +21,7 @@ app.secret_key = os.environ.get('SECRET_KEY', 'air_cursor_super_secret_key_2026'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=30)
 
 # =========================================================
-# 💥 1. CONFIGURATION & CREDENTIALS 💥
+# 💥 ૧. ક્રેડેન્શિયલ્સ & કન્ફિગરેશન 💥
 # =========================================================
 MASTER_PASSCODE = os.environ.get('MASTER_PASSCODE', '998877')
 DEFAULT_MAIN_NAME = os.environ.get('MAIN_ADMIN_NAME', 'Vansh Patel')
@@ -30,7 +31,7 @@ SMTP_EMAIL = os.environ.get('SMTP_EMAIL', 'aircursor.verify@gmail.com')
 SMTP_APP_PASSWORD = os.environ.get('SMTP_APP_PASSWORD', 'btajqpkrvkflsqvl')
 
 # =========================================================
-# 💥 2. MONGODB ATLAS CLOUD CONNECTION 💥
+# 💥 ૨. MONGODB ATLAS CLOUD CONNECTION 💥
 # =========================================================
 MONGO_URI = os.environ.get('MONGO_URI')
 client = None
@@ -42,6 +43,7 @@ audit_collection = None
 requests_collection = None
 instructions_collection = None
 messages_collection = None
+otp_collection = None
 
 if MONGO_URI:
     try:
@@ -54,12 +56,14 @@ if MONGO_URI:
         requests_collection = db['permission_requests']
         instructions_collection = db['admin_instructions']
         messages_collection = db['subadmin_messages']
+        otp_collection = db['security_otps']
 
         if config_collection.count_documents({"type": "main_admin"}) == 0:
             config_collection.insert_one({
                 "type": "main_admin",
                 "name": DEFAULT_MAIN_NAME,
-                "email": DEFAULT_MAIN_EMAIL
+                "email": DEFAULT_MAIN_EMAIL,
+                "passcode": MASTER_PASSCODE
             })
         print("✅ MongoDB Atlas Configured Successfully!")
     except Exception as e:
@@ -77,8 +81,8 @@ def get_main_admin():
                     {"type": "main_admin"},
                     {"$set": {"name": env_name, "email": env_email}}
                 )
-            return env_name, env_email
-    return env_name, env_email
+            return env_name, env_email, rec.get("passcode", MASTER_PASSCODE)
+    return env_name, env_email, MASTER_PASSCODE
 
 def log_activity(sub_name, sub_email, action, status="ALLOWED", details=""):
     if audit_collection is not None:
@@ -96,100 +100,34 @@ def log_activity(sub_name, sub_email, action, status="ALLOWED", details=""):
             print(f"❌ Log Error: {e}")
 
 # =========================================================
-# 💥 3. ANTI-SPAM ASYNC EMAIL DISPATCH ENGINE 💥
+# 💥 ૩. ANTI-SPAM ASYNC EMAIL ENGINE 💥
 # =========================================================
-def async_email_worker(subadmin_name, subadmin_email, action_name, perm_key, subadmin_id, req_id):
+def send_system_email(to_email, subject, plain_text, html_body):
     if not SMTP_APP_PASSWORD or not SMTP_EMAIL:
-        return
-
-    main_name, main_email = get_main_admin()
-    app_base_url = "https://air-cursor-nd6r.onrender.com"
-    accept_url = f"{app_base_url}/admin/grant-permission?sub_id={subadmin_id}&perm={perm_key}&passcode={MASTER_PASSCODE}&req_id={req_id}"
-    ignore_url = f"{app_base_url}/admin/deny-permission?sub_id={subadmin_id}&action={action_name}&req_id={req_id}"
-
-    # Anti-Spam Compliant Headers
+        return False
     msg = MIMEMultipart("alternative")
-    msg['Subject'] = f"Air Cursor Security Request: {action_name}"
+    msg['Subject'] = subject
     msg['From'] = f"Air Cursor Security <{SMTP_EMAIL}>"
-    msg['To'] = main_email
+    msg['To'] = to_email
     msg['Reply-To'] = SMTP_EMAIL
     msg['Date'] = formatdate(localtime=True)
     msg['Message-ID'] = make_msgid(domain='aircursor.verify')
 
-    # Plain text fallback (Spam filters require both plain text and HTML)
-    plain_text = f"""Hello {main_name},
-
-Sub-Admin {subadmin_name} ({subadmin_email}) has requested authorization for: {action_name} ({perm_key}).
-
-To Approve & Grant Permission:
-{accept_url}
-
-To Ignore & Dismiss:
-{ignore_url}
-
---
-Air Cursor Security System
-"""
-
-    html_content = f"""<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"></head>
-<body style="margin:0; padding:0; background-color:#0d0e12; font-family:'Segoe UI', Arial, sans-serif; color:#E6E4E0;">
-    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:#0d0e12; padding:30px 15px;">
-        <tr>
-            <td align="center">
-                <table width="580" border="0" cellspacing="0" cellpadding="0" style="background-color:#16171d; border:1px solid #C5A880; border-radius:20px; overflow:hidden;">
-                    <tr>
-                        <td style="padding:30px 30px 20px 30px; border-bottom:1px solid rgba(197, 168, 128, 0.2); text-align:center;">
-                            <div style="color:#C5A880; font-size:22px; font-weight:800; letter-spacing:1px; text-transform:uppercase;">AIR CURSOR COMMAND</div>
-                            <div style="color:#8e8f96; font-size:11px; margin-top:4px; text-transform:uppercase; letter-spacing:2px;">Security & Authorization Portal</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="padding:25px 30px;">
-                            <p style="font-size:15px; color:#ffffff; margin:0 0 12px 0;">Hello <b>{main_name}</b>,</p>
-                            <p style="font-size:14px; color:#a6a7ad; line-height:1.5; margin:0 0 20px 0;">
-                                Sub-Admin <b>{subadmin_name}</b> ({subadmin_email}) has requested access elevation:
-                            </p>
-                            <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:#101115; border:1px solid rgba(255,255,255,0.08); border-radius:12px; margin-bottom:20px;">
-                                <tr>
-                                    <td style="padding:15px;">
-                                        <p style="margin:4px 0; font-size:14px; color:#fff;"><b>Action:</b> <span style="color:#00e5ff;">{action_name}</span></p>
-                                        <p style="margin:4px 0; font-size:13px; color:#888;"><b>Permission Flag:</b> <code>{perm_key}</code></p>
-                                    </td>
-                                </tr>
-                            </table>
-                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                                <tr>
-                                    <td align="center">
-                                        <a href="{accept_url}" target="_blank" style="display:inline-block; padding:12px 26px; background:linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%); color:#101115; text-decoration:none; border-radius:99px; font-weight:800; font-size:13px; margin-right:10px;">✓ Approve & Grant</a>
-                                        <a href="{ignore_url}" target="_blank" style="display:inline-block; padding:12px 24px; background-color:#202228; color:#ff4757; text-decoration:none; border-radius:99px; font-weight:700; font-size:13px; border:1px solid rgba(255,71,87,0.4);">✕ Ignore / Dismiss</a>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
-</body>
-</html>"""
-
     msg.attach(MIMEText(plain_text, "plain", "utf-8"))
-    msg.attach(MIMEText(html_content, "html", "utf-8"))
+    msg.attach(MIMEText(html_body, "html", "utf-8"))
 
     try:
         server = smtplib.SMTP_SSL('smtp.gmail.com', 465, timeout=10)
         server.login(SMTP_EMAIL, SMTP_APP_PASSWORD)
-        server.sendmail(SMTP_EMAIL, main_email, msg.as_string())
+        server.sendmail(SMTP_EMAIL, to_email, msg.as_string())
         server.quit()
-        print(f"✅ Anti-Spam Compliant Email delivered to Inbox of {main_email}")
+        return True
     except Exception as e:
-        print(f"⚠️ SMTP background dispatch warning: {e}")
+        print(f"⚠️ SMTP Error: {e}")
+        return False
 
 # =========================================================
-# 💥 4. DEVICE RESTRICTION & ROUTING 💥
+# 💥 ૪. DEVICE & STEALTH ROUTING 💥
 # =========================================================
 def is_windows_pc(ua_string):
     if not ua_string:
@@ -213,7 +151,7 @@ def enforce_security():
         return None
     ua = request.headers.get('User-Agent', '')
     if not is_windows_pc(ua):
-        abort(403, description="Air Cursor algorithms are strictly engineered for Windows PC & Laptops only.")
+        abort(403, description="Air Cursor is strictly engineered for Windows PC & Laptops only.")
 
 @app.after_request
 def add_security_headers(response):
@@ -226,28 +164,19 @@ def add_security_headers(response):
 def home():
     return render_template('index.html')
 
-# =========================================================
-# 💥 STRICT INPUT VALIDATOR (BAN +, -, *, /, SYMBOLS) 💥
-# =========================================================
-FORBIDDEN_CHARS_REGEX = re.compile(r'[+\-*\/~`!#$%^&()=_{}\[\]:;"\'<>,?|\\]')
-STRICT_EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.]+@[a-zA-Z0-9.]+\.[a-zA-Z]{2,}$')
-STRICT_NAME_REGEX = re.compile(r'^[a-zA-Z0-9\s]+$')
-
 @app.route('/register', methods=['POST'])
 def register():
     raw_name = request.form.get('name', '').strip()
     raw_email = request.form.get('email', '').strip()
     remember = request.form.get('remember')
 
-    main_name, main_email = get_main_admin()
+    main_name, main_email, _ = get_main_admin()
 
-    # 1. Main Admin Stealth Gateway Check
     if raw_name == main_name and raw_email == main_email:
         session['user_role'] = 'main_admin'
         session['admin_authenticated'] = True
         return redirect(url_for('main_admin_dashboard'))
 
-    # 2. Sub-Admin Check
     if subadmins_collection is not None:
         sub = subadmins_collection.find_one({"name": raw_name, "email": raw_email})
         if sub:
@@ -258,19 +187,15 @@ def register():
             log_activity(sub['name'], sub['email'], "Session Started", "ALLOWED", "Logged in via Stealth Gateway")
             return redirect(url_for('subadmin_dashboard'))
 
-    # 3. 💥 STRICT VALIDATION: Check for +, -, *, /, or invalid symbols 💥
-    if FORBIDDEN_CHARS_REGEX.search(raw_name) or FORBIDDEN_CHARS_REGEX.search(raw_email):
-        abort(400, description="Invalid Characters Detected! Characters like (+, -, *, /) or symbols are strictly prohibited. Only letters, numbers, @, and . are allowed.")
+    forbidden_symbols = re.compile(r'[+\-*\/~`!#$%^&()=_{}\[\]:;"\'<>,?|\\]')
+    if forbidden_symbols.search(raw_name) or forbidden_symbols.search(raw_email):
+        abort(400, description="Symbols (+, -, *, /) are strictly prohibited! Only letters, numbers, @, and . are allowed.")
 
-    if not STRICT_NAME_REGEX.match(raw_name):
-        abort(400, description="Invalid Name! Full Name can only contain letters, numbers, and spaces.")
-
-    if not STRICT_EMAIL_REGEX.match(raw_email) or '..' in raw_email:
-        abort(400, description="Invalid Email Format! Only alphanumeric characters, a single @, and dots are permitted. Aliases like +1 are rejected.")
-
-    # 4. Clean Normal Lead Store
     name = sanitize_input(raw_name)
     email = sanitize_input(raw_email)
+
+    if not name or not email or '@' not in email:
+        abort(400, description="Valid Full Name and Email are mandatory.")
 
     session['user_registered'] = True
     session['user_name'] = name
@@ -289,7 +214,7 @@ def register():
     return redirect(url_for('download_page'))
 
 # =========================================================
-# 💥 5. MAIN ADMIN DASHBOARD & APIS 💥
+# 💥 ૫. MAIN ADMIN DASHBOARD & OTP WORKFLOWS 💥
 # =========================================================
 @app.route('/admin')
 @app.route('/admin/master')
@@ -300,16 +225,10 @@ def main_admin_dashboard():
     visitors = list(visitors_collection.find().sort('_id', -1)) if visitors_collection is not None else []
     sub_admins = list(subadmins_collection.find().sort('_id', -1)) if subadmins_collection is not None else []
     activity_logs = list(audit_collection.find().sort('_id', -1).limit(50)) if audit_collection is not None else []
-    
-    pending_requests = []
-    if requests_collection is not None:
-        pending_requests = list(requests_collection.find({"status": "PENDING"}).sort('_id', -1))
+    pending_requests = list(requests_collection.find({"status": "PENDING"}).sort('_id', -1)) if requests_collection is not None else []
+    work_messages = list(messages_collection.find().sort('_id', -1).limit(40)) if messages_collection is not None else []
 
-    work_messages = []
-    if messages_collection is not None:
-        work_messages = list(messages_collection.find().sort('_id', -1).limit(40))
-
-    main_name, main_email = get_main_admin()
+    main_name, main_email, _ = get_main_admin()
 
     return render_template(
         'admin_master.html',
@@ -321,6 +240,142 @@ def main_admin_dashboard():
         main_name=main_name,
         main_email=main_email
     )
+
+# 💥 OTP Generation for Profile/Passcode Update 💥
+@app.route('/admin/request-profile-otp', methods=['POST'])
+def request_profile_otp():
+    if session.get('user_role') != 'main_admin':
+        return jsonify({"status": "unauthorized"}), 401
+
+    main_name, main_email, _ = get_main_admin()
+    otp = f"{random.randint(100000, 999999)}"
+
+    if otp_collection is not None:
+        otp_collection.delete_many({"email": main_email})
+        otp_collection.insert_one({
+            "email": main_email,
+            "otp": otp,
+            "created_at": datetime.utcnow(),
+            "verified": False
+        })
+
+    verify_url = "https://air-cursor-nd6r.onrender.com/admin/security-verify"
+    subject = "🔐 [Air Cursor Security] One-Time Security Passcode (OTP)"
+    plain = f"Your Security OTP is: {otp}\nVerify here: {verify_url}"
+    html = f"""
+    <div style="background:#0d0e12; color:#E6E4E0; padding:30px; font-family:sans-serif;">
+        <div style="max-width:500px; margin:auto; background:#16171d; border:1px solid #C5A880; border-radius:20px; padding:30px; text-align:center;">
+            <h2 style="color:#C5A880;">Security Authorization</h2>
+            <p>Hello {main_name}, a request to modify Root Profile / Passcode was triggered.</p>
+            <div style="font-size:32px; font-weight:800; letter-spacing:8px; color:#00e5ff; margin:20px 0;">{otp}</div>
+            <p style="font-size:13px; color:#888;">Valid for 10 minutes. Click below to verify and unlock credential updates:</p>
+            <a href="{verify_url}" style="display:inline-block; padding:12px 28px; background:linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%); color:#000; border-radius:99px; font-weight:bold; text-decoration:none; margin-top:15px;">Verify Security OTP</a>
+        </div>
+    </div>
+    """
+    threading.Thread(target=send_system_email, args=(main_email, subject, plain, html), daemon=True).start()
+    return jsonify({"status": "success", "message": f"Security OTP dispatched to {main_email}. Please check your inbox."})
+
+@app.route('/admin/security-verify')
+def security_verify_page():
+    main_name, main_email, _ = get_main_admin()
+    return render_template('security_verify.html', main_name=main_name, main_email=main_email)
+
+@app.route('/api/admin/validate-otp', methods=['POST'])
+def validate_otp():
+    data = request.get_json() or {}
+    otp = data.get('otp', '').strip()
+    main_name, main_email, _ = get_main_admin()
+
+    if otp_collection is not None:
+        rec = otp_collection.find_one({"email": main_email, "otp": otp})
+        if rec and (datetime.utcnow() - rec.get("created_at", datetime.utcnow())).total_seconds() < 600:
+            token = str(rec['_id'])
+            otp_collection.update_one({"_id": rec['_id']}, {"$set": {"verified": True}})
+            return jsonify({"status": "success", "token": token})
+    return jsonify({"status": "error", "message": "Invalid or Expired OTP"}), 400
+
+@app.route('/admin/execute-profile-update', methods=['POST'])
+def execute_profile_update():
+    token = request.form.get('verified_token')
+    new_name = request.form.get('new_name', '').strip()
+    new_email = request.form.get('new_email', '').strip()
+    new_passcode = request.form.get('new_passcode', '').strip()
+    curr_passcode = request.form.get('current_passcode', '').strip()
+
+    main_name, main_email, active_passcode = get_main_admin()
+
+    if curr_passcode != active_passcode:
+        abort(403, description="Access Denied: Current Master Passcode verification failed.")
+
+    if otp_collection is not None and token:
+        try:
+            valid_otp = otp_collection.find_one({"_id": ObjectId(token), "verified": True})
+            if not valid_otp:
+                abort(403, description="Unauthorized: OTP verification token missing or expired.")
+        except Exception:
+            abort(403)
+
+    update_payload = {"name": new_name, "email": new_email}
+    if new_passcode:
+        update_payload["passcode"] = new_passcode
+
+    if config_collection is not None:
+        config_collection.update_one({"type": "main_admin"}, {"$set": update_payload}, upsert=True)
+
+    if otp_collection is not None and token:
+        otp_collection.delete_one({"_id": ObjectId(token)})
+
+    log_activity("Main Admin", new_email, "Updated Root Profile Credentials", "ALLOWED")
+    return redirect(url_for('main_admin_dashboard'))
+
+# 💥 Forgot Passcode Dispatch 💥
+@app.route('/admin/forgot-passcode', methods=['POST'])
+def forgot_passcode():
+    main_name, main_email, active_passcode = get_main_admin()
+    subject = "🔑 [Air Cursor Security] Master Passcode Recovery"
+    plain = f"Hello {main_name},\n\nYour Master Passcode is: {active_passcode}"
+    html = f"""
+    <div style="background:#0d0e12; color:#fff; padding:30px; font-family:sans-serif;">
+        <div style="max-width:500px; margin:auto; background:#16171d; border:1px solid #C5A880; border-radius:20px; padding:30px; text-align:center;">
+            <h2 style="color:#C5A880;">Passcode Recovery</h2>
+            <p>Your current Master Authorization Passcode is:</p>
+            <div style="font-size:28px; font-weight:800; color:#2ed573; margin:15px 0;">{active_passcode}</div>
+            <p style="font-size:12px; color:#888;">Do not share this passcode with unauthorized personnel.</p>
+        </div>
+    </div>
+    """
+    threading.Thread(target=send_system_email, args=(main_email, subject, plain, html), daemon=True).start()
+    return jsonify({"status": "success", "message": f"Your Master Passcode has been emailed to {main_email}."})
+
+# 💥 LIVE REFRESH API (NO FULL PAGE RELOADS) 💥
+@app.route('/api/admin/live-sync')
+def api_admin_live_sync():
+    if session.get('user_role') != 'main_admin':
+        return jsonify({"status": "unauthorized"}), 401
+
+    visitors = list(visitors_collection.find().sort('_id', -1)) if visitors_collection is not None else []
+    sub_admins = list(subadmins_collection.find().sort('_id', -1)) if subadmins_collection is not None else []
+    activity_logs = list(audit_collection.find().sort('_id', -1).limit(50)) if audit_collection is not None else []
+    pending_requests = list(requests_collection.find({"status": "PENDING"}).sort('_id', -1)) if requests_collection is not None else []
+    work_messages = list(messages_collection.find().sort('_id', -1).limit(40)) if messages_collection is not None else []
+
+    def serialize(docs):
+        res = []
+        for d in docs:
+            c = dict(d)
+            c['_id'] = str(c['_id'])
+            res.append(c)
+        return res
+
+    return jsonify({
+        "status": "success",
+        "visitors": serialize(visitors),
+        "sub_admins": serialize(sub_admins),
+        "activity_logs": serialize(activity_logs),
+        "pending_requests": serialize(pending_requests),
+        "work_messages": serialize(work_messages)
+    })
 
 @app.route('/admin/send-instruction', methods=['POST'])
 def send_instruction():
@@ -351,36 +406,40 @@ def send_instruction():
 def approve_request(req_id):
     if session.get('user_role') != 'main_admin':
         abort(404)
-    
     if requests_collection is not None and subadmins_collection is not None:
         req_item = requests_collection.find_one({"_id": ObjectId(req_id)})
         if req_item:
             perm_key = req_item.get('permission_key')
             sub_id = req_item.get('subadmin_id')
 
-            subadmins_collection.update_one(
-                {"_id": ObjectId(sub_id)},
-                {"$set": {perm_key: True}}
-            )
+            # Handle Sub-Admin Profile Change Approval
+            if perm_key == "profile_change":
+                subadmins_collection.update_one(
+                    {"_id": ObjectId(sub_id)},
+                    {"$set": {"name": req_item.get('new_name'), "email": req_item.get('new_email')}}
+                )
+            else:
+                subadmins_collection.update_one(
+                    {"_id": ObjectId(sub_id)},
+                    {"$set": {perm_key: True}}
+                )
+
             requests_collection.update_one(
                 {"_id": ObjectId(req_id)},
                 {"$set": {"status": "APPROVED", "resolved_at": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")}}
             )
-            log_activity(req_item.get('subadmin_name'), req_item.get('subadmin_email'), f"Permission Approved: {req_item.get('action')}", "ALLOWED", "Granted by Main Admin")
-
+            log_activity(req_item.get('subadmin_name'), req_item.get('subadmin_email'), f"Approved: {req_item.get('action')}", "ALLOWED")
     return redirect(url_for('main_admin_dashboard'))
 
 @app.route('/admin/deny-request/<req_id>')
 def deny_request(req_id):
     if session.get('user_role') != 'main_admin':
         abort(404)
-    
     if requests_collection is not None:
         requests_collection.update_one(
             {"_id": ObjectId(req_id)},
             {"$set": {"status": "DENIED", "resolved_at": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")}}
         )
-
     return redirect(url_for('main_admin_dashboard'))
 
 @app.route('/admin/delete-message/<id>')
@@ -395,7 +454,6 @@ def delete_subadmin_message(id):
 def api_admin_poll_messages():
     if session.get('user_role') != 'main_admin':
         return jsonify({"status": "unauthorized"}), 401
-
     latest_msg = None
     if messages_collection is not None:
         item = messages_collection.find_one({"status": "UNREAD"}, sort=[('_id', -1)])
@@ -407,7 +465,6 @@ def api_admin_poll_messages():
                 "content": item.get('content')
             }
             messages_collection.update_one({"_id": item['_id']}, {"$set": {"status": "DELIVERED"}})
-
     return jsonify({"new_message": latest_msg})
 
 @app.route('/admin/create-subadmin', methods=['POST'])
@@ -416,7 +473,6 @@ def create_subadmin():
         abort(404)
     name = request.form.get('name', '').strip()
     email = request.form.get('email', '').strip()
-    
     if subadmins_collection is not None and name and email:
         subadmins_collection.insert_one({
             "name": name,
@@ -436,128 +492,73 @@ def remove_subadmin(id):
         subadmins_collection.delete_one({"_id": ObjectId(id)})
     return redirect(url_for('main_admin_dashboard'))
 
-@app.route('/admin/update-credentials', methods=['POST'])
-def update_credentials():
-    if session.get('user_role') != 'main_admin':
-        abort(404)
-    passcode = request.form.get('passcode')
-    new_name = request.form.get('new_name', '').strip()
-    new_email = request.form.get('new_email', '').strip()
-
-    if passcode != MASTER_PASSCODE:
-        abort(403, description="Access Denied: Invalid Master Passcode!")
-
-    if config_collection is not None and new_name and new_email:
-        config_collection.update_one(
-            {"type": "main_admin"},
-            {"$set": {"name": new_name, "email": new_email}},
-            upsert=True
-        )
-    return redirect(url_for('main_admin_dashboard'))
-
 @app.route('/admin/delete-lead/<id>')
 def delete_lead(id):
     is_main = session.get('user_role') == 'main_admin'
     is_sub_allowed = False
-    
     if session.get('user_role') == 'sub_admin' and subadmins_collection is not None:
         sub = subadmins_collection.find_one({"_id": ObjectId(session.get('subadmin_id'))})
         if sub and sub.get('can_delete_visitors'):
             is_sub_allowed = True
         log_activity(
-            session.get('subadmin_name'), 
-            session.get('subadmin_email'), 
-            f"Delete Lead ID: {id}", 
-            "ALLOWED" if is_sub_allowed else "RESTRICTED"
+            session.get('subadmin_name'), session.get('subadmin_email'),
+            f"Delete Lead ID: {id}", "ALLOWED" if is_sub_allowed else "RESTRICTED"
         )
-
     if not is_main and not is_sub_allowed:
-        abort(403, description="Privileges required to delete visitor records.")
-
+        abort(403)
     if visitors_collection is not None:
         visitors_collection.delete_one({"_id": ObjectId(id)})
-
     return redirect(request.referrer or url_for('home'))
 
-@app.route('/admin/grant-permission')
-def grant_permission():
-    sub_id = request.args.get('sub_id')
-    perm = request.args.get('perm')
-    passcode = request.args.get('passcode')
-    req_id = request.args.get('req_id')
-
-    if passcode != MASTER_PASSCODE or not sub_id or not perm:
-        abort(403, description="Invalid authorization token.")
-
-    if subadmins_collection is not None:
-        subadmins_collection.update_one(
-            {"_id": ObjectId(sub_id)},
-            {"$set": {perm: True}}
-        )
-    if requests_collection is not None and req_id:
-        try:
-            requests_collection.update_one(
-                {"_id": ObjectId(req_id)},
-                {"$set": {"status": "APPROVED", "resolved_at": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")}}
-            )
-        except Exception:
-            pass
-
-    return render_template('error.html', code="200", title="Permission Granted", message=f"Permission '{perm}' successfully granted to Sub-Admin.")
-
-@app.route('/admin/deny-permission')
-def deny_permission():
-    action = request.args.get('action', 'Requested Action')
-    req_id = request.args.get('req_id')
-
-    if requests_collection is not None and req_id:
-        try:
-            requests_collection.update_one(
-                {"_id": ObjectId(req_id)},
-                {"$set": {"status": "DENIED", "resolved_at": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")}}
-            )
-        except Exception:
-            pass
-
-    return render_template(
-        'error.html', 
-        code="Dismissed", 
-        title="Permission Request Ignored", 
-        message=f"The request for '{action}' has been dismissed. The Sub-Admin remains restricted."
-    ), 200
-
 # =========================================================
-# 💥 6. SUB-ADMIN WORKSPACE & APIS 💥
+# 💥 ૬. SUB-ADMIN WORKSPACE & PROFILE REQUESTS 💥
 # =========================================================
 @app.route('/subadmin')
 def subadmin_dashboard():
     if session.get('user_role') != 'sub_admin':
         abort(404)
-
     sub_id = session.get('subadmin_id')
     sub_info = subadmins_collection.find_one({"_id": ObjectId(sub_id)}) if subadmins_collection is not None else None
-    
     if not sub_info:
         session.clear()
         abort(404)
 
-    log_activity(sub_info['name'], sub_info['email'], "Viewed Dashboard", "ALLOWED", "Navigated to Sub-Admin Workspace")
-
-    visitors = []
-    if sub_info.get('can_view_visitors') and visitors_collection is not None:
-        visitors = list(visitors_collection.find().sort('_id', -1))
-
-    instructions = []
-    if instructions_collection is not None:
-        instructions = list(instructions_collection.find({"subadmin_id": sub_id}).sort('_id', -1))
+    visitors = list(visitors_collection.find().sort('_id', -1)) if visitors_collection is not None else []
+    instructions = list(instructions_collection.find({"subadmin_id": sub_id}).sort('_id', -1)) if instructions_collection is not None else []
 
     return render_template('subadmin.html', subadmin_info=sub_info, visitors=visitors, instructions=instructions)
+
+@app.route('/subadmin/request-profile-update', methods=['POST'])
+def subadmin_request_profile_update():
+    if session.get('user_role') != 'sub_admin':
+        return jsonify({"status": "unauthorized"}), 401
+    data = request.get_json() or {}
+    new_name = data.get('name', '').strip()
+    new_email = data.get('email', '').strip()
+    sub_id = session.get('subadmin_id')
+    sub_name = session.get('subadmin_name')
+    sub_email = session.get('subadmin_email')
+
+    if requests_collection is not None:
+        requests_collection.insert_one({
+            "subadmin_id": sub_id,
+            "subadmin_name": sub_name,
+            "subadmin_email": sub_email,
+            "action": f"Profile Update: Name to '{new_name}', Email to '{new_email}'",
+            "permission_key": "profile_change",
+            "new_name": new_name,
+            "new_email": new_email,
+            "status": "PENDING",
+            "requested_at": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
+        })
+        log_activity(sub_name, sub_email, "Requested Profile Credential Change", "RESTRICTED")
+
+    return jsonify({"status": "success", "message": "Profile update request has been routed to Main Admin for approval!"})
 
 @app.route('/subadmin/request-permission', methods=['POST'])
 def request_permission():
     if session.get('user_role') != 'sub_admin':
         return jsonify({"status": "error", "message": "Unauthorized"}), 401
-    
     data = request.get_json() or {}
     action_name = data.get('action', 'Unknown Action')
     perm_key = data.get('permission_key', '')
@@ -565,9 +566,8 @@ def request_permission():
     sub_name = session.get('subadmin_name')
     sub_email = session.get('subadmin_email')
 
-    req_id = ""
     if requests_collection is not None:
-        insert_res = requests_collection.insert_one({
+        requests_collection.insert_one({
             "subadmin_id": sub_id,
             "subadmin_name": sub_name,
             "subadmin_email": sub_email,
@@ -576,36 +576,20 @@ def request_permission():
             "status": "PENDING",
             "requested_at": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
         })
-        req_id = str(insert_res.inserted_id)
-
-    log_activity(sub_name, sub_email, f"Unauthorized Action: {action_name}", "RESTRICTED", f"Requested flag: {perm_key}")
-
-    threading.Thread(
-        target=async_email_worker,
-        args=(sub_name, sub_email, action_name, perm_key, sub_id, req_id),
-        daemon=True
-    ).start()
-    
-    return jsonify({
-        "status": "success",
-        "message": f"Your request for '{action_name}' has been delivered to Main Admin's command center and email!"
-    })
+    log_activity(sub_name, sub_email, f"Requested Access: {action_name}", "RESTRICTED", perm_key)
+    return jsonify({"status": "success", "message": f"Your request for '{action_name}' has been routed to Main Admin's command center!"})
 
 @app.route('/subadmin/send-message', methods=['POST'])
 def subadmin_send_message():
     if session.get('user_role') != 'sub_admin':
-        return jsonify({"status": "error", "message": "Unauthorized"}), 401
-    
+        return jsonify({"status": "error"}), 401
     data = request.get_json() or {}
     subject = data.get('subject', 'Work Query').strip()
     content = data.get('content', '').strip()
     sub_name = session.get('subadmin_name', 'Sub-Admin')
     sub_email = session.get('subadmin_email', '')
 
-    if not content:
-        return jsonify({"status": "error", "message": "Message content cannot be empty."}), 400
-
-    if messages_collection is not None:
+    if messages_collection is not None and content:
         messages_collection.insert_one({
             "subadmin_name": sub_name,
             "subadmin_email": sub_email,
@@ -622,7 +606,6 @@ def subadmin_send_message():
 def api_subadmin_poll():
     if session.get('user_role') != 'sub_admin':
         return jsonify({"status": "unauthorized"}), 401
-
     sub_id = session.get('subadmin_id')
     result = {"new_instruction": None, "resolved_request": None}
 
@@ -650,23 +633,17 @@ def api_subadmin_poll():
                 "status": resolved.get('status')
             }
             requests_collection.update_one({"_id": resolved['_id']}, {"$set": {"notified": True}})
-
     return jsonify(result)
 
 @app.route('/subadmin/instruction-action', methods=['POST'])
 def instruction_action():
     if session.get('user_role') != 'sub_admin':
         return jsonify({"status": "unauthorized"}), 401
-    
     data = request.get_json() or {}
     inst_id = data.get('id')
     action = data.get('action')
-
     if instructions_collection is not None and inst_id:
-        instructions_collection.update_one(
-            {"_id": ObjectId(inst_id)},
-            {"$set": {"status": action}}
-        )
+        instructions_collection.update_one({"_id": ObjectId(inst_id)}, {"$set": {"status": action}})
     return jsonify({"status": "success"})
 
 @app.route('/admin/logout')
@@ -675,7 +652,7 @@ def logout():
     return redirect(url_for('home'))
 
 # =========================================================
-# 💥 7. ERROR HANDLERS & DOWNLOADS 💥
+# 💥 ૭. ERROR HANDLERS & DOWNLOADS 💥
 # =========================================================
 @app.errorhandler(HTTPException)
 def handle_http_exception(e):
@@ -687,7 +664,7 @@ def handle_generic_server_crash(e):
 
 @app.route('/error/<int:code>')
 def simulate_error(code):
-    if code in defaultexceptions:
+    if code in default_exceptions:
         abort(code)
     return render_template('error.html', code=code, title="Custom Status", message="Non-standard status code."), 400
 
@@ -707,7 +684,6 @@ def reset_session():
 def download_pdf():
     if not session.get('user_registered'):
         return redirect(url_for('home', action='download_click'))
-    
     buffer = io.BytesIO()
     p = canvas.Canvas(buffer, pagesize=letter)
     width, height = letter

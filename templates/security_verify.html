@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Verification · Air Cursor</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+        body { background: #0c0d11; color: #E6E4E0; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .verify-card { background: #16171d; border: 1px solid rgba(197, 168, 128, 0.35); border-radius: 28px; padding: 40px 35px; width: 100%; max-width: 460px; box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 30px rgba(197,168,128,0.15); text-align: center; }
+        .badge-icon { font-size: 3.5rem; margin-bottom: 12px; display: block; }
+        h1 { color: #C5A880; font-size: 1.5rem; margin-bottom: 8px; font-weight: 800; }
+        p { color: rgba(230, 228, 224, 0.7); font-size: 0.92rem; line-height: 1.5; margin-bottom: 25px; }
+        .otp-input { width: 100%; padding: 14px; font-size: 1.6rem; letter-spacing: 12px; text-align: center; background: #0d0e12; border: 1px solid #333; border-radius: 12px; color: #00e5ff; font-weight: 800; margin-bottom: 20px; }
+        .btn-gold { background: linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%); color: #0c0d11; border: none; padding: 12px 30px; border-radius: 99px; font-weight: 800; font-size: 0.95rem; cursor: pointer; width: 100%; margin-bottom: 12px; }
+        .btn-link { background: none; border: none; color: #00e5ff; cursor: pointer; font-size: 0.85rem; text-decoration: underline; margin-top: 10px; }
+        .unlocked-form { display: none; text-align: left; margin-top: 20px; border-top: 1px solid #282a32; padding-top: 20px; }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 0.82rem; color: #aaa; margin-bottom: 5px; }
+        .form-group input { width: 100%; padding: 10px 12px; border-radius: 8px; background: #0d0e12; border: 1px solid #333; color: #fff; }
+    </style>
+</head>
+<body>
+    <div class="verify-card">
+        <span class="badge-icon">🔐</span>
+        <h1>Root Security Verification</h1>
+        <p>A 6-digit one-time passcode (OTP) has been dispatched from <b>aircursor.verify@gmail.com</b> to your administrator inbox.</p>
+
+        <!-- OTP Input Step -->
+        <div id="otpStep">
+            <input type="text" id="otpCode" class="otp-input" maxlength="6" placeholder="------" autofocus>
+            <button class="btn-gold" onclick="verifyOtp()">Authorize & Unlock</button>
+            <br>
+            <button class="btn-link" onclick="forgotPasscode()">🔑 Forgot Master Passcode?</button>
+        </div>
+
+        <!-- Unlocked Profile & Passcode Update Step -->
+        <div id="updateStep" class="unlocked-form">
+            <h3 style="color:#2ed573; margin-bottom:15px; font-size:1.1rem; text-align:center;">✅ Verification Successful!</h3>
+            <form action="/admin/execute-profile-update" method="POST">
+                <input type="hidden" name="verified_token" id="verifiedToken">
+                <div class="form-group">
+                    <label>New Secret Name:</label>
+                    <input type="text" name="new_name" value="{{ main_name }}" required>
+                </div>
+                <div class="form-group">
+                    <label>New Secret Email:</label>
+                    <input type="email" name="new_email" value="{{ main_email }}" required>
+                </div>
+                <div class="form-group">
+                    <label>New Master Passcode (Optional):</label>
+                    <input type="password" name="new_passcode" placeholder="Leave blank to keep current">
+                </div>
+                <div class="form-group" style="border-top:1px solid #333; padding-top:10px;">
+                    <label style="color:#ff4757; font-weight:bold;">ENTER CURRENT PASSCODE TO FINALIZE:</label>
+                    <input type="password" name="current_passcode" placeholder="Current Master Passcode" required>
+                </div>
+                <button type="submit" class="btn-gold" style="margin-top:10px;">Save Root Credentials</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function verifyOtp() {
+            const code = document.getElementById('otpCode').value.trim();
+            if (code.length !== 6) {
+                alert('Please enter a valid 6-digit OTP.');
+                return;
+            }
+
+            fetch('/api/admin/validate-otp', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ otp: code })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('otpStep').style.display = 'none';
+                    document.getElementById('updateStep').style.display = 'block';
+                    document.getElementById('verifiedToken').value = data.token;
+                } else {
+                    alert('Invalid or Expired OTP. Please check your email.');
+                }
+            })
+            .catch(() => alert('Network error verifying OTP.'));
+        }
+
+        function forgotPasscode() {
+            if (confirm('Dispatch current Master Passcode to your registered admin email?')) {
+                fetch('/admin/forgot-passcode', { method: 'POST' })
+                .then(res => res.json())
+                .then(data => alert(data.message));
+            }
+        }
+    </script>
+</body>
+</html>

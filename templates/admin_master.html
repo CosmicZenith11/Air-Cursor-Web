@@ -132,15 +132,124 @@
             transform: translateY(-50%) translateX(0);
         }
 
-        .dock-avatar-wrapper { position: relative; cursor: pointer; }
-        .dock-avatar {
-            width: 44px;
-            height: 44px;
+        /* 💥 EXACT GOLD RING FOR MAIN ADMIN (MATCHES IMAGE-4) 💥 */
+        .main-admin-avatar-frame {
+            position: relative;
+            width: 86px;
+            height: 86px;
             border-radius: 50%;
-            border: 2px solid var(--accent-gold);
+            padding: 5px;
+            background: conic-gradient(from 0deg, #dfac4a, #ffefb5, #c68a26, #fff4cc, #dfac4a, #986314, #ffdf85, #dfac4a);
+            box-shadow: 0 0 16px rgba(218, 165, 32, 0.55), inset 0 0 6px rgba(255, 235, 150, 0.6);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .main-admin-avatar-frame::before {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            border-radius: 50%;
+            border: 1.5px dashed rgba(255, 245, 200, 0.7);
+            pointer-events: none;
+        }
+
+        .main-admin-avatar-frame img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
             object-fit: cover;
             display: block;
+            background: #0d0e12;
         }
+
+        .dock-avatar-frame-main {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            padding: 3.5px;
+            background: conic-gradient(from 0deg, #dfac4a, #ffefb5, #c68a26, #fff4cc, #dfac4a, #986314, #ffdf85, #dfac4a);
+            box-shadow: 0 0 10px rgba(218, 165, 32, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .dock-avatar-frame-main img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* 💥 EXACT ANIMATED DAY/NIGHT TOGGLE (MATCHES IMAGE_B8C7C5) 💥 */
+        .day-night-toggle {
+            width: 82px;
+            height: 38px;
+            border-radius: 999px;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            border: 2px solid var(--dock-border);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5), inset 0 2px 4px rgba(0,0,0,0.6);
+            transition: all 0.5s ease;
+            background: #0f1c3f;
+            user-select: none;
+            display: inline-block;
+        }
+        body.light-mode .day-night-toggle {
+            background: #4ab7f7;
+            border-color: rgba(168, 137, 95, 0.4);
+        }
+        .landscape {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 15px;
+            background: #174b68;
+            border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+            transition: background 0.5s ease;
+            z-index: 2;
+        }
+        body.light-mode .landscape { background: #2ea886; }
+        .palm {
+            position: absolute;
+            left: 9px;
+            bottom: -2px;
+            font-size: 13px;
+            z-index: 3;
+            transition: opacity 0.4s ease;
+        }
+        .celestial-body {
+            position: absolute;
+            top: 5px;
+            right: 6px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #fdf5d6;
+            box-shadow: 0 0 10px #fffae6;
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55), background 0.5s ease, box-shadow 0.5s ease;
+            z-index: 4;
+        }
+        .crater { position: absolute; border-radius: 50%; background: #ded4b1; opacity: 0.6; }
+        .c1 { width: 4px; height: 4px; top: 5px; left: 6px; }
+        .c2 { width: 5px; height: 5px; bottom: 5px; right: 5px; }
+        .c3 { width: 3px; height: 3px; bottom: 8px; left: 8px; }
+        body.light-mode .celestial-body {
+            transform: translateX(-46px);
+            background: #ffcc00;
+            box-shadow: 0 0 14px #ffaa00;
+        }
+        body.light-mode .crater { opacity: 0; }
+        .sky-elements { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+        .star { position: absolute; color: #fff; font-size: 8px; opacity: 0.8; transition: opacity 0.4s ease; }
+        .star-1 { top: 5px; left: 32px; font-size: 7px; }
+        .star-2 { top: 14px; left: 24px; font-size: 6px; }
+        .star-3 { top: 7px; left: 16px; font-size: 5px; }
+        body.light-mode .star { opacity: 0; }
 
         /* MAIN VIEWPORT */
         .main-viewport {
@@ -165,9 +274,8 @@
 
         .top-header h1 { font-size: 1.7rem; color: var(--accent-gold); font-weight: 800; }
         .top-header p { font-size: 0.85rem; color: var(--text-sub); margin-top: 4px; }
-        .header-actions { display: flex; gap: 12px; align-items: center; }
+        .header-actions { display: flex; gap: 14px; align-items: center; }
 
-        /* 💥 REFRESH BUTTON WITH SPIN ANIMATION 💥 */
         .btn-refresh {
             background: #181920;
             border: 1px solid var(--card-border);
@@ -186,32 +294,6 @@
         .spinning { animation: spinAnim 0.8s linear infinite; }
         @keyframes spinAnim { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* ANIMATED DAY/NIGHT TOGGLE SWITCH */
-        .theme-switch-box {
-            position: relative;
-            width: 58px;
-            height: 30px;
-            background: #1c1d24;
-            border: 1px solid var(--dock-border);
-            border-radius: 99px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            padding: 3px;
-        }
-        .theme-slider {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            transition: transform 0.3s ease;
-        }
-        body.light-mode .theme-slider { transform: translateX(28px); background: #141517; color:#fff; }
-
         .btn-gold {
             background: linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%);
             color: #0c0d11;
@@ -225,58 +307,6 @@
             align-items: center;
             gap: 6px;
         }
-
-        /* 💥 EXACT GOLD RING FOR MAIN ADMIN (MATCHES IMAGE-4) 💥 */
-.main-admin-avatar-frame {
-    position: relative;
-    width: 86px;
-    height: 86px;
-    border-radius: 50%;
-    padding: 5px;
-    background: conic-gradient(from 0deg, #dfac4a, #ffefb5, #c68a26, #fff4cc, #dfac4a, #986314, #ffdf85, #dfac4a);
-    box-shadow: 0 0 16px rgba(218, 165, 32, 0.55), inset 0 0 6px rgba(255, 235, 150, 0.6);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.main-admin-avatar-frame::before {
-    content: '';
-    position: absolute;
-    inset: 2px;
-    border-radius: 50%;
-    border: 1.5px dashed rgba(255, 245, 200, 0.7);
-    pointer-events: none;
-}
-
-.main-admin-avatar-frame img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
-    display: block;
-    background: #0d0e12;
-}
-
-/* Sidebar capsule avatar ring */
-.dock-avatar-frame-main {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    padding: 3.5px;
-    background: conic-gradient(from 0deg, #dfac4a, #ffefb5, #c68a26, #fff4cc, #dfac4a, #986314, #ffdf85, #dfac4a);
-    box-shadow: 0 0 10px rgba(218, 165, 32, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.dock-avatar-frame-main img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
-}
 
         .btn-cancel {
             background: #252830;
@@ -307,11 +337,10 @@
 
         .badge { display: inline-block; padding: 3px 10px; border-radius: 99px; font-size: 0.75rem; font-weight: 700; background: rgba(0, 229, 255, 0.15); color: #00e5ff; }
 
-        /* BALANCED CHARTS GRID */
         .charts-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; }
         .chart-box { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 25px; box-shadow: var(--shadow); }
 
-        /* Custom Modal */
+        /* Universal Glassmorphism Modal */
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(14px); justify-content: center; align-items: center; z-index: 100000; padding: 20px; }
         .modal-box { background: #16171d; border: 1px solid var(--card-border); border-radius: 28px; padding: 32px 28px; width: 100%; max-width: 480px; color: #fff; box-shadow: 0 25px 60px rgba(0,0,0,0.8); }
         .form-group { margin-bottom: 15px; text-align: left; }
@@ -337,10 +366,12 @@
             <div class="nav-pill-item" onclick="switchSection('sec-settings', this)"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg><div class="dock-tooltip">7. Settings & OTP Portal</div></div>
         </div>
 
-        <!-- Avatar -->
+        <!-- Avatar with Gold Ring -->
         <div class="dock-avatar-wrapper" onclick="switchSection('sec-settings', document.querySelectorAll('.nav-pill-item')[6])">
-            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80" alt="Admin" class="dock-avatar" id="dockAvatarImg">
-            <div class="dock-tooltip">{{ main_name }} (Root)</div>
+            <div class="dock-avatar-frame-main">
+                <img src="{{ main_avatar }}" alt="Admin" id="dockAvatarImg">
+            </div>
+            <div class="dock-tooltip">{{ main_name }} (Root Admin)</div>
         </div>
     </nav>
 
@@ -359,7 +390,14 @@
                         <svg class="refresh-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
                         Sync Live Data
                     </button>
-                    <div class="theme-switch-box" onclick="toggleTheme()"><div class="theme-slider" id="themeSliderIcon">☀️</div></div>
+                    <!-- 💥 Day/Night Animated Toggle Switch (Matching image_b8c7c5) 💥 -->
+                    <div class="day-night-toggle" onclick="toggleTheme()">
+                        <div class="sky-elements">
+                            <div class="star star-1">✦</div><div class="star star-2">★</div><div class="star star-3">•</div>
+                        </div>
+                        <div class="landscape"><div class="palm">🌴</div></div>
+                        <div class="celestial-body"><div class="crater c1"></div><div class="crater c2"></div><div class="crater c3"></div></div>
+                    </div>
                     <a href="/admin/logout" class="btn-danger" style="padding:9px 20px; border-radius:99px;">Exit</a>
                 </div>
             </div>
@@ -413,47 +451,9 @@
                 </div>
             </div>
 
-            <!-- 💥 SECTION 7: PROFILE SETTINGS (UNIFORM LAYOUT + REMOVE BUTTON) 💥 -->
-<div class="box-card">
-    <div style="font-size:1.15rem; font-weight:700; color:var(--text-main); margin-bottom:20px; display:flex; align-items:center; gap:8px;">
-        <span>👤</span> <span>Admin Profile & Picture</span>
-    </div>
-    
-    <div style="display:flex; align-items:center; gap:25px; flex-wrap:wrap;">
-        <!-- Gold Ring Frame around Avatar -->
-        <div class="main-admin-avatar-frame">
-            <img src="{{ main_avatar or 'data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><defs><linearGradient id=\'g\' x1=\'0\' y1=\'0\' x2=\'0\' y2=\'1\'><stop offset=\'0%25\' stop-color=\'%234ea5ff\'/><stop offset=\'50%25\' stop-color=\'%232a85ff\'/><stop offset=\'100%25\' stop-color=\'%231868db\'/></linearGradient><linearGradient id=\'a\' x1=\'0\' y1=\'0\' x2=\'0\' y2=\'1\'><stop offset=\'0%25\' stop-color=\'%23ffffff\'/><stop offset=\'100%25\' stop-color=\'%23e2edfc\'/></linearGradient></defs><circle cx=\'50\' cy=\'50\' r=\'50\' fill=\'url(%23g)\'/><circle cx=\'50\' cy=\'37\' r=\'15\' fill=\'url(%23a)\'/><path d=\'M 23.5 80 C 23.5 63 35 56 50 56 C 65 56 76.5 63 76.5 80 Z\' fill=\'url(%23a)\'/></svg>' }}" alt="Admin Avatar" id="previewAvatar">
-        </div>
-
-        <div style="flex:1; min-width:260px;">
-            <label style="font-size:0.88rem; color:#aaa; display:block; margin-bottom:10px;">
-                Choose Picture from Computer/Device:
-            </label>
-            <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-                <input type="file" id="avatarFileInput" accept="image/*" onchange="uploadAvatarFromDevice(event)" style="font-size:0.85rem; color:#aaa;">
-                <button type="button" onclick="removeAdminAvatar()" class="btn-danger" style="padding:7px 16px; border-radius:99px; font-size:0.82rem; background:#ff4757; color:#fff; border:none; cursor:pointer;">
-                    🗑️ Remove Photo
-                </button>
-            </div>
-            <p style="font-size:0.75rem; color:var(--text-sub); margin-top:8px;">
-                Supported: JPG, PNG or WEBP. Removing photo reverts to default blue avatar.
-            </p>
-        </div>
-    </div>
-</div>
-
-            <div class="dock-avatar-wrapper" onclick="switchSection('sec-settings', document.querySelectorAll('.nav-pill-item')[6])">
-    <div class="dock-avatar-frame-main">
-        <img src="{{ main_avatar or 'data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><defs><linearGradient id=\'g\' x1=\'0\' y1=\'0\' x2=\'0\' y2=\'1\'><stop offset=\'0%25\' stop-color=\'%234ea5ff\'/><stop offset=\'50%25\' stop-color=\'%232a85ff\'/><stop offset=\'100%25\' stop-color=\'%231868db\'/></linearGradient><linearGradient id=\'a\' x1=\'0\' y1=\'0\' x2=\'0\' y2=\'1\'><stop offset=\'0%25\' stop-color=\'%23ffffff\'/><stop offset=\'100%25\' stop-color=\'%23e2edfc\'/></linearGradient></defs><circle cx=\'50\' cy=\'50\' r=\'50\' fill=\'url(%23g)\'/><circle cx=\'50\' cy=\'37\' r=\'15\' fill=\'url(%23a)\'/><path d=\'M 23.5 80 C 23.5 63 35 56 50 56 C 65 56 76.5 63 76.5 80 Z\' fill=\'url(%23a)\'/></svg>' }}" alt="Admin" id="dockAvatarImg">
-    </div>
-    <div class="dock-tooltip">{{ main_name }} (Root Admin)</div>
-</div>
-            
             <div class="box-card">
                 <table>
-                    <thead>
-                        <tr><th>Name</th><th>Email</th><th>Permissions</th><th>Created</th><th>Action</th></tr>
-                    </thead>
+                    <thead><tr><th>Name</th><th>Email</th><th>Permissions</th><th>Created</th><th>Action</th></tr></thead>
                     <tbody id="subAdminsTableBody">
                         {% for sa in sub_admins %}
                         <tr>
@@ -487,9 +487,7 @@
 
             <div class="box-card">
                 <table>
-                    <thead>
-                        <tr><th>Time (UTC)</th><th>Sub-Admin</th><th>Action</th><th>Status</th><th>Details</th></tr>
-                    </thead>
+                    <thead><tr><th>Time (UTC)</th><th>Sub-Admin</th><th>Action</th><th>Status</th><th>Details</th></tr></thead>
                     <tbody id="auditTableBody">
                         {% for log in activity_logs %}
                         <tr>
@@ -519,9 +517,7 @@
 
             <div class="box-card">
                 <table>
-                    <thead>
-                        <tr><th>#</th><th>Name</th><th>Email</th><th>Registered At</th><th>Verification</th><th>Action</th></tr>
-                    </thead>
+                    <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Registered At</th><th>Verification</th><th>Action</th></tr></thead>
                     <tbody id="leadsTableBody">
                         {% for u in visitors %}
                         <tr>
@@ -553,13 +549,10 @@
                 </div>
             </div>
 
-            <!-- Pending Requests -->
             <div class="box-card" style="border-color: rgba(255, 165, 2, 0.4);">
                 <div class="box-title"><span style="color:#ffa502;">🔔 Pending Requests</span></div>
                 <table>
-                    <thead>
-                        <tr><th>Time</th><th>Sub-Admin</th><th>Action</th><th>Key</th><th>Decision</th></tr>
-                    </thead>
+                    <thead><tr><th>Time</th><th>Sub-Admin</th><th>Action</th><th>Key</th><th>Decision</th></tr></thead>
                     <tbody id="pendingTableBody">
                         {% for req in pending_requests %}
                         <tr>
@@ -579,7 +572,6 @@
                 </table>
             </div>
 
-            <!-- Messages -->
             <div class="box-card">
                 <div class="box-title"><span style="color:#00e5ff;">📥 Sub-Admin Work Notes</span></div>
                 <table>
@@ -611,19 +603,35 @@
             </div>
 
             <div class="charts-grid">
-                <!-- Profile Picture from Device -->
+                <!-- 💥 UNIFORM PROFILE BOX WITH GOLD RING & REMOVE BUTTON 💥 -->
                 <div class="chart-box">
-                    <h3 style="color:var(--accent-gold); margin-bottom:15px;">👤 Admin Avatar (Device Upload)</h3>
-                    <div style="display:flex; align-items:center; gap:20px;">
-                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80" alt="Avatar" id="previewAvatar" style="width:80px; height:80px; border-radius:50%; border:2px solid var(--accent-gold); object-fit:cover;">
-                        <div>
-                            <label style="font-size:0.85rem; color:#aaa; display:block; margin-bottom:8px;">Choose Picture from Computer/Device:</label>
-                            <input type="file" id="avatarFileInput" accept="image/*" onchange="uploadAvatarFromDevice(event)" style="font-size:0.82rem; color:#aaa;">
+                    <div style="font-size:1.15rem; font-weight:700; color:var(--text-main); margin-bottom:18px; display:flex; align-items:center; gap:8px;">
+                        <span>👤</span> <span>Admin Profile & Picture</span>
+                    </div>
+                    
+                    <div style="display:flex; align-items:center; gap:22px; flex-wrap:wrap;">
+                        <div class="main-admin-avatar-frame">
+                            <img src="{{ main_avatar }}" alt="Admin Avatar" id="previewAvatar">
+                        </div>
+
+                        <div style="flex:1; min-width:240px;">
+                            <label style="font-size:0.88rem; color:#aaa; display:block; margin-bottom:10px;">
+                                Choose Picture from Computer/Device:
+                            </label>
+                            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                                <input type="file" id="avatarFileInput" accept="image/*" onchange="uploadAvatarFromDevice(event)" style="font-size:0.85rem; color:#aaa;">
+                                <button type="button" onclick="removeAdminAvatar()" class="btn-danger" style="padding:7px 16px; border-radius:99px; font-size:0.82rem; background:#ff4757; color:#fff; border:none; cursor:pointer;">
+                                    🗑️ Remove Photo
+                                </button>
+                            </div>
+                            <p style="font-size:0.75rem; color:var(--text-sub); margin-top:8px;">
+                                Removing photo reverts to default blue avatar.
+                            </p>
                         </div>
                     </div>
                 </div>
 
-                <!-- OTP Protected Credentials Box -->
+                <!-- OTP Credentials -->
                 <div class="chart-box">
                     <h3 style="color:var(--accent-gold); margin-bottom:12px;">🔒 Modify Credentials & Passcode</h3>
                     <p style="color:var(--text-sub); font-size:0.88rem; line-height:1.5; margin-bottom:20px;">
@@ -642,15 +650,15 @@
         </section>
     </main>
 
-    <!-- CUSTOM THEMED CONFIRMATION MODAL (NO BROWSER ALERTS) -->
-    <div id="customModal" class="modal-overlay">
+    <!-- UNIVERSAL CUSTOM MODAL (NO BROWSER ALERTS) -->
+    <div id="universalAppModal" class="modal-overlay">
         <div class="modal-box" style="text-align:center;">
-            <span id="cEmoji" style="font-size:3.2rem; display:block; margin-bottom:10px;">⚠️</span>
-            <h2 id="cTitle" style="color:var(--accent-gold); font-size:1.3rem; margin-bottom:8px;">Confirm Operation</h2>
-            <p id="cMsg" style="color:var(--text-sub); font-size:0.92rem; margin-bottom:25px;"></p>
+            <span id="uEmoji" style="font-size:3.2rem; display:block; margin-bottom:10px;">⚠️</span>
+            <h2 id="uTitle" style="color:var(--accent-gold); font-size:1.3rem; margin-bottom:8px;">Notification</h2>
+            <p id="uMsg" style="color:var(--text-sub); font-size:0.92rem; margin-bottom:25px;"></p>
             <div style="display:flex; justify-content:center; gap:12px;">
-                <button onclick="closeCustomModal()" class="btn-cancel">Cancel</button>
-                <button id="cConfirmBtn" class="btn-gold">Confirm</button>
+                <button id="uCancelBtn" onclick="closeUniversalModal()" class="btn-cancel">Cancel</button>
+                <button id="uConfirmBtn" class="btn-gold">Confirm</button>
             </div>
         </div>
     </div>
@@ -700,25 +708,38 @@
     </div>
 
     <script>
-        let modalCallback = null;
-        function showAppConfirm(emoji, title, msg, btnText, onConfirm) {
-            document.getElementById('cEmoji').innerText = emoji || '⚠️';
-            document.getElementById('cTitle').innerText = title;
-            document.getElementById('cMsg').innerText = msg;
-            document.getElementById('cConfirmBtn').innerText = btnText || 'Confirm';
-            modalCallback = onConfirm;
-            document.getElementById('customModal').style.display = 'flex';
+        // 💥 GLOBAL BROWSER POPUP INTERCEPTOR (BANISHES ALL BROWSER ALERTS!) 💥
+        let uModalCallback = null;
+        function showUniversalModal(emoji, title, msg, btnText, showCancel, onConfirm) {
+            document.getElementById('uEmoji').innerText = emoji || '⚠️';
+            document.getElementById('uTitle').innerText = title || 'Notice';
+            document.getElementById('uMsg').innerText = msg;
+            document.getElementById('uConfirmBtn').innerText = btnText || 'Understood';
+            document.getElementById('uCancelBtn').style.display = showCancel ? 'inline-block' : 'none';
+            uModalCallback = onConfirm;
+            document.getElementById('universalAppModal').style.display = 'flex';
         }
-        function closeCustomModal() { document.getElementById('customModal').style.display = 'none'; modalCallback = null; }
-        document.getElementById('cConfirmBtn').onclick = () => { if (modalCallback) { modalCallback(); closeCustomModal(); } };
+        function closeUniversalModal() {
+            document.getElementById('universalAppModal').style.display = 'none';
+            uModalCallback = null;
+        }
+        document.getElementById('uConfirmBtn').onclick = () => {
+            if (uModalCallback) uModalCallback();
+            closeUniversalModal();
+        };
+
+        // Override standard window.alert
+        window.alert = function(message) {
+            showUniversalModal('🔔', 'Notification', message, 'OK', false, null);
+        };
 
         function confirmRemoveSubAdmin(id, name) {
-            showAppConfirm('🛡️', 'Revoke Sub-Admin', `Permanently revoke access for ${name}?`, 'Revoke Now', () => {
+            showUniversalModal('🛡️', 'Revoke Sub-Admin', `Permanently revoke access for ${name}?`, 'Revoke Now', true, () => {
                 window.location.href = '/admin/remove-subadmin/' + id;
             });
         }
         function confirmDeleteLead(id) {
-            showAppConfirm('🗑️', 'Delete Lead', 'Permanently remove this visitor entry?', 'Delete Now', () => {
+            showUniversalModal('🗑️', 'Delete Lead', 'Permanently remove this visitor entry?', 'Delete Now', true, () => {
                 window.location.href = '/admin/delete-lead/' + id;
             });
         }
@@ -735,7 +756,7 @@
         function openInstructionModal() { document.getElementById('instructionModal').style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        // 💥 DEVICE AVATAR UPLOAD 💥
+        // 💥 DEVICE AVATAR UPLOAD & REMOVE 💥
         function uploadAvatarFromDevice(e) {
             const file = e.target.files[0];
             if (file) {
@@ -744,18 +765,31 @@
                     const dataUrl = evt.target.result;
                     document.getElementById('previewAvatar').src = dataUrl;
                     document.getElementById('dockAvatarImg').src = dataUrl;
-                    localStorage.setItem('admin_custom_avatar', dataUrl);
+
+                    fetch('/api/admin/avatar/upload', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ avatar_url: dataUrl })
+                    });
                 };
                 reader.readAsDataURL(file);
             }
         }
-        const savedPic = localStorage.getItem('admin_custom_avatar');
-        if (savedPic) {
-            document.getElementById('previewAvatar').src = savedPic;
-            document.getElementById('dockAvatarImg').src = savedPic;
+
+        function removeAdminAvatar() {
+            showUniversalModal('🗑️', 'Reset Avatar', 'Remove custom picture and revert to default avatar?', 'Reset Avatar', true, () => {
+                fetch('/api/admin/avatar/remove', { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('previewAvatar').src = data.default_avatar;
+                    document.getElementById('dockAvatarImg').src = data.default_avatar;
+                    document.getElementById('avatarFileInput').value = '';
+                    showUniversalModal('✅', 'Reset Completed', 'Avatar reset to default successfully.', 'OK', false, null);
+                });
+            });
         }
 
-        // 💥 ANIMATED REFRESH BUTTON (NO FULL RELOAD) 💥
+        // 💥 ANIMATED REFRESH BUTTON 💥
         function triggerSync(btn) {
             const icon = btn.querySelector('.refresh-icon');
             if (icon) icon.classList.add('spinning');
@@ -773,35 +807,35 @@
             .catch(() => { if (icon) icon.classList.remove('spinning'); });
         }
 
-        // 💥 OTP REQUEST 💥
+        // 💥 OTP WORKFLOW 💥
         function requestSecurityOtp() {
-            showAppConfirm('🔐', 'Authorize With OTP', 'Send a 6-digit one-time passcode to your verified inbox?', 'Dispatch OTP', () => {
+            showUniversalModal('🔐', 'Authorize With OTP', 'Send a 6-digit one-time passcode to your verified email?', 'Dispatch OTP', true, () => {
                 fetch('/admin/request-profile-otp', { method: 'POST' })
                 .then(res => res.json())
                 .then(data => {
-                    alert(data.message);
-                    window.location.href = '/admin/security-verify';
+                    showUniversalModal('📩', 'OTP Dispatched', data.message, 'Proceed to Verification', false, () => {
+                        window.location.href = '/admin/security-verify';
+                    });
                 });
             });
         }
 
         function forgotPasscodeDirect() {
-            showAppConfirm('🔑', 'Recover Passcode', 'Dispatch your current Master Passcode to your registered email?', 'Email Passcode', () => {
+            showUniversalModal('🔑', 'Recover Passcode', 'Dispatch your current Master Passcode to your registered email?', 'Email Passcode', true, () => {
                 fetch('/admin/forgot-passcode', { method: 'POST' })
                 .then(res => res.json())
-                .then(data => alert(data.message));
+                .then(data => showUniversalModal('✅', 'Passcode Dispatched', data.message, 'OK', false, null));
             });
         }
 
         function toggleTheme() {
             document.body.classList.toggle('light-mode');
             const isLight = document.body.classList.contains('light-mode');
-            document.getElementById('themeSliderIcon').innerText = isLight ? '🌙' : '☀️';
             localStorage.setItem('air_theme', isLight ? 'light' : 'dark');
         }
         if (localStorage.getItem('air_theme') === 'light') toggleTheme();
 
-        // 💥 CHARTS RENDER 💥
+        // 💥 CHARTS 💥
         let chartsLoaded = false;
         function renderCharts() {
             if (chartsLoaded) return;

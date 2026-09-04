@@ -38,59 +38,27 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; transition: background 0.3s, color 0.3s, border-color 0.3s; }
         body { background: var(--bg-body); color: var(--text-main); min-height: 100vh; overflow-x: hidden; display: flex; }
 
-        /* CAPSULE PILL NAVBAR */
         .dock-capsule {
-            position: fixed;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 70px;
-            height: 90vh;
-            max-height: 720px;
-            background: var(--dock-bg);
-            border: 1px solid var(--dock-border);
-            border-radius: 40px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            padding: 22px 0;
-            z-index: 9999;
+            position: fixed; left: 20px; top: 50%; transform: translateY(-50%);
+            width: 70px; height: 90vh; max-height: 720px;
+            background: var(--dock-bg); border: 1px solid var(--dock-border);
+            border-radius: 40px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
+            display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+            padding: 22px 0; z-index: 9999;
         }
 
         .dock-logo {
-            width: 38px;
-            height: 38px;
-            background: rgba(197, 168, 128, 0.12);
-            border: 1px solid var(--dock-border);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--accent-gold);
-            cursor: pointer;
+            width: 38px; height: 38px; background: rgba(197, 168, 128, 0.12);
+            border: 1px solid var(--dock-border); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--accent-gold); cursor: pointer;
         }
 
-        .dock-nav-group {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            width: 100%;
-            align-items: center;
-        }
-
+        .dock-nav-group { display: flex; flex-direction: column; gap: 12px; width: 100%; align-items: center; }
         .nav-pill-item {
-            position: relative;
-            width: 46px;
-            height: 46px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: var(--text-sub);
-            border: 1px solid transparent;
+            position: relative; width: 46px; height: 46px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; color: var(--text-sub); border: 1px solid transparent;
             transition: all 0.25s ease;
         }
 
@@ -102,192 +70,86 @@
         }
         .nav-pill-item svg { width: 20px; height: 20px; stroke-width: 2; }
 
-        /* 1.2s HOVER TOOLTIP */
         .dock-tooltip {
-            position: absolute;
-            left: 65px;
-            top: 50%;
-            transform: translateY(-50%) translateX(-8px);
-            background: #14151b;
-            border: 1px solid var(--dock-border);
-            color: #ffffff;
-            padding: 8px 16px;
-            border-radius: 12px;
-            font-size: 0.82rem;
-            font-weight: 700;
-            white-space: nowrap;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
+            position: absolute; left: 65px; top: 50%; transform: translateY(-50%) translateX(-8px);
+            background: #14151b; border: 1px solid var(--dock-border); color: #ffffff;
+            padding: 8px 16px; border-radius: 12px; font-size: 0.82rem; font-weight: 700;
+            white-space: nowrap; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            opacity: 0; visibility: hidden; pointer-events: none;
             transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
-            transition-delay: 1.2s;
-            z-index: 10000;
+            transition-delay: 1.2s; z-index: 10000;
         }
 
         .nav-pill-item:hover .dock-tooltip,
         .dock-avatar-wrapper:hover .dock-tooltip {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(-50%) translateX(0);
+            opacity: 1; visibility: visible; transform: translateY(-50%) translateX(0);
         }
 
-        /* 💥 EXACT GOLD RING FOR MAIN ADMIN (MATCHES IMAGE-4) 💥 */
         .main-admin-avatar-frame {
-            position: relative;
-            width: 86px;
-            height: 86px;
-            border-radius: 50%;
-            padding: 5px;
+            position: relative; width: 86px; height: 86px; border-radius: 50%; padding: 5px;
             background: conic-gradient(from 0deg, #dfac4a, #ffefb5, #c68a26, #fff4cc, #dfac4a, #986314, #ffdf85, #dfac4a);
             box-shadow: 0 0 16px rgba(218, 165, 32, 0.55), inset 0 0 6px rgba(255, 235, 150, 0.6);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
+            display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
         }
-
         .main-admin-avatar-frame::before {
-            content: '';
-            position: absolute;
-            inset: 2px;
-            border-radius: 50%;
-            border: 1.5px dashed rgba(255, 245, 200, 0.7);
-            pointer-events: none;
+            content: ''; position: absolute; inset: 2px; border-radius: 50%;
+            border: 1.5px dashed rgba(255, 245, 200, 0.7); pointer-events: none;
         }
-
         .main-admin-avatar-frame img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-            display: block;
-            background: #0d0e12;
+            width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
+            display: block; background: #0d0e12;
         }
 
         .dock-avatar-frame-main {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            padding: 3.5px;
+            width: 48px; height: 48px; border-radius: 50%; padding: 3.5px;
             background: conic-gradient(from 0deg, #dfac4a, #ffefb5, #c68a26, #fff4cc, #dfac4a, #986314, #ffdf85, #dfac4a);
             box-shadow: 0 0 10px rgba(218, 165, 32, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
         }
-        .dock-avatar-frame-main img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-        }
+        .dock-avatar-frame-main img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
 
-        /* 💥 EXACT ANIMATED DAY/NIGHT TOGGLE (MATCHES IMAGE_B8C7C5) 💥 */
         .day-night-toggle {
-            width: 82px;
-            height: 38px;
-            border-radius: 999px;
-            position: relative;
-            cursor: pointer;
-            overflow: hidden;
-            border: 2px solid var(--dock-border);
+            width: 82px; height: 38px; border-radius: 999px; position: relative; cursor: pointer;
+            overflow: hidden; border: 2px solid var(--dock-border);
             box-shadow: 0 4px 15px rgba(0,0,0,0.5), inset 0 2px 4px rgba(0,0,0,0.6);
-            transition: all 0.5s ease;
-            background: #0f1c3f;
-            user-select: none;
-            display: inline-block;
+            transition: all 0.5s ease; background: #0f1c3f; user-select: none; display: inline-block;
         }
-        body.light-mode .day-night-toggle {
-            background: #4ab7f7;
-            border-color: rgba(168, 137, 95, 0.4);
-        }
-        .landscape {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 15px;
-            background: #174b68;
-            border-radius: 50% 50% 0 0 / 100% 100% 0 0;
-            transition: background 0.5s ease;
-            z-index: 2;
-        }
+        body.light-mode .day-night-toggle { background: #4ab7f7; border-color: rgba(168, 137, 95, 0.4); }
+        .landscape { position: absolute; bottom: 0; left: 0; right: 0; height: 15px; background: #174b68; border-radius: 50% 50% 0 0 / 100% 100% 0 0; transition: background 0.5s ease; z-index: 2; }
         body.light-mode .landscape { background: #2ea886; }
-        .palm {
-            position: absolute;
-            left: 9px;
-            bottom: -2px;
-            font-size: 13px;
-            z-index: 3;
-            transition: opacity 0.4s ease;
-        }
+        .palm { position: absolute; left: 9px; bottom: -2px; font-size: 13px; z-index: 3; }
         .celestial-body {
-            position: absolute;
-            top: 5px;
-            right: 6px;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: #fdf5d6;
-            box-shadow: 0 0 10px #fffae6;
-            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55), background 0.5s ease, box-shadow 0.5s ease;
-            z-index: 4;
+            position: absolute; top: 5px; right: 6px; width: 24px; height: 24px; border-radius: 50%;
+            background: #fdf5d6; box-shadow: 0 0 10px #fffae6;
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55), background 0.5s ease, box-shadow 0.5s ease; z-index: 4;
         }
         .crater { position: absolute; border-radius: 50%; background: #ded4b1; opacity: 0.6; }
         .c1 { width: 4px; height: 4px; top: 5px; left: 6px; }
         .c2 { width: 5px; height: 5px; bottom: 5px; right: 5px; }
         .c3 { width: 3px; height: 3px; bottom: 8px; left: 8px; }
-        body.light-mode .celestial-body {
-            transform: translateX(-46px);
-            background: #ffcc00;
-            box-shadow: 0 0 14px #ffaa00;
-        }
+        body.light-mode .celestial-body { transform: translateX(-46px); background: #ffcc00; box-shadow: 0 0 14px #ffaa00; }
         body.light-mode .crater { opacity: 0; }
         .sky-elements { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
-        .star { position: absolute; color: #fff; font-size: 8px; opacity: 0.8; transition: opacity 0.4s ease; }
+        .star { position: absolute; color: #fff; font-size: 8px; opacity: 0.8; }
         .star-1 { top: 5px; left: 32px; font-size: 7px; }
         .star-2 { top: 14px; left: 24px; font-size: 6px; }
         .star-3 { top: 7px; left: 16px; font-size: 5px; }
         body.light-mode .star { opacity: 0; }
 
-        /* MAIN VIEWPORT */
-        .main-viewport {
-            margin-left: 115px;
-            padding: 35px 35px 35px 15px;
-            width: calc(100vw - 125px);
-            max-width: 1400px;
-        }
-
+        .main-viewport { margin-left: 115px; padding: 35px 35px 35px 15px; width: calc(100vw - 125px); max-width: 1400px; }
         .view-section { display: none; animation: fadeInView 0.3s ease-out forwards; }
         .view-section.active-view { display: block; }
         @keyframes fadeInView { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .top-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 18px;
-            border-bottom: 1px solid var(--card-border);
-        }
-
+        .top-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 18px; border-bottom: 1px solid var(--card-border); }
         .top-header h1 { font-size: 1.7rem; color: var(--accent-gold); font-weight: 800; }
         .top-header p { font-size: 0.85rem; color: var(--text-sub); margin-top: 4px; }
         .header-actions { display: flex; gap: 14px; align-items: center; }
 
         .btn-refresh {
-            background: #181920;
-            border: 1px solid var(--card-border);
-            color: var(--accent-gold);
-            padding: 8px 16px;
-            border-radius: 99px;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 0.82rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
+            background: #181920; border: 1px solid var(--card-border); color: var(--accent-gold);
+            padding: 8px 16px; border-radius: 99px; cursor: pointer; font-weight: 700; font-size: 0.82rem;
+            display: inline-flex; align-items: center; gap: 8px;
         }
         .btn-refresh:hover { background: rgba(197, 168, 128, 0.15); }
         .refresh-icon { width: 16px; height: 16px; transition: transform 0.8s ease; }
@@ -295,30 +157,13 @@
         @keyframes spinAnim { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
         .btn-gold {
-            background: linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%);
-            color: #0c0d11;
-            border: none;
-            padding: 9px 22px;
-            border-radius: 99px;
-            font-weight: 700;
-            font-size: 0.88rem;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
+            background: linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%); color: #0c0d11; border: none;
+            padding: 9px 22px; border-radius: 99px; font-weight: 700; font-size: 0.88rem; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 6px;
         }
 
-        .btn-cancel {
-            background: #252830;
-            color: #E6E4E0;
-            border: 1px solid rgba(255,255,255,0.15);
-            padding: 10px 24px;
-            border-radius: 99px;
-            font-weight: 600;
-            cursor: pointer;
-        }
+        .btn-cancel { background: #252830; color: #E6E4E0; border: 1px solid rgba(255,255,255,0.15); padding: 10px 24px; border-radius: 99px; font-weight: 600; cursor: pointer; }
         .btn-cancel:hover { background: #333640; }
-
         .btn-danger { background: #ff4757; color: #fff; border: none; padding: 6px 14px; border-radius: 8px; font-size: 0.82rem; font-weight: 600; cursor: pointer; text-decoration: none; }
         .btn-approve { background: #2ed573; color: white; padding: 6px 14px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 0.85rem; margin-right: 6px; }
         .btn-deny { background: #2f3542; color: #ff4757; border: 1px solid rgba(255,71,87,0.4); padding: 6px 14px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 0.85rem; }
@@ -334,13 +179,11 @@
         table { width: 100%; border-collapse: collapse; text-align: left; }
         th { background: rgba(0,0,0,0.25); padding: 14px 16px; color: var(--text-sub); font-size: 0.8rem; text-transform: uppercase; border-bottom: 1px solid var(--card-border); }
         td { padding: 16px; border-bottom: 1px solid var(--card-border); font-size: 0.92rem; }
-
         .badge { display: inline-block; padding: 3px 10px; border-radius: 99px; font-size: 0.75rem; font-weight: 700; background: rgba(0, 229, 255, 0.15); color: #00e5ff; }
 
         .charts-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; }
         .chart-box { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 25px; box-shadow: var(--shadow); }
 
-        /* Universal Glassmorphism Modal */
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(14px); justify-content: center; align-items: center; z-index: 100000; padding: 20px; }
         .modal-box { background: #16171d; border: 1px solid var(--card-border); border-radius: 28px; padding: 32px 28px; width: 100%; max-width: 480px; color: #fff; box-shadow: 0 25px 60px rgba(0,0,0,0.8); }
         .form-group { margin-bottom: 15px; text-align: left; }
@@ -350,7 +193,6 @@
 </head>
 <body>
 
-    <!-- CAPSULE PILL NAVBAR -->
     <nav class="dock-capsule">
         <div class="dock-logo" onclick="switchSection('sec-home', this)">
             <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="12 8 8 12 12 16 16 12 12 8"></polygon></svg>
@@ -366,7 +208,6 @@
             <div class="nav-pill-item" onclick="switchSection('sec-settings', this)"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg><div class="dock-tooltip">7. Settings & OTP Portal</div></div>
         </div>
 
-        <!-- Avatar with Gold Ring -->
         <div class="dock-avatar-wrapper" onclick="switchSection('sec-settings', document.querySelectorAll('.nav-pill-item')[6])">
             <div class="dock-avatar-frame-main">
                 <img src="{{ main_avatar }}" alt="Admin" id="dockAvatarImg">
@@ -375,9 +216,7 @@
         </div>
     </nav>
 
-    <!-- MAIN VIEWPORT -->
     <main class="main-viewport">
-
         <!-- 1. HOME -->
         <section id="sec-home" class="view-section active-view">
             <div class="top-header">
@@ -390,11 +229,8 @@
                         <svg class="refresh-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
                         Sync Live Data
                     </button>
-                    <!-- 💥 Day/Night Animated Toggle Switch (Matching image_b8c7c5) 💥 -->
                     <div class="day-night-toggle" onclick="toggleTheme()">
-                        <div class="sky-elements">
-                            <div class="star star-1">✦</div><div class="star star-2">★</div><div class="star star-3">•</div>
-                        </div>
+                        <div class="sky-elements"><div class="star star-1">✦</div><div class="star star-2">★</div><div class="star star-3">•</div></div>
                         <div class="landscape"><div class="palm">🌴</div></div>
                         <div class="celestial-body"><div class="crater c1"></div><div class="crater c2"></div><div class="crater c3"></div></div>
                     </div>
@@ -427,13 +263,21 @@
                     <h3 style="color:var(--accent-gold); margin-bottom:15px;">📈 Weekly Visitor Traffic</h3>
                     <div style="height:260px;"><canvas id="leadsLineChart"></canvas></div>
                 </div>
+
+                <!-- 💥 DEDICATED CAPTCHA GRAPH FOR MAIN ADMIN 💥 -->
+                <div class="chart-box">
+                    <h3 style="color:var(--accent-gold); margin-bottom:15px;">🛡️ CAPTCHA Gatekeeper: Passed vs Failed</h3>
+                    <div style="height:260px;"><canvas id="captchaPieChart"></canvas></div>
+                </div>
+
                 <div class="chart-box">
                     <h3 style="color:var(--accent-gold); margin-bottom:15px;">🛡️ Device Integrity Breakdown</h3>
                     <div style="height:260px;"><canvas id="securityPieChart"></canvas></div>
                 </div>
-                <div class="chart-box" style="grid-column: 1 / -1;">
+
+                <div class="chart-box">
                     <h3 style="color:var(--accent-gold); margin-bottom:15px;">📊 Operations & Activity Distribution</h3>
-                    <div style="height:220px;"><canvas id="operationsBarChart"></canvas></div>
+                    <div style="height:260px;"><canvas id="operationsBarChart"></canvas></div>
                 </div>
             </div>
         </section>
@@ -505,7 +349,7 @@
             </div>
         </section>
 
-        <!-- 5. USER ENTRY & TIMING -->
+        <!-- 5. USER ENTRY & TIMING + CAPTCHA AUDIT LOGS -->
         <section id="sec-users" class="view-section">
             <div class="top-header">
                 <div>
@@ -516,6 +360,7 @@
             </div>
 
             <div class="box-card">
+                <div class="box-title"><span>📥 Registered Leads</span></div>
                 <table>
                     <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Registered At</th><th>Verification</th><th>Action</th></tr></thead>
                     <tbody id="leadsTableBody">
@@ -530,6 +375,44 @@
                         </tr>
                         {% else %}
                         <tr><td colspan="6" style="text-align:center; padding:30px; color:#888;">No leads registered.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 💥 CAPTCHA AUDIT TABLE 💥 -->
+            <div class="box-card" style="border-color: rgba(0, 229, 255, 0.25);">
+                <div class="box-title">
+                    <span style="color:#00e5ff;">🛡️ CAPTCHA Gatekeeper Audit Logs</span>
+                    <span style="font-size:0.85rem; color:var(--text-sub); font-weight:normal;">Real-time Gate Access</span>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Time (UTC)</th>
+                            <th>Client IP</th>
+                            <th>Verification Status</th>
+                            <th>Attempted Code</th>
+                            <th>Hardware / Device</th>
+                        </tr>
+                    </thead>
+                    <tbody id="captchaTableBody">
+                        {% for c in captcha_logs %}
+                        <tr>
+                            <td style="color:var(--text-sub); font-size:0.85rem;">{{ c.timestamp }}</td>
+                            <td style="font-family:monospace; color:#fff;">{{ c.ip_address }}</td>
+                            <td>
+                                {% if c.status == 'PASSED' %}
+                                    <span class="badge" style="color:#2ed573; background:rgba(46,213,115,0.15); border:1px solid rgba(46,213,115,0.3);">PASSED</span>
+                                {% else %}
+                                    <span class="badge" style="color:#ff4757; background:rgba(255,71,87,0.15); border:1px solid rgba(255,71,87,0.3);">FAILED</span>
+                                {% endif %}
+                            </td>
+                            <td style="font-family:monospace; font-weight:bold; color:var(--accent-gold);">{{ c.attempted_code }}</td>
+                            <td style="color:var(--text-sub); font-size:0.8rem;">Windows PC Verified</td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="5" style="text-align:center; padding:25px; color:var(--text-sub);">No CAPTCHA logs recorded yet.</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -603,7 +486,6 @@
             </div>
 
             <div class="charts-grid">
-                <!-- 💥 UNIFORM PROFILE BOX WITH GOLD RING & REMOVE BUTTON 💥 -->
                 <div class="chart-box">
                     <div style="font-size:1.15rem; font-weight:700; color:var(--text-main); margin-bottom:18px; display:flex; align-items:center; gap:8px;">
                         <span>👤</span> <span>Admin Profile & Picture</span>
@@ -631,7 +513,6 @@
                     </div>
                 </div>
 
-                <!-- OTP Credentials -->
                 <div class="chart-box">
                     <h3 style="color:var(--accent-gold); margin-bottom:12px;">🔒 Modify Credentials & Passcode</h3>
                     <p style="color:var(--text-sub); font-size:0.88rem; line-height:1.5; margin-bottom:20px;">
@@ -650,7 +531,6 @@
         </section>
     </main>
 
-    <!-- UNIVERSAL CUSTOM MODAL (NO BROWSER ALERTS) -->
     <div id="universalAppModal" class="modal-overlay">
         <div class="modal-box" style="text-align:center;">
             <span id="uEmoji" style="font-size:3.2rem; display:block; margin-bottom:10px;">⚠️</span>
@@ -663,7 +543,6 @@
         </div>
     </div>
 
-    <!-- Create Sub-Admin Modal -->
     <div id="subAdminModal" class="modal-overlay">
         <div class="modal-box">
             <h2 style="color:var(--accent-gold); margin-bottom:15px;">+ Create Sub-Admin</h2>
@@ -686,7 +565,6 @@
         </div>
     </div>
 
-    <!-- Issue Directive Modal -->
     <div id="instructionModal" class="modal-overlay">
         <div class="modal-box">
             <h2 style="color:var(--accent-gold); margin-bottom:15px;">📜 Issue Directive</h2>
@@ -708,7 +586,6 @@
     </div>
 
     <script>
-        // 💥 GLOBAL BROWSER POPUP INTERCEPTOR (BANISHES ALL BROWSER ALERTS!) 💥
         let uModalCallback = null;
         function showUniversalModal(emoji, title, msg, btnText, showCancel, onConfirm) {
             document.getElementById('uEmoji').innerText = emoji || '⚠️';
@@ -728,7 +605,6 @@
             closeUniversalModal();
         };
 
-        // Override standard window.alert
         window.alert = function(message) {
             showUniversalModal('🔔', 'Notification', message, 'OK', false, null);
         };
@@ -756,7 +632,6 @@
         function openInstructionModal() { document.getElementById('instructionModal').style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        // 💥 DEVICE AVATAR UPLOAD & REMOVE 💥
         function uploadAvatarFromDevice(e) {
             const file = e.target.files[0];
             if (file) {
@@ -789,7 +664,6 @@
             });
         }
 
-        // 💥 ANIMATED REFRESH BUTTON 💥
         function triggerSync(btn) {
             const icon = btn.querySelector('.refresh-icon');
             if (icon) icon.classList.add('spinning');
@@ -807,7 +681,6 @@
             .catch(() => { if (icon) icon.classList.remove('spinning'); });
         }
 
-        // 💥 OTP WORKFLOW 💥
         function requestSecurityOtp() {
             showUniversalModal('🔐', 'Authorize With OTP', 'Send a 6-digit one-time passcode to your verified email?', 'Dispatch OTP', true, () => {
                 fetch('/admin/request-profile-otp', { method: 'POST' })
@@ -835,7 +708,6 @@
         }
         if (localStorage.getItem('air_theme') === 'light') toggleTheme();
 
-        // 💥 CHARTS 💥
         let chartsLoaded = false;
         function renderCharts() {
             if (chartsLoaded) return;
@@ -854,6 +726,25 @@
                     }]
                 },
                 options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            // 💥 CAPTCHA DEDICATED GRAPH 💥
+            new Chart(document.getElementById('captchaPieChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Passed (Genuine Users)', 'Failed / Blocked Attempts'],
+                    datasets: [{
+                        data: [{{ captcha_passed }}, {{ captcha_failed }}],
+                        backgroundColor: ['#2ed573', '#ff4757'],
+                        borderColor: '#16171d',
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#E6E4E0' }, position: 'bottom' } }
+                }
             });
 
             new Chart(document.getElementById('securityPieChart'), {

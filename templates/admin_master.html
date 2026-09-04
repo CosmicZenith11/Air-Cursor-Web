@@ -226,6 +226,58 @@
             gap: 6px;
         }
 
+        /* 💥 EXACT GOLD RING FOR MAIN ADMIN (MATCHES IMAGE-4) 💥 */
+.main-admin-avatar-frame {
+    position: relative;
+    width: 86px;
+    height: 86px;
+    border-radius: 50%;
+    padding: 5px;
+    background: conic-gradient(from 0deg, #dfac4a, #ffefb5, #c68a26, #fff4cc, #dfac4a, #986314, #ffdf85, #dfac4a);
+    box-shadow: 0 0 16px rgba(218, 165, 32, 0.55), inset 0 0 6px rgba(255, 235, 150, 0.6);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.main-admin-avatar-frame::before {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    border-radius: 50%;
+    border: 1.5px dashed rgba(255, 245, 200, 0.7);
+    pointer-events: none;
+}
+
+.main-admin-avatar-frame img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    background: #0d0e12;
+}
+
+/* Sidebar capsule avatar ring */
+.dock-avatar-frame-main {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    padding: 3.5px;
+    background: conic-gradient(from 0deg, #dfac4a, #ffefb5, #c68a26, #fff4cc, #dfac4a, #986314, #ffdf85, #dfac4a);
+    box-shadow: 0 0 10px rgba(218, 165, 32, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.dock-avatar-frame-main img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
         .btn-cancel {
             background: #252830;
             color: #E6E4E0;
@@ -361,6 +413,35 @@
                 </div>
             </div>
 
+            <!-- 💥 SECTION 7: PROFILE SETTINGS (UNIFORM LAYOUT + REMOVE BUTTON) 💥 -->
+<div class="box-card">
+    <div style="font-size:1.15rem; font-weight:700; color:var(--text-main); margin-bottom:20px; display:flex; align-items:center; gap:8px;">
+        <span>👤</span> <span>Admin Profile & Picture</span>
+    </div>
+    
+    <div style="display:flex; align-items:center; gap:25px; flex-wrap:wrap;">
+        <!-- Gold Ring Frame around Avatar -->
+        <div class="main-admin-avatar-frame">
+            <img src="{{ main_avatar or 'data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><defs><linearGradient id=\'g\' x1=\'0\' y1=\'0\' x2=\'0\' y2=\'1\'><stop offset=\'0%25\' stop-color=\'%234ea5ff\'/><stop offset=\'50%25\' stop-color=\'%232a85ff\'/><stop offset=\'100%25\' stop-color=\'%231868db\'/></linearGradient><linearGradient id=\'a\' x1=\'0\' y1=\'0\' x2=\'0\' y2=\'1\'><stop offset=\'0%25\' stop-color=\'%23ffffff\'/><stop offset=\'100%25\' stop-color=\'%23e2edfc\'/></linearGradient></defs><circle cx=\'50\' cy=\'50\' r=\'50\' fill=\'url(%23g)\'/><circle cx=\'50\' cy=\'37\' r=\'15\' fill=\'url(%23a)\'/><path d=\'M 23.5 80 C 23.5 63 35 56 50 56 C 65 56 76.5 63 76.5 80 Z\' fill=\'url(%23a)\'/></svg>' }}" alt="Admin Avatar" id="previewAvatar">
+        </div>
+
+        <div style="flex:1; min-width:260px;">
+            <label style="font-size:0.88rem; color:#aaa; display:block; margin-bottom:10px;">
+                Choose Picture from Computer/Device:
+            </label>
+            <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                <input type="file" id="avatarFileInput" accept="image/*" onchange="uploadAvatarFromDevice(event)" style="font-size:0.85rem; color:#aaa;">
+                <button type="button" onclick="removeAdminAvatar()" class="btn-danger" style="padding:7px 16px; border-radius:99px; font-size:0.82rem; background:#ff4757; color:#fff; border:none; cursor:pointer;">
+                    🗑️ Remove Photo
+                </button>
+            </div>
+            <p style="font-size:0.75rem; color:var(--text-sub); margin-top:8px;">
+                Supported: JPG, PNG or WEBP. Removing photo reverts to default blue avatar.
+            </p>
+        </div>
+    </div>
+</div>
+            
             <div class="box-card">
                 <table>
                     <thead>

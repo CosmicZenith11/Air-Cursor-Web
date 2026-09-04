@@ -60,8 +60,8 @@
         .nav-pill-item:hover .dock-tooltip, .dock-avatar-wrapper:hover .dock-tooltip { opacity: 1; visibility: visible; transform: translateY(-50%) translateX(0); }
 
         .sub-admin-avatar-frame {
-            position: relative; width: 86px; height: 86px; border-radius: 50%; padding: 4.5px;
-            background: #00bcd4; box-shadow: 0 0 15px rgba(0, 188, 212, 0.45);
+            position: relative; width: 92px; height: 92px; border-radius: 50%; padding: 4.5px;
+            background: #00bcd4; box-shadow: 0 0 20px rgba(0, 188, 212, 0.45);
             display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
         }
         .sub-admin-avatar-frame img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; background: #0d0e12; }
@@ -114,6 +114,7 @@
             padding: 10px 24px; border-radius: 99px; font-weight: 600; cursor: pointer; font-size: 0.88rem;
         }
         .btn-cancel:hover { background: #333642; color: #fff; }
+        .btn-danger { background: #ff4757; color: #fff; border: none; padding: 7px 18px; border-radius: 99px; font-size: 0.82rem; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
 
         .btn-refresh {
             background: #181920; border: 1px solid var(--card-border); color: var(--accent-gold);
@@ -131,8 +132,23 @@
         th { background: rgba(0,0,0,0.25); padding: 14px 16px; color: var(--text-sub); font-size: 0.8rem; text-transform: uppercase; border-bottom: 1px solid var(--card-border); text-align: left; }
         td { padding: 16px; border-bottom: 1px solid var(--card-border); font-size: 0.92rem; text-align: left; }
 
+        .danger-item {
+            background: rgba(255, 71, 87, 0.04);
+            border: 1px solid rgba(255, 71, 87, 0.25);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .danger-info h4 { color: #ff4757; font-size: 1.05rem; margin-bottom: 5px; }
+        .danger-info p { color: var(--text-sub); font-size: 0.88rem; line-height: 1.5; }
+
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(14px); justify-content: center; align-items: center; z-index: 100000; padding: 20px; }
-        .modal-box { background: #16171d; border: 1px solid var(--card-border); border-radius: 28px; padding: 32px 28px; width: 100%; max-width: 460px; color: #fff; text-align: center; }
+        .modal-box { background: #16171d; border: 1px solid var(--card-border); border-radius: 28px; padding: 32px 28px; width: 100%; max-width: 500px; color: #fff; text-align: center; }
     </style>
 </head>
 <body>
@@ -145,7 +161,7 @@
             <div class="nav-pill-item" onclick="switchSection('sec-sub-directives', this)"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg><div class="dock-tooltip">3. Admin Directives</div></div>
             <div class="nav-pill-item" onclick="switchSection('sec-sub-leads', this)"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg><div class="dock-tooltip">4. Visitor Leads</div></div>
             <div class="nav-pill-item" onclick="openSendMessageModal()"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg><div class="dock-tooltip">5. Message Main Admin</div></div>
-            <div class="nav-pill-item" onclick="switchSection('sec-sub-settings', this)"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg><div class="dock-tooltip">6. Profile & Settings</div></div>
+            <div class="nav-pill-item" onclick="switchSection('sec-sub-settings', this)"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg><div class="dock-tooltip">6. Profile & Danger Zone</div></div>
         </div>
 
         <div class="dock-avatar-wrapper" onclick="switchSection('sec-sub-settings', document.querySelectorAll('.nav-pill-item')[5])">
@@ -188,7 +204,7 @@
             </div>
         </section>
 
-        <!-- 2. ANALYTICAL CHARTS (INCLUDING DEDICATED CAPTCHA GRAPH) -->
+        <!-- 2. ANALYTICAL CHARTS -->
         <section id="sec-sub-charts" class="view-section">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid var(--card-border); padding-bottom:15px;">
                 <h1 style="color:var(--accent-gold); font-size:1.6rem;">📊 VISUAL ANALYTICS</h1>
@@ -200,7 +216,6 @@
                     <div style="height:250px;"><canvas id="subLineChart"></canvas></div>
                 </div>
 
-                <!-- 💥 DEDICATED CAPTCHA GRAPH FOR SUB-ADMIN 💥 -->
                 <div class="chart-box">
                     <h3 style="color:var(--accent-gold); margin-bottom:15px;">🛡️ CAPTCHA Gatekeeper Breakdown</h3>
                     <div style="height:250px;"><canvas id="subCaptchaChart"></canvas></div>
@@ -249,7 +264,7 @@
                             <td style="color:var(--text-sub);">{{ u.registered_at or 'N/A' }}</td>
                             <td>
                                 {% if subadmin_info.can_delete_visitors %}
-                                    <button onclick="confirmDeleteLead('{{ u._id }}')" style="background:#ff4757; color:#fff; border:none; padding:5px 12px; border-radius:6px; font-weight:bold; cursor:pointer;">Delete</button>
+                                    <button onclick="confirmDeleteLead('{{ u._id }}')" class="btn-danger" style="padding:5px 12px; border-radius:6px;">Delete</button>
                                 {% else %}
                                     <span onclick="handleAction('can_delete_visitors', 'Delete Lead')" style="cursor:pointer; color:#888;">🔒 Delete</span>
                                 {% endif %}
@@ -268,7 +283,6 @@
                 {% endif %}
             </div>
 
-            <!-- 💥 CAPTCHA AUDIT TABLE FOR SUB-ADMIN 💥 -->
             <div class="box-card" style="border-color: rgba(0, 229, 255, 0.25);">
                 <div class="box-title">
                     <span style="color:#00e5ff;">🛡️ CAPTCHA Gatekeeper Audit Logs</span>
@@ -300,56 +314,109 @@
             </div>
         </section>
 
-        <!-- 6. SUB-ADMIN PROFILE & SETTINGS -->
+        <!-- 6. SUB-ADMIN PROFILE & DANGER ZONE -->
         <section id="sec-sub-settings" class="view-section">
             <div style="margin-bottom:20px; border-bottom:1px solid var(--card-border); padding-bottom:15px;">
-                <h1 style="color:var(--accent-gold); font-size:1.6rem;">SUB-ADMIN PROFILE SETTINGS</h1>
-                <p style="color:var(--text-sub); font-size:0.85rem;">Device Avatar & Credential Change Request</p>
+                <h1 style="color:var(--accent-gold); font-size:1.6rem;">SUB-ADMIN PROFILE & SETTINGS</h1>
+                <p style="color:var(--text-sub); font-size:0.85rem;">Device Avatar, Profile Update & Cluster Controls</p>
             </div>
-            <div class="charts-grid">
-                <div class="chart-box">
-                    <div style="font-size:1.15rem; font-weight:700; color:var(--text-main); margin-bottom:18px; display:flex; align-items:center; gap:8px;">
-                        <span>👤</span> <span>Profile Picture (Device Upload)</span>
-                    </div>
 
-                    <div style="display:flex; align-items:center; gap:22px; flex-wrap:wrap;">
-                        <div class="sub-admin-avatar-frame">
-                            <img src="{{ sub_avatar }}" alt="Avatar" id="subPreviewAvatar">
-                        </div>
-                        <div style="flex:1; min-width:240px;">
-                            <label style="font-size:0.88rem; color:#aaa; display:block; margin-bottom:10px;">
-                                Upload Image from Computer/Device:
-                            </label>
-                            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-                                <input type="file" id="subAvatarFileInput" accept="image/*" onchange="uploadSubAvatar(event)" style="font-size:0.85rem; color:#aaa;">
-                                <button type="button" onclick="removeSubAvatar()" class="btn-danger" style="padding:7px 16px; border-radius:99px; font-size:0.82rem; background:#ff4757; color:#fff; border:none; cursor:pointer;">
-                                    🗑️ Remove Photo
-                                </button>
-                            </div>
-                            <p style="font-size:0.75rem; color:var(--text-sub); margin-top:8px;">
-                                Removing photo reverts to default blue avatar.
-                            </p>
-                        </div>
-                    </div>
+            <!-- 💥 1. REDESIGNED LUXURY PROFILE PICTURE CARD (CYAN RING - FIXES IMAGE_B94727) 💥 -->
+            <div class="box-card">
+                <div class="box-title">
+                    <span>👤 Sub-Admin Profile Picture</span>
+                    <span class="badge" style="background:rgba(0, 188, 212, 0.15); color:#00bcd4;">Delegated Admin</span>
                 </div>
 
-                <div class="chart-box">
-                    <h3 style="color:var(--accent-gold); margin-bottom:12px;">📝 Request Name / Email Modification</h3>
-                    <p style="color:var(--text-sub); font-size:0.85rem; margin-bottom:15px;">Sub-admin credentials can only be updated after approval by Root Main Admin.</p>
-                    <div style="margin-bottom:12px;">
-                        <label style="font-size:0.82rem; color:#aaa;">Requested Name:</label>
-                        <input type="text" id="reqSubName" value="{{ subadmin_info.name }}" style="width:100%; padding:10px; border-radius:8px; background:#0d0e12; border:1px solid #333; color:#fff;">
+                <div style="display:flex; align-items:center; gap:28px; flex-wrap:wrap;">
+                    <div class="sub-admin-avatar-frame">
+                        <img src="{{ sub_avatar }}" alt="Avatar" id="subPreviewAvatar">
                     </div>
-                    <div style="margin-bottom:15px;">
-                        <label style="font-size:0.82rem; color:#aaa;">Requested Email:</label>
-                        <input type="email" id="reqSubEmail" value="{{ subadmin_info.email }}" style="width:100%; padding:10px; border-radius:8px; background:#0d0e12; border:1px solid #333; color:#fff;">
+                    <div style="flex:1; min-width:280px;">
+                        <h4 style="color:#fff; font-size:1.1rem; margin-bottom:5px;">{{ subadmin_info.name }}</h4>
+                        <p style="color:var(--text-sub); font-size:0.85rem; margin-bottom:15px;">{{ subadmin_info.email }}</p>
+                        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                            <input type="file" id="subAvatarFileInput" accept="image/*" onchange="uploadSubAvatar(event)" style="display:none;">
+                            <button type="button" onclick="document.getElementById('subAvatarFileInput').click()" class="btn-gold" style="padding:8px 20px;">
+                                📁 Upload from Device
+                            </button>
+                            <button type="button" onclick="removeSubAvatar()" class="btn-danger" style="padding:8px 20px; background:#202228; border:1px solid rgba(255,71,87,0.4); color:#ff4757;">
+                                🗑️ Remove Photo
+                            </button>
+                        </div>
+                        <p style="font-size:0.75rem; color:var(--text-sub); margin-top:8px;">
+                            Removing photo resets MongoDB record back to default blue avatar.
+                        </p>
                     </div>
-                    <button class="btn-gold" onclick="submitProfileChangeRequest()" style="width:100%; justify-content:center;">✉️ Send Update Request to Main Admin</button>
+                </div>
+            </div>
+
+            <div class="box-card">
+                <h3 style="color:var(--accent-gold); margin-bottom:12px;">📝 Request Name / Email Modification</h3>
+                <p style="color:var(--text-sub); font-size:0.85rem; margin-bottom:15px;">Sub-admin credentials can only be updated after approval by Root Main Admin.</p>
+                <div style="margin-bottom:12px;">
+                    <label style="font-size:0.82rem; color:#aaa;">Requested Name:</label>
+                    <input type="text" id="reqSubName" value="{{ subadmin_info.name }}" style="width:100%; padding:10px; border-radius:8px; background:#0d0e12; border:1px solid #333; color:#fff;">
+                </div>
+                <div style="margin-bottom:15px;">
+                    <label style="font-size:0.82rem; color:#aaa;">Requested Email:</label>
+                    <input type="email" id="reqSubEmail" value="{{ subadmin_info.email }}" style="width:100%; padding:10px; border-radius:8px; background:#0d0e12; border:1px solid #333; color:#fff;">
+                </div>
+                <button class="btn-gold" onclick="submitProfileChangeRequest()" style="width:100%; justify-content:center;">✉️ Send Update Request to Main Admin</button>
+            </div>
+
+            <!-- 💥 2. SUB-ADMIN DANGER ZONE (MATCHES IMAGE_B94A67) 💥 -->
+            <div class="box-card" style="border:1px solid rgba(255, 71, 87, 0.45);">
+                <div class="box-title">
+                    <span style="color:#ff4757;">⚠️ High-Security Danger Zone</span>
+                </div>
+                <div class="danger-item">
+                    <div class="danger-info">
+                        <h4>Wipe All Data From Database</h4>
+                        <p>Deletes visitor leads, messages, and audit trail. Folders and schema remain safe.</p>
+                    </div>
+                    <button onclick="openSubWipeModal()" class="btn-danger">Wipe Records</button>
                 </div>
             </div>
         </section>
     </main>
 
+    <!-- 💥 WIPE DATA MODAL (SUB-ADMIN) 💥 -->
+    <div id="subWipeModal" class="modal-overlay">
+        <div class="modal-box">
+            <div id="subWipeStage1">
+                <h3 style="color:#ff4757; font-size:1.3rem; margin-bottom:12px;">Delete all data from database</h3>
+                <div style="background:#111217; border-radius:14px; padding:15px; margin-bottom:18px; font-size:0.85rem; color:#aaa; text-align:left; line-height:1.6;">
+                    • All visitor leads and audit logs will be permanently cleared.<br>
+                    • Sub-admin directives and inbox notes will be emptied.
+                </div>
+                <p style="font-size:0.88rem; color:#fff; text-align:left; margin-bottom:8px;">
+                    To verify, please type <b style="color:#ff4757;">delete all data from database</b>:
+                </p>
+                <input type="text" id="subWipeInput" oninput="checkSubWipeInput()" placeholder="delete all data from database" style="width:100%; padding:12px; border-radius:10px; background:#0d0e12; border:1px solid #444; color:#fff; font-family:monospace; margin-bottom:20px;">
+                <div style="display:flex; justify-content:flex-end; gap:12px;">
+                    <button onclick="closeModal('subWipeModal')" class="btn-cancel">Cancel</button>
+                    <button id="subWipeConfirmBtn" onclick="goToSubWipeStage2()" class="btn-danger" style="opacity:0.4; pointer-events:none;">Continue</button>
+                </div>
+            </div>
+
+            <div id="subWipeStage2" style="display:none; text-align:center;">
+                <span style="font-size:3.5rem; display:block; margin-bottom:10px;">⚠️</span>
+                <h3 style="color:#ff4757; font-size:1.3rem; margin-bottom:10px;">Final Confirmation</h3>
+                <p style="color:var(--text-sub); font-size:0.92rem; line-height:1.6; margin-bottom:22px;">
+                    Are you completely sure? Countdown lock must expire before you can proceed.
+                </p>
+                <div style="display:flex; justify-content:center; gap:12px;">
+                    <button onclick="closeModal('subWipeModal')" class="btn-cancel">Cancel</button>
+                    <button id="subWipe10sBtn" onclick="executeSubWipe()" class="btn-danger" style="opacity:0.4; pointer-events:none; min-width:170px;">
+                        Proceed (10s)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MESSAGE MODAL -->
     <div id="msgModal" class="modal-overlay">
         <div class="modal-box" style="text-align:left;">
             <h2 style="color:var(--accent-gold); margin-bottom:15px; text-align:center;">💬 Send Note to Main Admin</h2>
@@ -368,6 +435,7 @@
         </div>
     </div>
 
+    <!-- UNIVERSAL CUSTOM MODAL -->
     <div id="subCustomAppModal" class="modal-overlay">
         <div class="modal-box">
             <span id="sEmoji" style="font-size:3.2rem; display:block; margin-bottom:10px;">⚠️</span>
@@ -404,12 +472,6 @@
             showSubModal('🔔', 'Notification', message, 'OK', false, null);
         };
 
-        function confirmDeleteLead(id) {
-            showSubModal('🗑️', 'Delete Lead Record', 'Are you sure you want to permanently delete this lead?', 'Delete Lead', true, () => {
-                window.location.href = '/admin/delete-lead/' + id;
-            });
-        }
-
         function switchSection(secId, navEl) {
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active-view'));
             document.querySelectorAll('.nav-pill-item').forEach(i => i.classList.remove('active'));
@@ -419,6 +481,7 @@
         }
 
         function openSendMessageModal() { document.getElementById('msgModal').style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
         function submitMessageToAdmin() {
             const subject = document.getElementById('msgSubject').value.trim();
@@ -516,6 +579,64 @@
         }
         if (localStorage.getItem('air_theme') === 'light') toggleTheme();
 
+        // 💥 SUB-ADMIN WIPE DATA WORKFLOW 💥
+        function openSubWipeModal() {
+            document.getElementById('subWipeStage1').style.display = 'block';
+            document.getElementById('subWipeStage2').style.display = 'none';
+            document.getElementById('subWipeInput').value = '';
+            document.getElementById('subWipeConfirmBtn').style.opacity = '0.4';
+            document.getElementById('subWipeConfirmBtn').style.pointerEvents = 'none';
+            document.getElementById('subWipeModal').style.display = 'flex';
+        }
+
+        function checkSubWipeInput() {
+            const val = document.getElementById('subWipeInput').value.trim();
+            const btn = document.getElementById('subWipeConfirmBtn');
+            if (val === "delete all data from database") {
+                btn.style.opacity = '1';
+                btn.style.pointerEvents = 'auto';
+            } else {
+                btn.style.opacity = '0.4';
+                btn.style.pointerEvents = 'none';
+            }
+        }
+
+        function goToSubWipeStage2() {
+            document.getElementById('subWipeStage1').style.display = 'none';
+            document.getElementById('subWipeStage2').style.display = 'block';
+
+            let timeLeft = 10;
+            const btn = document.getElementById('subWipe10sBtn');
+            btn.style.opacity = '0.4';
+            btn.style.pointerEvents = 'none';
+            btn.innerText = `Proceed (${timeLeft}s)`;
+
+            const timer = setInterval(() => {
+                timeLeft--;
+                if (timeLeft > 0) {
+                    btn.innerText = `Proceed (${timeLeft}s)`;
+                } else {
+                    clearInterval(timer);
+                    btn.innerText = "Proceed & Wipe All Data";
+                    btn.style.opacity = '1';
+                    btn.style.pointerEvents = 'auto';
+                }
+            }, 1000);
+        }
+
+        function executeSubWipe() {
+            fetch('/api/admin/wipe-all-data', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ confirm_text: "delete all data from database" })
+            })
+            .then(res => res.json())
+            .then(data => {
+                closeModal('subWipeModal');
+                showSubModal('🗑️', 'Cluster Purged', data.message, 'OK', false, () => window.location.reload());
+            });
+        }
+
         let subChartsLoaded = false;
         function renderSubCharts() {
             if (subChartsLoaded) return;
@@ -530,7 +651,6 @@
                 options: { responsive: true, maintainAspectRatio: false }
             });
 
-            // 💥 SUB-ADMIN CAPTCHA GRAPH 💥
             new Chart(document.getElementById('subCaptchaChart'), {
                 type: 'doughnut',
                 data: {

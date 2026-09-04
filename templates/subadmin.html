@@ -8,83 +8,260 @@
     <script src="{{ url_for('static', filename='security.js') }}"></script>
     <style>
         :root {
-            --bg-body: #141517;
-            --card-bg: rgba(31, 33, 36, 0.75);
-            --card-border: rgba(197, 168, 128, 0.28);
+            --bg-body: #0d0e12;
+            --dock-bg: #090a0d;
+            --dock-border: rgba(197, 168, 128, 0.22);
+            --card-bg: rgba(22, 24, 29, 0.85);
+            --card-border: rgba(197, 168, 128, 0.25);
             --text-main: #E6E4E0;
             --text-sub: rgba(230, 228, 224, 0.65);
             --accent-gold: #C5A880;
-            --table-header: #1f2124;
-            --shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            --shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
         }
-        body.light-mode {
-            --bg-body: #F4F1EA;
-            --card-bg: rgba(255, 255, 255, 0.85);
-            --card-border: rgba(168, 137, 95, 0.35);
-            --text-main: #18191b;
-            --text-sub: #5a5c61;
-            --accent-gold: #9E7D53;
-            --table-header: #ebe7de;
-        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; transition: 0.3s; }
-        body { background: var(--bg-body); color: var(--text-main); min-height: 100vh; padding: 35px 20px; }
-        .container { max-width: 1100px; margin: 0 auto; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid var(--card-border); padding-bottom: 20px; }
-        .brand h1 { font-size: 1.6rem; color: var(--accent-gold); font-weight: 800; }
-        .brand p { font-size: 0.85rem; color: var(--text-sub); }
-        .logout-btn { background: #ff385c; color: white; padding: 8px 20px; border-radius: 99px; text-decoration: none; font-weight: 700; }
-        
-        .box-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 25px; box-shadow: var(--shadow); margin-bottom: 30px; overflow-x: auto; }
-        .actions-bar { display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
-        .action-btn { background: #1f2126; color: var(--text-main); border: 1px solid var(--card-border); padding: 10px 20px; border-radius: 12px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px; }
-        .action-btn:hover { background: rgba(197, 168, 128, 0.15); border-color: var(--accent-gold); }
-        .locked-tag { font-size: 0.75rem; background: #ff4757; color: white; padding: 2px 7px; border-radius: 99px; }
+        body { background: var(--bg-body); color: var(--text-main); min-height: 100vh; overflow-x: hidden; display: flex; }
 
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th { background: var(--table-header); padding: 14px 16px; color: var(--text-sub); font-size: 0.8rem; text-transform: uppercase; border-bottom: 1px solid var(--card-border); }
-        td { padding: 16px; border-bottom: 1px solid var(--card-border); font-size: 0.92rem; }
+        /* 💥 VERTICAL CAPSULE PILL NAVBAR 💥 */
+        .dock-capsule {
+            position: fixed;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 70px;
+            height: 85vh;
+            max-height: 650px;
+            background: var(--dock-bg);
+            border: 1px solid var(--dock-border);
+            border-radius: 40px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 22px 0;
+            z-index: 9999;
+        }
 
-        .btn-gold { background: linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%); color: #141517; border: none; padding: 10px 22px; border-radius: 99px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+        .dock-logo {
+            width: 38px;
+            height: 38px;
+            background: rgba(197, 168, 128, 0.12);
+            border: 1px solid var(--dock-border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-gold);
+        }
 
-        .directive-card { background: #181a20; border-left: 4px solid var(--accent-gold); border-radius: 12px; padding: 16px; margin-bottom: 12px; }
-        .directive-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
+        .dock-nav-group {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            width: 100%;
+            align-items: center;
+        }
 
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); justify-content: center; align-items: center; z-index: 10000; padding: 20px; }
-        .modal-box { background: #1a1b20; border: 1px solid var(--card-border); border-radius: 28px; padding: 35px 30px; width: 100%; max-width: 450px; text-align: center; color: #fff; box-shadow: 0 25px 60px rgba(0,0,0,0.8); animation: popIn 0.25s ease-out; }
-        @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-        
-        .modal-emoji { font-size: 3.4rem; margin-bottom: 14px; display: block; }
-        .modal-title { color: var(--accent-gold); font-size: 1.4rem; font-weight: 800; margin-bottom: 10px; }
-        .modal-msg { color: var(--text-sub); font-size: 0.95rem; line-height: 1.6; margin-bottom: 25px; white-space: pre-line; }
-        .modal-btns { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
-        .btn-cancel { background: #282a30; color: #aaa; border: 1px solid rgba(255,255,255,0.1); padding: 10px 22px; border-radius: 99px; font-weight: 600; cursor: pointer; }
-        .form-group { margin-bottom: 14px; text-align: left; }
-        .form-group label { display: block; font-size: 0.85rem; color: #aaa; margin-bottom: 6px; }
-        .form-group input, .form-group textarea { width: 100%; padding: 12px; border-radius: 10px; background: #0f1013; border: 1px solid #333; color: #fff; font-family: inherit; }
+        .nav-pill-item {
+            position: relative;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-sub);
+            border: 1px solid transparent;
+            transition: all 0.25s ease;
+        }
+
+        .nav-pill-item:hover {
+            color: var(--accent-gold);
+            background: rgba(197, 168, 128, 0.12);
+        }
+
+        .nav-pill-item.active {
+            color: #0c0d11;
+            background: linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%);
+            box-shadow: 0 0 18px rgba(197, 168, 128, 0.45);
+        }
+
+        .nav-pill-item svg { width: 20px; height: 20px; stroke-width: 2; }
+
+        /* 💥 EXACT 1.2s HOVER TOOLTIP DELAY 💥 */
+        .dock-tooltip {
+            position: absolute;
+            left: 65px;
+            top: 50%;
+            transform: translateY(-50%) translateX(-8px);
+            background: #14151b;
+            border: 1px solid var(--dock-border);
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            white-space: nowrap;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
+            transition-delay: 1.2s; /* 💥 1.2s HOVER DELAY 💥 */
+            z-index: 10000;
+        }
+
+        .nav-pill-item:hover .dock-tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(-50%) translateX(0);
+        }
+
+        .dock-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-gold);
+            object-fit: cover;
+        }
+
+        .main-viewport {
+            margin-left: 115px;
+            padding: 35px 35px 35px 15px;
+            width: calc(100vw - 125px);
+            max-width: 1300px;
+        }
+
+        .view-section { display: none; animation: fadeInView 0.3s ease forwards; }
+        .view-section.active-view { display: block; }
+        @keyframes fadeInView { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .box-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%);
+            color: #0c0d11;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 99px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+        th { background: rgba(0,0,0,0.25); padding: 14px 16px; color: var(--text-sub); font-size: 0.8rem; text-transform: uppercase; border-bottom: 1px solid var(--card-border); text-align: left; }
+        td { padding: 16px; border-bottom: 1px solid var(--card-border); font-size: 0.92rem; text-align: left; }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(14px);
+            justify-content: center;
+            align-items: center;
+            z-index: 100000;
+            padding: 20px;
+        }
+        .modal-box {
+            background: #16171d;
+            border: 1px solid var(--card-border);
+            border-radius: 28px;
+            padding: 32px 28px;
+            width: 100%;
+            max-width: 460px;
+            color: #fff;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="brand">
-                <h1>AIR CURSOR (SUB-ADMIN WORKSPACE)</h1>
-                <p>Logged in: {{ subadmin_info.name }} • Live Synchronized</p>
+
+    <!-- 💥 VERTICAL CAPSULE PILL NAVBAR 💥 -->
+    <nav class="dock-capsule">
+        <div class="dock-logo">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="12 8 8 12 12 16 16 12 12 8"></polygon></svg>
+        </div>
+
+        <div class="dock-nav-group">
+            <!-- 1. Home / Operations -->
+            <div class="nav-pill-item active" onclick="switchSection('sec-sub-home', this)">
+                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+                <div class="dock-tooltip">1. Home Operations</div>
             </div>
-            <div style="display:flex; gap:12px; align-items:center;">
-                <button onclick="document.body.classList.toggle('light-mode')" style="padding:8px 16px; border-radius:99px; cursor:pointer; background:#222; color:#fff; border:1px solid #444;">☀️/🌙</button>
-                <a href="/admin/logout" class="logout-btn">Log Out</a>
+
+            <!-- 2. Directives Board -->
+            <div class="nav-pill-item" onclick="switchSection('sec-sub-directives', this)">
+                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                <div class="dock-tooltip">2. Admin Directives ({{ instructions|length }})</div>
+            </div>
+
+            <!-- 3. Visitor Leads -->
+            <div class="nav-pill-item" onclick="switchSection('sec-sub-leads', this)">
+                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                <div class="dock-tooltip">3. Visitor Leads</div>
+            </div>
+
+            <!-- 4. Message Main Admin -->
+            <div class="nav-pill-item" onclick="openSendMessageModal()">
+                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                <div class="dock-tooltip">4. Message Main Admin</div>
             </div>
         </div>
 
-        <div class="box-card" style="border-color: rgba(197, 168, 128, 0.4);">
-            <h2 style="font-size:1.15rem; margin-bottom:15px; color:var(--accent-gold); display:flex; justify-content:space-between;">
-                <span>📌 Main Admin Directives & Tasks</span>
-                <span style="font-size:0.85rem; color:var(--text-sub); font-weight:normal;">Saved for reference</span>
-            </h2>
-            <div id="directivesContainer">
+        <div class="dock-avatar-wrapper">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80" alt="SubAdmin" class="dock-avatar">
+            <div class="dock-tooltip">{{ subadmin_info.name }} (Sub-Admin)</div>
+        </div>
+    </nav>
+
+    <!-- 💥 MAIN VIEWPORT 💥 -->
+    <main class="main-viewport">
+        <!-- Section 1: Home Operations -->
+        <section id="sec-sub-home" class="view-section active-view">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; border-bottom:1px solid var(--card-border); padding-bottom:15px;">
+                <div>
+                    <h1 style="color:var(--accent-gold); font-size:1.6rem;">SUB-ADMIN WORKSPACE</h1>
+                    <p style="color:var(--text-sub); font-size:0.85rem;">Authenticated as: {{ subadmin_info.name }} ({{ subadmin_info.email }})</p>
+                </div>
+                <a href="/admin/logout" style="background:#ff4757; color:#fff; padding:8px 20px; border-radius:99px; text-decoration:none; font-weight:bold;">Exit</a>
+            </div>
+
+            <div class="box-card">
+                <h3 style="color:var(--accent-gold); margin-bottom:15px;">⚡ Delegated Actions</h3>
+                <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                    <button class="btn-gold" onclick="handleAction('can_view_visitors', 'View Leads')">📋 View Leads</button>
+                    <button class="btn-gold" onclick="handleAction('can_delete_visitors', 'Delete Leads')">🗑️ Delete Leads</button>
+                    <button class="btn-gold" onclick="handleAction('can_export_data', 'Export Data')">📊 Export Full Analytics</button>
+                    <button class="btn-gold" onclick="openSendMessageModal()" style="background:#00e5ff; color:#0c0d11;">💬 Contact Main Admin</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Directives Board -->
+        <section id="sec-sub-directives" class="view-section">
+            <div style="margin-bottom:25px; border-bottom:1px solid var(--card-border); padding-bottom:15px;">
+                <h1 style="color:var(--accent-gold); font-size:1.6rem;">📜 MAIN ADMIN DIRECTIVES</h1>
+                <p style="color:var(--text-sub); font-size:0.85rem;">Operational Tasks & Priority Instructions</p>
+            </div>
+
+            <div class="box-card">
                 {% for inst in instructions %}
-                <div class="directive-card">
-                    <div class="directive-header">
+                <div style="background:#14151b; border-left:4px solid var(--accent-gold); border-radius:10px; padding:16px; margin-bottom:12px;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
                         <b style="color:#00e5ff;">{{ inst.title }}</b>
                         <span style="font-size:0.75rem; background:#333; padding:2px 8px; border-radius:6px; color:#fff;">{{ inst.priority }}</span>
                     </div>
@@ -92,280 +269,93 @@
                     <div style="font-size:0.75rem; color:#888;">Issued: {{ inst.created_at }} • Status: {{ inst.status }}</div>
                 </div>
                 {% else %}
-                <p style="color:var(--text-sub); font-size:0.9rem;">No directives assigned by Main Admin yet.</p>
+                <p style="color:var(--text-sub);">No directives assigned yet.</p>
                 {% endfor %}
             </div>
-        </div>
+        </section>
 
-        <div class="box-card">
-            <h2 style="font-size:1.15rem; margin-bottom:15px; color:var(--accent-gold);">Available Operations</h2>
-            <div class="actions-bar">
-                <button class="action-btn" onclick="handleAction('can_view_visitors', 'View Leads')">
-                    📋 View Leads {% if not subadmin_info.can_view_visitors %}<span class="locked-tag">🔒 Request Access</span>{% endif %}
-                </button>
-                <button class="action-btn" onclick="handleAction('can_delete_visitors', 'Delete Leads')">
-                    🗑️ Delete Leads {% if not subadmin_info.can_delete_visitors %}<span class="locked-tag">🔒 Request Access</span>{% endif %}
-                </button>
-                <button class="action-btn" onclick="handleAction('can_export_data', 'Export Data')">
-                    📊 Export Analytics {% if not subadmin_info.can_export_data %}<span class="locked-tag">🔒 Request Access</span>{% endif %}
-                </button>
-                <button class="action-btn" onclick="openSendMessageModal()" style="border-color: #00e5ff; color: #00e5ff;">
-                    💬 Message Main Admin
-                </button>
+        <!-- Section 3: Leads Data -->
+        <section id="sec-sub-leads" class="view-section">
+            <div style="margin-bottom:25px; border-bottom:1px solid var(--card-border); padding-bottom:15px;">
+                <h1 style="color:var(--accent-gold); font-size:1.6rem;">VISITOR LEADS ARCHIVE</h1>
+                <p style="color:var(--text-sub); font-size:0.85rem;">Audited User Entries</p>
             </div>
-        </div>
 
-        <div class="box-card">
-            <h2 style="font-size:1.15rem; margin-bottom:15px; color:var(--text-main);">Visitor Leads Data</h2>
-            {% if subadmin_info.can_view_visitors %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Registration Date (UTC)</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for u in visitors %}
-                    <tr>
-                        <td>{{ loop.index }}</td>
-                        <td style="font-weight:700;">{{ u.name }}</td>
-                        <td>{{ u.email }}</td>
-                        <td style="color:var(--text-sub);">{{ u.registered_at or 'N/A' }}</td>
-                        <td>
-                            {% if subadmin_info.can_delete_visitors %}
-                                <a href="javascript:void(0)" onclick="confirmDeleteLead('{{ u._id }}')" style="color:#ff4757; font-weight:bold; text-decoration:none;">Delete</a>
-                            {% else %}
-                                <span onclick="handleAction('can_delete_visitors', 'Delete Single Lead')" style="cursor:pointer; color:#888;">🔒 Delete</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% else %}
-                    <tr><td colspan="5" style="text-align:center; padding:30px; color:#888;">No leads registered.</td></tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% else %}
-            <div style="text-align:center; padding:45px 20px; color:#888;">
-                <p style="font-size:1.1rem; margin-bottom:12px;">🔒 Viewing leads is restricted by Main Admin.</p>
-                <button onclick="handleAction('can_view_visitors', 'View Leads')" class="btn-gold">
-                    ✉️ Request Access from Main Admin
-                </button>
+            <div class="box-card">
+                {% if subadmin_info.can_view_visitors %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Registration Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in visitors %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td style="font-weight:700;">{{ u.name }}</td>
+                            <td>{{ u.email }}</td>
+                            <td style="color:var(--text-sub);">{{ u.registered_at or 'N/A' }}</td>
+                            <td>
+                                {% if subadmin_info.can_delete_visitors %}
+                                    <a href="/admin/delete-lead/{{ u._id }}" onclick="return confirm('Delete record?')" style="color:#ff4757; font-weight:bold;">Delete</a>
+                                {% else %}
+                                    <span onclick="handleAction('can_delete_visitors', 'Delete Lead')" style="cursor:pointer; color:#888;">🔒 Delete</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="5" style="text-align:center; padding:25px; color:#888;">No leads registered.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div style="text-align:center; padding:40px; color:#888;">
+                    <p style="font-size:1.1rem; margin-bottom:12px;">🔒 Viewing leads is restricted by Main Admin.</p>
+                    <button onclick="handleAction('can_view_visitors', 'View Leads')" class="btn-gold">Request Access</button>
+                </div>
+                {% endif %}
             </div>
-            {% endif %}
-        </div>
-    </div>
+        </section>
+    </main>
 
-    <div id="customConfirmModal" class="modal-overlay">
-        <div class="modal-box">
-            <span id="modalEmoji" class="modal-emoji">🔒</span>
-            <div id="modalTitle" class="modal-title">Access Restricted</div>
-            <div id="modalMessage" class="modal-msg">You do not have permission for this action.</div>
-            <div class="modal-btns">
-                <button onclick="closeConfirmModal()" class="btn-cancel">✕ Cancel</button>
-                <button id="modalConfirmBtn" class="btn-gold">✉️ Send Request to Main Admin</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="customNoticeModal" class="modal-overlay">
-        <div class="modal-box">
-            <span id="noticeEmoji" class="modal-emoji">📩</span>
-            <div id="noticeTitle" class="modal-title">Request Dispatched!</div>
-            <div id="noticeMessage" class="modal-msg">Your permission request has been delivered.</div>
-            <div class="modal-btns">
-                <button onclick="closeNoticeModal()" class="btn-gold" style="width: 100%;">👍 Understood</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="directiveModal" class="modal-overlay">
-        <div class="modal-box" style="border-color:#00e5ff;">
-            <span class="modal-emoji">📜</span>
-            <div id="dirTitle" class="modal-title" style="color:#00e5ff;">Main Admin Directive</div>
-            <div id="dirMsg" class="modal-msg" style="color:#fff; text-align:left; background:#111; padding:15px; border-radius:12px;"></div>
-            <div class="modal-btns">
-                <button id="dirSaveBtn" class="btn-cancel" style="border-color:#00e5ff; color:#00e5ff;">📌 Save / See Later</button>
-                <button id="dirDoneBtn" class="btn-gold">✅ Acknowledge & Done</button>
-            </div>
-        </div>
-    </div>
-
+    <!-- Message Modal -->
     <div id="msgModal" class="modal-overlay">
-        <div class="modal-box" style="text-align:left;">
-            <h2 style="color:var(--accent-gold); margin-bottom:15px; text-align:center;">💬 Send Note to Main Admin</h2>
-            <div class="form-group">
-                <label>Subject / Task Reference:</label>
-                <input type="text" id="msgSubject" placeholder="e.g. Lead verification completed">
+        <div class="modal-box">
+            <h2 style="color:var(--accent-gold); margin-bottom:15px;">💬 Message Main Admin</h2>
+            <div style="margin-bottom:12px;">
+                <label style="color:#aaa; font-size:0.85rem; display:block; margin-bottom:6px;">Subject:</label>
+                <input type="text" id="msgSubject" placeholder="e.g. Lead verification update" style="width:100%; padding:12px; border-radius:10px; background:#0d0e12; border:1px solid #333; color:#fff;">
             </div>
-            <div class="form-group">
-                <label>Work Details / Query:</label>
-                <textarea id="msgContent" rows="4" placeholder="Type your work memo or question..."></textarea>
+            <div style="margin-bottom:15px;">
+                <label style="color:#aaa; font-size:0.85rem; display:block; margin-bottom:6px;">Work Memo / Details:</label>
+                <textarea id="msgContent" rows="4" placeholder="Type your message..." style="width:100%; padding:12px; border-radius:10px; background:#0d0e12; border:1px solid #333; color:#fff; font-family:inherit;"></textarea>
             </div>
-            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
-                <button type="button" onclick="document.getElementById('msgModal').style.display='none'" class="btn-cancel">Cancel</button>
-                <button type="button" onclick="submitMessageToAdmin()" class="btn-gold">🚀 Dispatch Note</button>
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
+                <button onclick="document.getElementById('msgModal').style.display='none'" class="btn-danger">Cancel</button>
+                <button onclick="submitMessageToAdmin()" class="btn-gold">Dispatch Note</button>
             </div>
         </div>
     </div>
 
     <script>
-        const SoundFX = {
-            ctx: null,
-            init() {
-                if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-            },
-            playSend() {
-                this.init();
-                const now = this.ctx.currentTime;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(300, now);
-                osc.frequency.exponentialRampToValueAtTime(900, now + 0.25);
-                gain.gain.setValueAtTime(0.3, now);
-                gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-                osc.start(now);
-                osc.stop(now + 0.25);
-            },
-            playApprove() {
-                this.init();
-                const notes = [523.25, 659.25, 783.99, 1046.50];
-                notes.forEach((freq, i) => {
-                    const now = this.ctx.currentTime + i * 0.08;
-                    const osc = this.ctx.createOscillator();
-                    const gain = this.ctx.createGain();
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(freq, now);
-                    gain.gain.setValueAtTime(0.25, now);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
-                    osc.connect(gain);
-                    gain.connect(this.ctx.destination);
-                    osc.start(now);
-                    osc.stop(now + 0.35);
-                });
-            },
-            playReject() {
-                this.init();
-                const now = this.ctx.currentTime;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(220, now);
-                osc.frequency.linearRampToValueAtTime(120, now + 0.3);
-                gain.gain.setValueAtTime(0.3, now);
-                gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-                osc.start(now);
-                osc.stop(now + 0.3);
-            },
-            playLoudInstructionAlert() {
-                this.init();
-                const tones = [587.33, 880.00, 1174.66, 1760.00];
-                tones.forEach((freq, i) => {
-                    const now = this.ctx.currentTime + (i * 0.12);
-                    const osc = this.ctx.createOscillator();
-                    const gain = this.ctx.createGain();
-                    osc.type = 'square';
-                    osc.frequency.setValueAtTime(freq, now);
-                    gain.gain.setValueAtTime(0.85, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
-                    osc.connect(gain);
-                    gain.connect(this.ctx.destination);
-                    osc.start(now);
-                    osc.stop(now + 0.3);
-                });
-            }
-        };
-
-        const myPermissions = {
-            can_view_visitors: {{ 'true' if subadmin_info.can_view_visitors else 'false' }},
-            can_delete_visitors: {{ 'true' if subadmin_info.can_delete_visitors else 'false' }},
-            can_export_data: {{ 'true' if subadmin_info.can_export_data else 'false' }}
-        };
-
-        let pendingCallback = null;
-
-        function showCustomConfirm(title, message, emoji, confirmBtnText, onConfirm) {
-            document.getElementById('modalEmoji').innerText = emoji || '🔒';
-            document.getElementById('modalTitle').innerText = title;
-            document.getElementById('modalMessage').innerText = message;
-            document.getElementById('modalConfirmBtn').innerText = confirmBtnText || 'Confirm';
-            pendingCallback = onConfirm;
-            document.getElementById('customConfirmModal').style.display = 'flex';
+        function switchSection(secId, el) {
+            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active-view'));
+            document.querySelectorAll('.nav-pill-item').forEach(i => i.classList.remove('active'));
+            document.getElementById(secId).classList.add('active-view');
+            if (el) el.classList.add('active');
         }
 
-        function closeConfirmModal() {
-            document.getElementById('customConfirmModal').style.display = 'none';
-            pendingCallback = null;
-        }
-
-        document.getElementById('modalConfirmBtn').onclick = function() {
-            if (pendingCallback) {
-                const cb = pendingCallback;
-                closeConfirmModal();
-                cb();
-            }
-        };
-
-        function showCustomNotice(emoji, title, message) {
-            document.getElementById('noticeEmoji').innerText = emoji;
-            document.getElementById('noticeTitle').innerText = title;
-            document.getElementById('noticeMessage').innerText = message;
-            document.getElementById('customNoticeModal').style.display = 'flex';
-        }
-
-        function closeNoticeModal() {
-            document.getElementById('customNoticeModal').style.display = 'none';
-        }
-
-        function handleAction(permKey, actionName) {
-            if (myPermissions[permKey]) {
-                SoundFX.playApprove();
-                showCustomNotice('⚡', 'Access Granted', 'You have active privileges for ' + actionName + '.');
-            } else {
-                showCustomConfirm(
-                    'Access Restricted',
-                    'You do not have permission for \'' + actionName + '\'. Send a direct approval request to Main Admin?',
-                    '🔒',
-                    '✉️ Send Request to Main Admin',
-                    function() {
-                        fetch('/subadmin/request-permission', {
-                            method: 'POST',
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({ action: actionName, permission_key: permKey })
-                        })
-                        .then(res => res.json())
-                        .then(data => {
-                            SoundFX.playSend();
-                            showCustomNotice('📩', 'Request Sent Successfully!', data.message);
-                        })
-                        .catch(err => {
-                            SoundFX.playReject();
-                            showCustomNotice('❌', 'Notice', 'Request logged in central security audit trail.');
-                        });
-                    }
-                );
-            }
-        }
-
-        function openSendMessageModal() {
-            document.getElementById('msgModal').style.display = 'flex';
-        }
+        function openSendMessageModal() { document.getElementById('msgModal').style.display = 'flex'; }
 
         function submitMessageToAdmin() {
             const subject = document.getElementById('msgSubject').value.trim();
             const content = document.getElementById('msgContent').value.trim();
-            if (!content) {
-                showCustomNotice('⚠️', 'Validation', 'Please enter message details before sending.');
-                return;
-            }
+            if (!content) return alert('Enter message content');
 
             fetch('/subadmin/send-message', {
                 method: 'POST',
@@ -375,73 +365,26 @@
             .then(res => res.json())
             .then(data => {
                 document.getElementById('msgModal').style.display = 'none';
-                document.getElementById('msgSubject').value = '';
-                document.getElementById('msgContent').value = '';
-                SoundFX.playSend();
-                showCustomNotice('📨', 'Dispatched!', data.message);
-            })
-            .catch(err => showCustomNotice('❌', 'Error', 'Error sending message.'));
+                alert(data.message);
+            });
         }
 
-        function confirmDeleteLead(id) {
-            showCustomConfirm(
-                'Delete Visitor Entry',
-                'Are you sure you want to permanently delete this visitor entry?',
-                '🗑️',
-                'Delete Lead',
-                function() { window.location.href = '/admin/delete-lead/' + id; }
-            );
+        function handleAction(permKey, actionName) {
+            const hasPerm = {{ 'true' if subadmin_info.can_view_visitors else 'false' }};
+            if (permKey === 'can_view_visitors' && hasPerm) {
+                switchSection('sec-sub-leads', document.querySelectorAll('.nav-pill-item')[2]);
+            } else {
+                if (confirm("You do not have permission for '" + actionName + "'. Send approval request to Main Admin?")) {
+                    fetch('/subadmin/request-permission', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ action: actionName, permission_key: permKey })
+                    })
+                    .then(res => res.json())
+                    .then(data => alert(data.message));
+                }
+            }
         }
-
-        // Live Polling for Directive Notifications and Approval status
-        setInterval(() => {
-            fetch('/api/subadmin/poll-status')
-            .then(res => res.json())
-            .then(data => {
-                if (data.resolved_request) {
-                    if (data.resolved_request.status === 'APPROVED') {
-                        SoundFX.playApprove();
-                        showCustomNotice('🎉', 'Permission Approved!', 'Main Admin GRANTED access for ' + data.resolved_request.action + '! Reloading...');
-                        setTimeout(() => window.location.reload(), 2500);
-                    } else if (data.resolved_request.status === 'DENIED') {
-                        SoundFX.playReject();
-                        showCustomNotice('❌', 'Permission Denied', 'Main Admin DISMISSED request for ' + data.resolved_request.action + '.');
-                    }
-                }
-
-                if (data.new_instruction) {
-                    SoundFX.playLoudInstructionAlert();
-                    const inst = data.new_instruction;
-                    document.getElementById('dirTitle').innerText = '📜 Directive: ' + inst.title;
-                    document.getElementById('dirMsg').innerText = inst.message;
-                    
-                    document.getElementById('dirDoneBtn').onclick = () => {
-                        fetch('/subadmin/instruction-action', {
-                            method: 'POST',
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({ id: inst.id, action: 'ACKNOWLEDGED' })
-                        }).then(() => {
-                            document.getElementById('directiveModal').style.display = 'none';
-                            window.location.reload();
-                        });
-                    };
-
-                    document.getElementById('dirSaveBtn').onclick = () => {
-                        fetch('/subadmin/instruction-action', {
-                            method: 'POST',
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({ id: inst.id, action: 'SAVED' })
-                        }).then(() => {
-                            document.getElementById('directiveModal').style.display = 'none';
-                            window.location.reload();
-                        });
-                    };
-
-                    document.getElementById('directiveModal').style.display = 'flex';
-                }
-            })
-            .catch(() => {});
-        }, 3000);
     </script>
 </body>
 </html>

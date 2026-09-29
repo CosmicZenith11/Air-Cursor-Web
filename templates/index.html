@@ -7,187 +7,155 @@
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     
-    <!-- 💥 COMPLETE STYLE OVERRIDE FOR DANGEROUS GAMES MATTE LOOK 💥 -->
     <style>
-        /* 1. FORCE THEME VARIABLES EVERYWHERE */
+        /* 💥 COMPLETE RESET: KILL ALL BROWN/GOLD & INJECT LIQUID GLASS 💥 */
         :root, body, html {
-            --bg-base: #0B0C10 !important;          /* Deep Void Black */
-            --glass-bg: #151821 !important;        /* Solid Matte Slate */
-            --glass-border: #232838 !important;    /* Subtle Hairline */
-            --text-main: #FFFFFF !important;       /* Pure White */
-            --text-sub: #9CA3AF !important;        /* Muted Gray */
-            --accent: #2563EB !important;          /* Air Cursor Solid Blue */
+            --bg-base: #0B0D13 !important;
+            --glass-bg: rgba(19, 23, 34, 0.75) !important;
+            --glass-border: rgba(37, 99, 235, 0.25) !important;
+            --text-main: #F3F4F6 !important;
+            --text-sub: #9CA3AF !important;
+            --accent: #2563EB !important;
             --accent-hover: #1D4ED8 !important;
-            --accent-gold: #2563EB !important;     /* KILL ALL BROWN */
-        }
-        
-        :root[data-theme="light"] {
-            --bg-base: #F9FAFB !important;
-            --glass-bg: #FFFFFF !important;
-            --glass-border: #E5E7EB !important;
-            --text-main: #111827 !important;
-            --text-sub: #6B7280 !important;
-            --accent: #1D4ED8 !important;
-            --accent-hover: #1E40AF !important;
-            --accent-gold: #1D4ED8 !important;
+            --accent-gold: #2563EB !important;
         }
 
         body {
             background-color: var(--bg-base) !important;
             color: var(--text-main) !important;
-            font-family: 'Helvetica Neue', system-ui, -apple-system, sans-serif !important;
-            margin: 0 !important;
+            font-family: system-ui, -apple-system, sans-serif !important;
         }
 
-        /* 2. KILL ALL NEON, SHINE, AND BLUR EFFECTS */
-        .glass-effect, .card, .content-section, .popup-card, .glass-modal, .download-form {
+        /* 💥 IOS 27 STYLE LIQUID GLASS BOXES WITH RUNNING BORDER ANIMATION 💥 */
+        .glass-effect, .card, .content-section, .popup-card, .glass-modal {
             background: var(--glass-bg) !important;
+            backdrop-filter: blur(16px) !important;
+            -webkit-backdrop-filter: blur(16px) !important;
             border: 1px solid var(--glass-border) !important;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important; /* Flat drop shadow */
-            backdrop-filter: none !important;
-            -webkit-backdrop-filter: none !important;
-            border-radius: 12px !important; 
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+            border-radius: 16px !important;
+            position: relative !important;
+            overflow: hidden !important;
+            transition: transform 0.3s ease, border-color 0.3s ease !important;
         }
 
-        /* 3. BRUTALIST TYPOGRAPHY */
-        h2 {
-            font-weight: 900 !important;
-            text-transform: uppercase !important;
-            letter-spacing: -1px !important;
-            color: var(--text-main) !important;
-            font-size: 2.4rem !important;
-            line-height: 1.1 !important;
-            margin-bottom: 20px !important;
+        /* Running Border Line Effect on Hover (Image-1 Fix) */
+        .glass-effect::after, .card::after, .content-section::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 16px;
+            border: 2px solid transparent;
+            pointer-events: none;
+            transition: border-color 0.4s ease;
         }
 
-        h3 {
-            font-weight: 800 !important;
-            color: var(--text-main) !important;
-            font-size: 1.4rem !important;
-            margin-bottom: 15px !important;
+        .glass-effect:hover, .card:hover, .content-section:hover {
+            border-color: var(--accent) !important;
+            transform: translateY(-4px);
         }
 
-        p, label, .main-text {
-            color: var(--text-sub) !important;
-            font-weight: 500 !important;
-            line-height: 1.6 !important;
+        @keyframes borderRun {
+            0% { clip-path: inset(0 100% 100% 0); }
+            25% { clip-path: inset(0 0 100% 0); }
+            50% { clip-path: inset(100% 0 0 0); }
+            75% { clip-path: inset(0 0 0 100%); }
+            100% { clip-path: inset(0 100% 100% 0); }
         }
 
-        /* 4. SOLID MATTE BUTTONS (NO BROWN) */
+        .glass-effect:hover::after, .card:hover::after, .content-section:hover::after {
+            border-color: var(--accent);
+            animation: borderRun 2s linear infinite;
+        }
+
+        /* Typography */
+        h2 { font-weight: 800 !important; color: var(--text-main) !important; text-transform: uppercase; letter-spacing: -0.5px; }
+        h3 { font-weight: 700 !important; color: var(--text-main) !important; }
+        p, label { color: var(--text-sub) !important; }
+
+        /* 💥 LIQUID GLASS BUTTON WITH LOGO COLOR FILL & RIPPLE CLICK EFFECT 💥 */
         .cta-button {
-            background: var(--accent) !important;
-            color: #ffffff !important;
-            border: none !important;
-            box-shadow: none !important;
+            position: relative !important;
+            overflow: hidden !important;
+            background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important;
+            color: #FFFFFF !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+            backdrop-filter: blur(10px) !important;
+            -webkit-backdrop-filter: blur(10px) !important;
             text-transform: uppercase !important;
             font-weight: 800 !important;
             letter-spacing: 1px !important;
-            border-radius: 6px !important;
-            padding: 14px 28px !important;
+            border-radius: 99px !important;
+            padding: 14px 32px !important;
             cursor: pointer !important;
-            transition: transform 0.2s ease, background 0.2s ease !important;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
         }
+
         .cta-button:hover {
-            background: var(--accent-hover) !important;
             transform: translateY(-2px) !important;
+            box-shadow: 0 15px 30px rgba(37, 99, 235, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
         }
 
-        .btn-secondary {
-            background: transparent !important;
-            color: var(--text-main) !important;
-            border: 2px solid var(--glass-border) !important;
-            padding: 12px 24px !important;
-            border-radius: 6px !important;
-            font-weight: 700 !important;
-            cursor: pointer !important;
+        /* Ripple / Liquid Splash on Click */
+        .cta-button::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 5px; height: 5px;
+            background: rgba(255, 255, 255, 0.6);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%, -50%);
+            transform-origin: 50% 50%;
         }
-        .btn-secondary:hover { background: var(--glass-border) !important; }
 
-        /* 5. FORM INPUTS */
+        .cta-button:active::after {
+            animation: liquidRipple 0.6s ease-out;
+        }
+
+        @keyframes liquidRipple {
+            0% { transform: scale(0, 0) translate(-50%, -50%); opacity: 0.8; }
+            100% { transform: scale(40, 40) translate(-50%, -50%); opacity: 0; }
+        }
+
+        /* Inputs & Controls */
         .glass-input {
-            background: var(--bg-base) !important;
+            background: rgba(11, 13, 19, 0.8) !important;
             color: var(--text-main) !important;
-            border: 2px solid var(--glass-border) !important;
-            border-radius: 6px !important;
-            padding: 15px !important;
-            font-family: monospace !important;
-            font-size: 1rem !important;
+            border: 1px solid var(--glass-border) !important;
+            border-radius: 10px !important;
+            padding: 14px 18px !important;
             width: 100% !important;
-            box-shadow: none !important;
-            margin-bottom: 20px !important;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.4) !important;
+            margin-bottom: 18px !important;
         }
-        .glass-input::placeholder { color: #6B7280 !important; }
-        .glass-input:focus {
-            border-color: var(--accent) !important;
-            outline: none !important;
-        }
-        
-        /* 6. BADGES */
+        .glass-input:focus { border-color: var(--accent) !important; outline: none !important; }
+
         .feature-badges span {
             color: var(--accent) !important;
-            border: 2px solid var(--glass-border) !important;
-            background: var(--bg-base) !important;
-            font-weight: 800 !important;
-            text-transform: uppercase !important;
-            letter-spacing: 0.5px !important;
-            padding: 8px 16px !important;
-            border-radius: 4px !important;
+            border: 1px solid var(--glass-border) !important;
+            background: rgba(37, 99, 235, 0.08) !important;
+            font-weight: 700 !important;
+            padding: 6px 14px !important;
+            border-radius: 8px !important;
         }
 
-        .nav-links a { color: var(--text-main) !important; font-weight: 700 !important; text-transform: uppercase !important; font-size: 0.85rem !important; }
+        .nav-links a { color: var(--text-main) !important; font-weight: 600 !important; }
         .nav-links a:hover { color: var(--accent) !important; }
-
-        .floating-emoji { 
-            text-shadow: none !important; 
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)) !important; 
-            font-size: 2.5rem !important;
-            margin-bottom: 20px !important;
-        }
-
-        /* 7. ANIMATIONS */
-        @keyframes dropIn {
-            0% { transform: translateY(-30px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
-        }
-
-        .app-logo-container { animation: dropIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .top-nav { animation: dropIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards; opacity: 0; }
-        .theme-toggle-container { animation: dropIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards; opacity: 0; }
-
-        .grid-cards .card {
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease !important;
-        }
-        .grid-cards .card:hover {
-            transform: translateY(-6px) !important;
-            border-color: var(--accent) !important;
-        }
-
-        .animate-on-scroll {
-            opacity: 0;
-            transform: translateY(40px);
-            transition: opacity 0.6s ease-out, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .animate-on-scroll.scrolled {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Hide specific elements showing brown */
-        .download-form { border: none !important; box-shadow: none !important; background: transparent !important; padding: 0 !important; }
+        
+        .download-form { border: none !important; background: transparent !important; box-shadow: none !important; padding: 0 !important; }
     </style>
 </head>
 <body>
 
-    <!-- Particle Background Canvas -->
     <canvas id="particleCanvas"></canvas>
 
-    <!-- ૧. એપ લોગો (Top Left) -->
     <a href="#" class="app-logo-container glass-effect" style="text-decoration: none;" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">
         <img src="{{ url_for('static', filename='favicon.png') }}" alt="Air Cursor Logo" class="app-logo-img">
-        <span class="app-logo-text" style="color: var(--accent) !important; font-weight: 900; letter-spacing: 1px;">AIR CURSOR</span>
+        <span class="app-logo-text" style="color: var(--accent) !important; font-weight: 900;">AIR CURSOR</span>
     </a>
 
-    <!-- ૨. ફ્લોટિંગ નેવબાર (Center) -->
     <header class="top-nav">
         <div class="nav-pill glass-effect">
             <nav class="nav-links">
@@ -199,72 +167,45 @@
         </div>
     </header>
 
-    <!-- ૩. ડે / નાઇટ એનિમેટેડ થીમ ટોગલ -->
     <div class="theme-toggle-container glass-effect">
         <div class="toggle-scaler">
             <button class="dn-toggle is-night" id="themeToggle" aria-label="Toggle Theme">
                 <div class="dn-sky"></div>
                 <div class="dn-stars">
-                    <div class="dn-star s1"></div>
-                    <div class="dn-star s2"></div>
-                    <div class="dn-star s3"></div>
-                    <div class="dn-star s4"></div>
-                    <div class="dn-star s5"></div>
+                    <div class="dn-star s1"></div><div class="dn-star s2"></div><div class="dn-star s3"></div><div class="dn-star s4"></div><div class="dn-star s5"></div>
                 </div>
                 <div class="dn-clouds">
-                    <div class="dn-cloud c1">
-                        <svg viewBox="0 0 34 16"><path d="M10 14h18a6 6 0 0 0 0-12 8 8 0 0 0-15 3A5 5 0 0 0 10 14z" fill="white"/></svg>
-                    </div>
-                    <div class="dn-cloud c2">
-                        <svg viewBox="0 0 26 13"><path d="M8 11h12a4 4 0 0 0 0-8 6 6 0 0 0-11 2 4 4 0 0 0-1 6z" fill="white"/></svg>
-                    </div>
+                    <div class="dn-cloud c1"><svg viewBox="0 0 34 16"><path d="M10 14h18a6 6 0 0 0 0-12 8 8 0 0 0-15 3A5 5 0 0 0 10 14z" fill="white"/></svg></div>
+                    <div class="dn-cloud c2"><svg viewBox="0 0 26 13"><path d="M8 11h12a4 4 0 0 0 0-8 6 6 0 0 0-11 2 4 4 0 0 0-1 6z" fill="white"/></svg></div>
                 </div>
                 <div class="dn-waves">
                     <div class="dn-wave w1"><svg viewBox="0 0 148 30"><path d="M0 20 Q 37 10 74 20 T 148 20 V 30 H 0 Z" fill="#38a3a5"/></svg></div>
                     <div class="dn-wave w2"><svg viewBox="0 0 148 30"><path d="M0 22 Q 37 15 74 22 T 148 22 V 30 H 0 Z" fill="#22577a"/></svg></div>
                 </div>
-                <div class="dn-palm left">
-                    <svg viewBox="0 0 40 46" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M22 46 C21 34 16 24 20 14" stroke="#5c3818" stroke-width="2.8" stroke-linecap="round"/>
-                        <path d="M20 14 C12 8 4 11 0 17 C6 13 13 14 20 14 Z" fill="#1b4332"/>
-                        <path d="M20 14 C14 4 6 5 2 8 C8 7 15 9 20 14 Z" fill="#2d6a4f"/>
-                        <path d="M20 14 C22 3 30 3 35 7 C28 8 23 10 20 14 Z" fill="#40916c"/>
-                        <path d="M20 14 C26 7 35 11 39 17 C33 13 26 14 20 14 Z" fill="#1b4332"/>
-                        <path d="M20 14 C18 6 22 4 25 3 C23 6 22 10 20 14 Z" fill="#52b788"/>
-                    </svg>
-                </div>
                 <div class="dn-orb">
                     <div class="dn-sun"></div>
-                    <div class="dn-moon">
-                        <div class="dn-crater cr1"></div>
-                        <div class="dn-crater cr2"></div>
-                    </div>
+                    <div class="dn-moon"><div class="dn-crater cr1"></div><div class="dn-crater cr2"></div><div class="dn-crater cr3"></div></div>
                 </div>
             </button>
         </div>
     </div>
 
-    <!-- હીરો સેક્શન -->
     <section class="hero-section">
-        <div class="scroll-instruction">
-            <p class="main-text">Scroll Down to Explore</p>
-        </div>
+        <div class="scroll-instruction"><p class="main-text">Scroll Down to Explore</p></div>
     </section>
 
-    <!-- Intro સેક્શન -->
-    <section id="intro" class="content-section glass-effect animate-on-scroll">
+    <section id="intro" class="content-section glass-effect">
         <div class="floating-emoji header-emoji">✨</div>
         <h2>Control Your Screen Effortlessly Without Touching</h2>
         <p>Experience the next generation of touchless navigation. Control your screen effortlessly with smooth, intuitive optical gesture recognition.</p>
-        <div class="feature-badges" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 25px;">
+        <div class="feature-badges" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
             <span>⚡ Zero Hardware</span>
             <span>🧠 AI Engine</span>
             <span>🚀 Responsive</span>
         </div>
     </section>
 
-    <!-- Functions સેક્શન -->
-    <section id="functions" class="content-section glass-effect animate-on-scroll">
+    <section id="functions" class="content-section glass-effect">
         <div class="floating-emoji header-emoji">⚙️</div>
         <h2>Functions</h2>
         <p>Designed for absolute precision, fluid interactivity, and effortless workflow.</p>
@@ -287,8 +228,7 @@
         </div>
     </section>
 
-    <!-- Characteristics સેક્શન -->
-    <section id="characteristics" class="content-section glass-effect animate-on-scroll">
+    <section id="characteristics" class="content-section glass-effect">
         <div class="floating-emoji header-emoji">🌟</div>
         <h2>Characteristics</h2>
         <p>Built for modern workflows with cutting-edge touchless responsiveness.</p>
@@ -311,47 +251,27 @@
         </div>
     </section>
 
-    <!-- Download સેક્શન -->
-    <section id="download" class="content-section glass-effect animate-on-scroll">
+    <section id="download" class="content-section glass-effect">
         <div class="floating-emoji header-emoji">📥</div>
         <h2>Get Started Today</h2>
         <p>Download Air Cursor and transform how you interact with your desktop instantly.</p>
-        <form action="/register" method="POST" id="downloadForm" class="download-form" novalidate style="margin-top: 30px;">
+        <form action="/register" method="POST" id="downloadForm" class="download-form" novalidate style="margin-top: 25px;">
             <input type="text" name="name" class="glass-input" placeholder="Your Name (eg: Rahul)" autocomplete="name">
             <input type="email" name="email" class="glass-input" placeholder="Email Address (eg: rahul@gmail.com)" autocomplete="email">
             
-            <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 25px;">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 22px;">
                 <input type="checkbox" name="remember" id="remember" value="true" style="cursor: pointer; width: 18px; height: 18px; accent-color: var(--accent);">
                 <label for="remember" style="font-size: 0.95rem; cursor: pointer; color: var(--text-main) !important;">Remember me</label>
             </div>
 
-            <button type="submit" class="cta-button" style="width: 100%; max-width: 300px; display: block; margin: 0 auto;">Download for Free</button>
+            <button type="submit" class="cta-button" style="width: 100%; max-width: 280px; display: block; margin: 0 auto;">Download for Free</button>
         </form>
     </section>
 
-    <!-- ફુટર -->
-    <footer class="site-footer" style="text-align: center; padding: 30px 20px; color: var(--text-sub) !important; margin-top: 40px;">
+    <footer class="site-footer" style="text-align: center; padding: 30px; color: var(--text-sub) !important;">
         <p>© 2026 Air Cursor Technologies. Crafted By Developer Mode.</p>
     </footer>
 
-    <!-- (NO BROWSER ALERTS) - Popups are handled by script.js -->
     <script src="{{ url_for('static', filename='script.js') }}"></script>
-
-    <!-- 💥 SCROLL ANIMATION SCRIPT 💥 -->
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('scrolled');
-                    }
-                });
-            }, { threshold: 0.1 });
-            
-            document.querySelectorAll('.animate-on-scroll').forEach(el => {
-                observer.observe(el);
-            });
-        });
-    </script>
 </body>
 </html>

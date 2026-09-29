@@ -7,82 +7,97 @@
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
-        /* 💥 OVERRIDE THEME COLORS FOR INDEX PAGE 💥 */
-        :root[data-theme="dark"] {
-            --bg-base: #0B0D13;          /* Deep Matte Charcoal Slate */
-            --glass-bg: #131722;        /* Solid Flat Card Surface */
-            --glass-border: #212735;    /* Soft Hairline Border */
-            --text-main: #F3F4F6;       /* Pure Premium White */
-            --text-sub: #9CA3AF;        /* Muted Slate Gray */
-            --accent: #2563EB;          /* Muted Brand Blue (Zero Neon) */
-            --accent-hover: #1D4ED8;    /* Darker Blue on Hover */
+        /* 💥 FORCE OVERRIDE ALL BROWN/GOLD COLORS FROM STYLE.CSS 💥 */
+        :root, :root[data-theme="dark"], body {
+            --bg-body: #0B0D13 !important;
+            --bg-base: #0B0D13 !important;
+            --card-bg: #131722 !important;
+            --glass-bg: #131722 !important;
+            --card-border: #212735 !important;
+            --glass-border: #212735 !important;
+            --text-main: #F3F4F6 !important;
+            --text-sub: #9CA3AF !important;
+            
+            /* Override old accent names */
+            --accent: #2563EB !important;
+            --accent-gold: #2563EB !important; 
+            --accent-hover: #1D4ED8 !important;
         }
         
         :root[data-theme="light"] {
-            --bg-base: #F3F4F6;
-            --glass-bg: #FFFFFF;
-            --glass-border: #E5E7EB;
-            --text-main: #111827;
-            --text-sub: #6B7280;
-            --accent: #1D4ED8;
-            --accent-hover: #1E40AF;
+            --bg-body: #F3F4F6 !important;
+            --bg-base: #F3F4F6 !important;
+            --card-bg: #FFFFFF !important;
+            --glass-bg: #FFFFFF !important;
+            --card-border: #E5E7EB !important;
+            --glass-border: #E5E7EB !important;
+            --text-main: #111827 !important;
+            --text-sub: #6B7280 !important;
+            
+            /* Override old accent names */
+            --accent: #1D4ED8 !important;
+            --accent-gold: #1D4ED8 !important;
+            --accent-hover: #1E40AF !important;
         }
 
-        body {
-            background-color: var(--bg-base);
-            color: var(--text-main);
+        body { 
+            background-color: var(--bg-base) !important; 
+            color: var(--text-main) !important; 
         }
 
-        .glass-effect {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            box-shadow: none; /* Removed neon shadow */
+        /* Fix specific elements showing brown */
+        .glass-effect, .card, .content-section, .popup-card, .glass-modal {
+            background: var(--glass-bg) !important;
+            border: 1px solid var(--glass-border) !important;
+            box-shadow: none !important;
         }
 
-        .nav-links a {
-            color: var(--text-main);
+        /* Fix Badges specifically */
+        .feature-badges span {
+            color: var(--accent) !important;
+            border: 1px solid var(--glass-border) !important;
+            background: var(--bg-base) !important;
+            box-shadow: none !important;
         }
-        .nav-links a:hover {
-            color: var(--accent);
-        }
+
+        .nav-links a { color: var(--text-main) !important; }
+        .nav-links a:hover { color: var(--accent) !important; }
 
         .cta-button {
-            background-color: var(--accent);
-            color: #ffffff;
-            border: none;
+            background-color: var(--accent) !important;
+            color: #ffffff !important;
+            border: none !important;
+            box-shadow: none !important;
         }
-        .cta-button:hover {
-            background-color: var(--accent-hover);
-            box-shadow: none; /* Removed neon shadow */
+        .cta-button:hover { 
+            background-color: var(--accent-hover) !important; 
         }
 
         .btn-secondary {
-            background-color: transparent;
-            color: var(--text-main);
-            border: 1px solid var(--glass-border);
+            background-color: transparent !important;
+            color: var(--text-main) !important;
+            border: 1px solid var(--glass-border) !important;
         }
-        .btn-secondary:hover {
-            background-color: var(--glass-border);
+        .btn-secondary:hover { 
+            background-color: var(--glass-border) !important; 
         }
 
         .glass-input {
-            background-color: rgba(0, 0, 0, 0.2);
-            color: var(--text-main);
-            border: 1px solid var(--glass-border);
+            background-color: rgba(0, 0, 0, 0.2) !important;
+            color: var(--text-main) !important;
+            border: 1px solid var(--glass-border) !important;
         }
-        :root[data-theme="light"] .glass-input {
-            background-color: rgba(255, 255, 255, 0.8);
+        :root[data-theme="light"] .glass-input { 
+            background-color: rgba(255, 255, 255, 0.8) !important; 
         }
-        .glass-input:focus {
-            border-color: var(--accent);
-            box-shadow: none; /* Removed neon shadow */
+        .glass-input:focus { 
+            border-color: var(--accent) !important; 
+            box-shadow: none !important;
         }
         
-        h2, h3 { color: var(--text-main); }
-        p { color: var(--text-sub); }
-        
-        /* Removed all global glowing/neon effects */
-        .floating-emoji { text-shadow: none; }
+        h2, h3, .main-text { color: var(--text-main) !important; }
+        p { color: var(--text-sub) !important; }
+        .floating-emoji { text-shadow: none !important; }
     </style>
 </head>
 <body>
@@ -93,7 +108,7 @@
     <!-- ૧. એપ લોગો (Top Left) -->
     <a href="#" class="app-logo-container glass-effect" style="text-decoration: none;" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">
         <img src="{{ url_for('static', filename='favicon.png') }}" alt="Air Cursor Logo" class="app-logo-img">
-        <span class="app-logo-text" style="color: var(--accent);">AIR CURSOR</span>
+        <span class="app-logo-text" style="color: var(--accent) !important;">AIR CURSOR</span>
     </a>
 
     <!-- ૨. ફ્લોટિંગ નેવબાર (Center) -->
@@ -177,9 +192,9 @@
         <h2>Control Your Screen Effortlessly Without Touching</h2>
         <p>Experience the next generation of touchless navigation. Control your screen effortlessly with smooth, intuitive optical gesture recognition.</p>
         <div class="feature-badges">
-            <span style="background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 5px 10px; border-radius: 8px;">⚡ Zero Hardware Setup</span>
-            <span style="background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 5px 10px; border-radius: 8px;">🧠 AI Gesture Engine</span>
-            <span style="background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 5px 10px; border-radius: 8px;">🚀 Ultra Responsive</span>
+            <span>⚡ Zero Hardware Setup</span>
+            <span>🧠 AI Gesture Engine</span>
+            <span>🚀 Ultra Responsive</span>
         </div>
     </section>
 
@@ -250,7 +265,7 @@
     </section>
 
     <!-- ફુટર -->
-    <footer class="site-footer" style="text-align: center; padding: 20px; color: var(--text-sub);">
+    <footer class="site-footer" style="text-align: center; padding: 20px; color: var(--text-sub) !important;">
         <p>© 2026 Air Cursor Technologies. Crafted By Developer Mode.</p>
     </footer>
 

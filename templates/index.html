@@ -1,14 +1,14 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" data-theme="dark">
 <head>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Air Cursor - Touchless Desktop Navigation</title>
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+    <title>Air Cursor - Download & Terms</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    
+
     <script>
-        /* Instant Theme Apply from Storage */
+        /* Instant Theme Persistence from Storage */
         (function() {
             var saved = localStorage.getItem('air_cursor_theme') || localStorage.getItem('theme') || 'dark';
             document.documentElement.setAttribute('data-theme', saved);
@@ -21,90 +21,77 @@
     </script>
 
     <style>
-        /* 💥 1. ROCK-SOLID THEME DEFINITIONS 💥 */
+        /* 💥 APPLE IOS LIQUID GLASS & THEME VARIABLES 💥 */
         :root {
-            --bg-base: #07090E;
+            --bg-body: #07090E;
             --liquid-glass-bg: rgba(15, 23, 42, 0.5);
-            --liquid-glass-card: rgba(20, 30, 55, 0.4);
-            --liquid-border: rgba(255, 255, 255, 0.14);
-            --liquid-border-hover: rgba(37, 99, 235, 0.7);
-            --liquid-sheen: inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.25), 0 20px 40px rgba(0, 0, 0, 0.6);
+            --liquid-glass-card: rgba(20, 30, 55, 0.45);
+            --border: rgba(255, 255, 255, 0.14);
             --text-main: #F8FAFC;
             --text-sub: #94A3B8;
-            --accent: #2563EB;
-            --accent-hover: #1D4ED8;
-            --input-bg: rgba(15, 23, 42, 0.65);
-            --input-text: #F8FAFC;
-            --input-placeholder: #64748B;
-            --input-border: rgba(255, 255, 255, 0.15);
+            --brand-blue: #2563EB;
+            --brand-blue-hover: #1D4ED8;
+            --tc-bg: rgba(11, 15, 25, 0.6);
+            --shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
         }
 
-        /* LIGHT THEME RULES */
+        /* LIGHT THEME */
         html[data-theme="light"],
         body[data-theme="light"],
         html.light-mode,
         body.light-mode {
-            --bg-base: #F8FAFC !important;
+            --bg-body: #F8FAFC !important;
             --liquid-glass-bg: rgba(255, 255, 255, 0.7) !important;
             --liquid-glass-card: rgba(255, 255, 255, 0.85) !important;
-            --liquid-border: rgba(37, 99, 235, 0.22) !important;
-            --liquid-border-hover: rgba(37, 99, 235, 0.6) !important;
-            --liquid-sheen: inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.9), 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+            --border: rgba(37, 99, 235, 0.22) !important;
             --text-main: #0F172A !important;
             --text-sub: #475569 !important;
-            --accent: #2563EB !important;
-            --accent-hover: #1D4ED8 !important;
-            --input-bg: rgba(255, 255, 255, 0.95) !important;
-            --input-text: #0F172A !important;
-            --input-placeholder: #94A3B8 !important;
-            --input-border: rgba(37, 99, 235, 0.3) !important;
+            --brand-blue: #2563EB !important;
+            --brand-blue-hover: #1D4ED8 !important;
+            --tc-bg: rgba(241, 245, 249, 0.85) !important;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
         }
 
-        /* DARK THEME OVERRIDE (HIGHEST PRIORITY) */
+        /* DARK THEME */
         html[data-theme="dark"],
         body[data-theme="dark"],
         html.dark-mode,
         body.dark-mode {
-            --bg-base: #07090E !important;
+            --bg-body: #07090E !important;
             --liquid-glass-bg: rgba(15, 23, 42, 0.5) !important;
-            --liquid-glass-card: rgba(20, 30, 55, 0.4) !important;
-            --liquid-border: rgba(255, 255, 255, 0.14) !important;
-            --liquid-border-hover: rgba(37, 99, 235, 0.7) !important;
-            --liquid-sheen: inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.25), 0 20px 40px rgba(0, 0, 0, 0.6) !important;
+            --liquid-glass-card: rgba(20, 30, 55, 0.45) !important;
+            --border: rgba(255, 255, 255, 0.14) !important;
             --text-main: #F8FAFC !important;
             --text-sub: #94A3B8 !important;
-            --accent: #2563EB !important;
-            --accent-hover: #1D4ED8 !important;
-            --input-bg: rgba(15, 23, 42, 0.65) !important;
-            --input-text: #F8FAFC !important;
-            --input-placeholder: #64748B !important;
-            --input-border: rgba(255, 255, 255, 0.15) !important;
+            --brand-blue: #2563EB !important;
+            --brand-blue-hover: #1D4ED8 !important;
+            --tc-bg: rgba(11, 15, 25, 0.6) !important;
+            --shadow: 0 20px 40px rgba(0, 0, 0, 0.6) !important;
         }
 
-        /* Canvas clicks block na kare te mate */
-        #particleCanvas {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
+        canvas, #particleCanvas, .particles-js-canvas-el {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
             pointer-events: none !important;
-            z-index: 0 !important;
         }
 
         html, body {
-            background-color: var(--bg-base) !important;
+            min-height: 100vh !important;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-body) !important;
             color: var(--text-main) !important;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-            margin: 0 !important;
-            padding-top: 110px !important;
-            transition: background-color 0.25s ease, color 0.25s ease !important;
-            position: relative;
-            z-index: 1;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            transition: background-color 0.25s ease, color 0.25s ease;
+            box-sizing: border-box;
         }
 
-        /* 💥 HEADER ROW (48PX HEIGHT) 💥 */
-        .header-bar-fixed {
+        *::-webkit-scrollbar { display: none !important; }
+        * { scrollbar-width: none !important; box-sizing: border-box; }
+
+        /* 💥 TOP HEADER BAR (48PX HEIGHT IN 1 LINE) 💥 */
+        .header-bar-download {
             position: fixed !important;
             top: 20px !important;
             left: 0 !important;
@@ -119,12 +106,11 @@
             pointer-events: none !important;
         }
 
-        .header-bar-fixed > * {
+        .header-bar-download > * {
             pointer-events: auto !important;
         }
 
         .app-logo-container,
-        .nav-pill,
         .theme-toggle-container {
             height: 48px !important;
             max-height: 48px !important;
@@ -135,8 +121,8 @@
             background: var(--liquid-glass-bg) !important;
             backdrop-filter: blur(24px) saturate(200%) !important;
             -webkit-backdrop-filter: blur(24px) saturate(200%) !important;
-            border: 1px solid var(--liquid-border) !important;
-            box-shadow: var(--liquid-sheen) !important;
+            border: 1px solid var(--border) !important;
+            box-shadow: inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.2), 0 10px 25px rgba(0, 0, 0, 0.2) !important;
             border-radius: 999px !important;
             box-sizing: border-box !important;
             margin: 0 !important;
@@ -160,41 +146,6 @@
             font-size: 0.95rem !important;
         }
 
-        .top-nav {
-            position: absolute !important;
-            left: 50% !important;
-            transform: translateX(-50%) !important;
-            margin: 0 !important;
-            height: 48px !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-        }
-        .nav-pill {
-            padding: 0 8px !important;
-        }
-        .nav-links {
-            display: flex !important;
-            align-items: center !important;
-            gap: 4px !important;
-        }
-        .nav-links a {
-            color: var(--text-sub) !important;
-            -webkit-text-fill-color: var(--text-sub) !important;
-            text-decoration: none !important;
-            font-weight: 600 !important;
-            font-size: 0.9rem !important;
-            padding: 8px 16px !important;
-            border-radius: 999px !important;
-            transition: all 0.2s ease !important;
-        }
-        .nav-links a:hover,
-        .nav-links a.active {
-            color: #2563EB !important;
-            -webkit-text-fill-color: #2563EB !important;
-            background: rgba(37, 99, 235, 0.15) !important;
-        }
-
         .theme-toggle-container {
             padding: 0 6px !important;
             cursor: pointer !important;
@@ -205,235 +156,222 @@
             justify-content: center !important;
         }
 
-        /* 💥 TOGGLE BUTTON CLICK FIX 💥 */
         #themeToggle {
             cursor: pointer !important;
-            pointer-events: auto !important;
             border: none;
             background: none;
             outline: none;
         }
 
-        /* ZERO EXPLORE LINE HERO */
-        .scroll-instruction,
-        .hero-section p,
-        .main-text {
-            display: none !important;
-            visibility: hidden !important;
-            opacity: 0 !important;
-            height: 0 !important;
-            margin: 0 !important;
-            padding: 0 !important;
+        .download-page-wrap {
+            min-height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 100px 20px 40px 20px;
+            position: relative;
+            z-index: 10;
         }
 
-        .hero-section {
-            min-height: 38vh !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-        }
-
-        /* CONTENT SECTIONS */
-        .content-section,
-        #intro,
-        #functions,
-        #characteristics,
-        #download {
-            background: var(--liquid-glass-bg) !important;
+        /* 💥 LIQUID GLASS CARD 💥 */
+        .download-card {
+            width: 100%;
+            max-width: 680px;
+            padding: 38px 42px;
+            border-radius: 24px;
+            text-align: left;
+            background: var(--liquid-glass-card) !important;
             backdrop-filter: blur(28px) saturate(190%) !important;
             -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
-            border: 1px solid var(--liquid-border) !important;
-            box-shadow: var(--liquid-sheen) !important;
-            border-radius: 26px !important;
-            position: relative !important;
-            z-index: 10 !important;
-            overflow: hidden !important;
-            margin: 40px auto !important;
-            max-width: 960px !important;
-            width: 92% !important;
-            padding: 45px 35px !important;
-            text-align: center !important;
-            box-sizing: border-box !important;
+            border: 1px solid var(--border) !important;
+            box-shadow: var(--shadow);
+            position: relative;
         }
 
-        /* ૨ BOXES UPAR + ૧ BOX NICHE CENTER MA */
-        .faculty-cards-layout {
-            display: flex !important;
-            flex-wrap: wrap !important;
-            justify-content: center !important;
-            align-items: stretch !important;
-            gap: 24px !important;
-            margin: 34px auto 0 auto !important;
-            max-width: 820px !important;
-            width: 100% !important;
-            box-sizing: border-box !important;
-        }
-
-        .faculty-card {
-            width: 380px !important;
-            max-width: 100% !important;
-            flex: 0 0 380px !important;
-            background: var(--liquid-glass-card) !important;
-            backdrop-filter: blur(20px) !important;
-            -webkit-backdrop-filter: blur(20px) !important;
-            border: 1px solid var(--liquid-border) !important;
-            box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.18), 0 12px 28px rgba(0, 0, 0, 0.35) !important;
-            border-radius: 18px !important;
-            padding: 26px 22px !important;
-            text-align: left !important;
-            display: flex !important;
-            flex-direction: column !important;
-            justify-content: flex-start !important;
-            position: relative !important;
-            overflow: hidden !important;
-            box-sizing: border-box !important;
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease !important;
-        }
-
-        .faculty-card:hover {
-            transform: translateY(-5px) !important;
-            border-color: var(--liquid-border-hover) !important;
-        }
-
-        .faculty-card::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-            border: 2px solid transparent;
-            pointer-events: none;
-            transition: border-color 0.3s ease;
-        }
-
-        @keyframes borderRun {
-            0% { clip-path: inset(0 100% 100% 0); }
-            25% { clip-path: inset(0 0 100% 0); }
-            50% { clip-path: inset(100% 0 0 0); }
-            75% { clip-path: inset(0 0 0 100%); }
-            100% { clip-path: inset(0 100% 100% 0); }
-        }
-
-        .faculty-card:hover::after {
-            border-color: var(--accent);
-            animation: borderRun 2s linear infinite;
-        }
-
-        h2 {
-            font-weight: 800 !important;
-            color: var(--text-main) !important;
-            text-transform: uppercase;
+        .download-card h1 {
+            font-size: 1.75rem;
+            margin-bottom: 6px;
+            font-weight: 800;
+            color: var(--text-main);
             letter-spacing: -0.5px;
-            font-size: 1.85rem !important;
-            margin-top: 10px !important;
         }
-        h3 {
-            font-weight: 700 !important;
-            color: var(--text-main) !important;
-            font-size: 1.15rem !important;
-            margin: 10px 0 8px 0 !important;
+
+        .download-card p.subtitle {
+            margin-bottom: 20px;
+            font-size: 0.92rem;
+            line-height: 1.5;
+            color: var(--text-sub);
         }
-        p {
+
+        .tc-box {
+            background: var(--tc-bg);
+            border: 1px solid var(--border);
+            padding: 20px 24px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            transition: border-color 0.2s ease;
+        }
+
+        .tc-box h3 {
+            margin-top: 0;
+            margin-bottom: 14px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-main);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tc-box.box-highlight-active {
+            border-color: var(--brand-blue);
+        }
+
+        .tc-box ul {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+            font-size: 0.88rem;
+            line-height: 1.6;
+            color: var(--text-sub);
+        }
+
+        .tc-box li {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .tc-box li strong { color: var(--text-main); }
+        .tc-box li:last-child { margin-bottom: 0; }
+
+        .tc-checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 24px;
+            padding: 0 2px;
+            user-select: none;
+        }
+
+        .tc-checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--brand-blue);
+        }
+
+        .tc-checkbox-group label {
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+
+        .tc-clickable-link {
+            color: #2563EB !important;
+            cursor: pointer;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            font-weight: 600;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+        }
+
+        #trigger-download-btn {
+            background-color: rgba(100, 116, 139, 0.2) !important;
             color: var(--text-sub) !important;
-            line-height: 1.6 !important;
-            font-size: 0.93rem !important;
-        }
-
-        .floating-emoji {
-            font-size: 2rem !important;
-            margin-bottom: 8px !important;
-        }
-
-        .feature-badges span {
-            color: var(--accent) !important;
-            border: 1px solid var(--liquid-border) !important;
-            background: rgba(37, 99, 235, 0.08) !important;
-            backdrop-filter: blur(12px) !important;
+            border: 1px solid var(--border) !important;
+            padding: 13px 26px !important;
+            border-radius: 999px !important;
             font-weight: 700 !important;
-            padding: 8px 16px !important;
-            border-radius: 999px !important;
-            font-size: 0.88rem !important;
-        }
-
-        .cta-button {
-            background: #2563EB !important;
-            color: #FFFFFF !important;
-            border: 1px solid rgba(255, 255, 255, 0.18) !important;
-            box-shadow: 0 10px 24px rgba(37, 99, 235, 0.3) !important;
-            text-transform: uppercase !important;
-            font-weight: 800 !important;
-            letter-spacing: 0.8px !important;
-            border-radius: 999px !important;
-            padding: 14px 34px !important;
-            cursor: pointer !important;
-            pointer-events: auto !important;
-            position: relative !important;
-            z-index: 50 !important;
+            font-size: 0.92rem !important;
+            cursor: not-allowed !important;
+            text-decoration: none !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 8px !important;
+            flex: 1 !important;
+            opacity: 0.65 !important;
             transition: all 0.2s ease !important;
         }
-        .cta-button:hover {
-            background: #1D4ED8 !important;
-            transform: translateY(-2px);
-        }
 
-        .glass-input {
-            background: var(--input-bg) !important;
-            color: var(--input-text) !important;
-            border: 1px solid var(--input-border) !important;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05) !important;
-            border-radius: 12px !important;
-            padding: 14px 18px !important;
-            width: 100% !important;
-            font-size: 0.95rem !important;
-            margin-bottom: 16px !important;
-            box-sizing: border-box !important;
-            outline: none !important;
-            pointer-events: auto !important;
-            position: relative !important;
-            z-index: 50 !important;
-            transition: border-color 0.2s ease, background 0.2s ease !important;
-        }
-        .glass-input::placeholder {
-            color: var(--input-placeholder) !important;
+        #trigger-download-btn.btn-active {
+            background-color: #2563EB !important;
+            color: #FFFFFF !important;
+            border-color: #2563EB !important;
+            cursor: pointer !important;
             opacity: 1 !important;
-        }
-        .glass-input:focus {
-            border-color: var(--accent) !important;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2) !important;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3) !important;
         }
 
-        .download-form {
-            border: none !important;
-            background: transparent !important;
-            box-shadow: none !important;
-            padding: 0 !important;
-            max-width: 440px !important;
-            margin: 24px auto 0 auto !important;
-            position: relative !important;
-            z-index: 30 !important;
+        #trigger-download-btn.btn-active:hover {
+            background-color: #1D4ED8 !important;
         }
+
+        .btn-secondary {
+            background: var(--tc-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 13px 22px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 0.92rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        /* Popup */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            padding: 20px;
+        }
+        .popup-overlay.active { display: flex; }
+
+        .popup-card {
+            background: var(--liquid-glass-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+        .popup-card h3 { font-size: 1.3rem; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
+        .popup-card p { font-size: 0.9rem; line-height: 1.5; color: var(--text-sub); margin-bottom: 22px; }
     </style>
 </head>
 <body>
 
-    <canvas id="particleCanvas"></canvas>
-
-    <!-- FIXED HEADER -->
-    <div class="header-bar-fixed">
-        <a href="#" class="app-logo-container" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">
+    <!-- TOP HEADER -->
+    <div class="header-bar-download">
+        <a href="/" class="app-logo-container">
             <img src="{{ url_for('static', filename='favicon.png') }}" alt="Air Cursor Logo" class="app-logo-img">
             <span class="app-logo-text">AIR CURSOR</span>
         </a>
-
-        <header class="top-nav">
-            <div class="nav-pill">
-                <nav class="nav-links">
-                    <a href="#intro">Intro</a>
-                    <a href="#functions">Functions</a>
-                    <a href="#characteristics">Characteristics</a>
-                    <a href="/download">Download</a>
-                </nav>
-            </div>
-        </header>
 
         <div class="theme-toggle-container">
             <div class="toggle-scaler">
@@ -486,111 +424,60 @@
         </div>
     </div>
 
-    <!-- ZERO EXPLORE LINE HERO -->
-    <section class="hero-section"></section>
+    <div class="download-page-wrap">
+        <div class="download-card">
+            <div style="font-size: 2rem; margin-bottom: 10px;">⬇️</div>
+            <h1>Ready for Download</h1>
+            <p class="subtitle">Thank you for choosing Air Cursor. Please read our Terms & Conditions below before starting the installer download.</p>
 
-    <!-- INTRO SECTION -->
-    <section id="intro" class="content-section">
-        <div class="floating-emoji">✨</div>
-        <h2>Control Your Screen Effortlessly Without Touching</h2>
-        <p>A next-generation touchless navigation engine powered by real-time Computer Vision. Translates optical finger coordinates into zero-friction desktop controls.</p>
-        <div class="feature-badges" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 24px;">
-            <span>⚡ Zero Extra Hardware</span>
-            <span>🧠 MediaPipe AI Engine</span>
-            <span>🚀 60+ FPS Real-Time</span>
-        </div>
-    </section>
-
-    <!-- FUNCTIONS SECTION (૨ UPAR + ૧ NICHE CENTERED) -->
-    <section id="functions" class="content-section">
-        <div class="floating-emoji">⚙️</div>
-        <h2>Functions</h2>
-        <p>Engineered for sub-pixel cursor accuracy, low system overhead, and intuitive desktop navigation.</p>
-        
-        <div class="faculty-cards-layout">
-            <div class="faculty-card">
-                <div class="floating-emoji">🖐️</div>
-                <h3>AI Optical Cursor Tracking</h3>
-                <p>MediaPipe Hand framework 21 distinct 3D joint landmark detection dwara index finger trajectory ne high-precision cursor coordinates ma translate kare chhe.</p>
+            <div class="tc-box" id="tcBox">
+                <h3 id="tcHeader">📋 Terms & Conditions (T&C)</h3>
+                <ul>
+                    <li><span>📜</span> <span><strong>License Usage:</strong> Air Cursor is licensed for personal and professional touchless desktop navigation use.</span></li>
+                    <li><span>🔒</span> <span><strong>Privacy & Security:</strong> All gesture tracking happens locally on your machine via your webcam feed. No video streams are recorded, stored, or transmitted.</span></li>
+                    <li><span>💻</span> <span><strong>System Requirements:</strong> Standard USB/Built-in webcam, Windows 10 or 11 desktop environment, and minimum 4GB RAM.</span></li>
+                    <li><span>🔄</span> <span><strong>Updates:</strong> By installing, you agree to receive automated security patches and gesture model enhancements.</span></li>
+                </ul>
             </div>
 
-            <div class="faculty-card">
-                <div class="floating-emoji">⚡</div>
-                <h3>Real-Time Action Gestures</h3>
-                <p>Index tip ane thumb coordinates vacche Euclidean distance calculation kari left-click, right-click, dragging ane virtual scrolling mid-air touchlessly trigger kare chhe.</p>
+            <div class="tc-checkbox-group">
+                <input type="checkbox" id="tcAgree">
+                <label for="tcAgree">
+                    I have read and agree to the <span id="tcLinkTrigger" class="tc-clickable-link">Terms & Conditions (T&C)</span>
+                </label>
             </div>
 
-            <div class="faculty-card">
-                <div class="floating-emoji">🔒</div>
-                <h3>100% On-Device Edge Processing</h3>
-                <p>Dareke video frame client machine ni local RAM ma execute thay chhe. Zero cloud transmission, biometrics athva camera feed kadapi store ke upload thati nathi.</p>
+            <div class="btn-group">
+                <a href="#" id="trigger-download-btn">
+                    <span>📥</span> Download Installer
+                </a>
+                <a href="/" class="btn-secondary">
+                    <span>🏠</span> Back to Home
+                </a>
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- CHARACTERISTICS SECTION (૨ UPAR + ૧ NICHE CENTERED) -->
-    <section id="characteristics" class="content-section">
-        <div class="floating-emoji">🌟</div>
-        <h2>Characteristics</h2>
-        <p>Architected for minimal CPU load, broad hardware accessibility, and production responsiveness.</p>
-        
-        <div class="faculty-cards-layout">
-            <div class="faculty-card">
-                <div class="floating-emoji">🚀</div>
-                <h3>Ultra-Low Latency Pipeline</h3>
-                <p>Optimized vector mathematics pipeline input frames ne 60+ FPS ane under 15ms optical latency sathe process kare chhe, jethi cursor jitter ane lag zero thay chhe.</p>
-            </div>
-
-            <div class="faculty-card">
-                <div class="floating-emoji">🔌</div>
-                <h3>Hardware-Agnostic Plug & Play</h3>
-                <p>Standard built-in athva external 720p/1080p USB webcam sathe seedhun chale chhe; koi expensive infrared sensor athva depth camera peripherals ni jarur nathi.</p>
-            </div>
-
-            <div class="faculty-card">
-                <div class="floating-emoji">🌐</div>
-                <h3>Native Windows Architecture</h3>
-                <p>Windows 10 ane 11 environments mate lightweight multi-threaded Python backend routines dwara minimal RAM ane battery impact sathe design karel chhe.</p>
-            </div>
+    <!-- Popup -->
+    <div id="custom-popup" class="popup-overlay">
+        <div class="popup-card">
+            <div style="font-size: 2.4rem; margin-bottom: 12px;">🎉</div>
+            <h3 id="popup-title">Download Initialized!</h3>
+            <p id="popup-message">Your PDF receipt and Air Cursor package are downloading successfully.</p>
+            <button id="popup-close-btn" class="btn-secondary" style="width: 100%; justify-content: center; background: #2563EB; color: #fff;">OK</button>
         </div>
-    </section>
+    </div>
 
-    <!-- DOWNLOAD FORM SECTION -->
-    <section id="download" class="content-section">
-        <div class="floating-emoji">📥</div>
-        <h2>Get Started Today</h2>
-        <p>Experience touchless desktop navigation. Register below to download the Air Cursor client.</p>
-        
-        <form action="/register" method="POST" id="downloadForm" class="download-form">
-            <input type="text" name="name" id="name" class="glass-input" placeholder="Your Name (eg: Rahul)" autocomplete="name" required>
-            <input type="email" name="email" id="email" class="glass-input" placeholder="Email Address (eg: rahul123@gmail.com)" autocomplete="email" required>
-            
-            <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin: -5px 0 18px 0;">
-                <input type="checkbox" name="remember" id="remember" value="true" style="cursor: pointer; accent-color: var(--accent); width: 16px; height: 16px;">
-                <label for="remember" style="font-size: 0.95rem; opacity: 0.85; cursor: pointer; color: var(--text-main);">Remember me</label>
-            </div>
-
-            <button type="submit" id="downloadSubmitBtn" class="cta-button">Download for Free</button>
-        </form>
-    </section>
-
-    <!-- FOOTER -->
-    <footer class="site-footer" style="text-align: center; padding: 35px 20px; color: var(--text-sub);">
-        <p>© 2026 Air Cursor Technologies. Crafted By Developer Mode.</p>
-    </footer>
-
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
-
-    <!-- 💥 100% BULLETPROOF THEME & SUBMISSION ENGINE 💥 -->
+    <!-- 💥 FOOLPROOF THEME ENGINE & DOWNLOAD HANDLER 💥 -->
     <script>
         (function() {
-            function updateTheme(theme) {
+            function applyTheme(theme) {
                 const isDark = (theme === 'dark');
-                
-                // Document and Body synchronization
-                document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+                const themeName = isDark ? 'dark' : 'light';
+
+                document.documentElement.setAttribute('data-theme', themeName);
                 if (document.body) {
-                    document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
+                    document.body.setAttribute('data-theme', themeName);
                     if (isDark) {
                         document.body.classList.remove('light-mode');
                         document.documentElement.classList.remove('light-mode');
@@ -602,11 +489,9 @@
                     }
                 }
 
-                // Storage keys
-                localStorage.setItem('air_cursor_theme', isDark ? 'dark' : 'light');
-                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                localStorage.setItem('air_cursor_theme', themeName);
+                localStorage.setItem('theme', themeName);
 
-                // Toggle Button Visual State
                 const btn = document.getElementById('themeToggle');
                 if (btn) {
                     if (isDark) {
@@ -617,48 +502,74 @@
                 }
             }
 
-            function bindToggle() {
-                const btn = document.getElementById('themeToggle');
-                if (!btn) return;
+            document.addEventListener('DOMContentLoaded', () => {
+                const savedTheme = localStorage.getItem('air_cursor_theme') || localStorage.getItem('theme') || 'dark';
+                applyTheme(savedTheme);
 
-                // Directly overwrite onclick to stop bubbling and duplicate listeners
-                btn.onclick = function(e) {
-                    if (e) {
+                const toggleBtn = document.getElementById('themeToggle');
+                if (toggleBtn) {
+                    // CAPTURE PHASE LISTENER: Wipes conflict and guarantees clean toggle
+                    toggleBtn.addEventListener('click', function(e) {
                         e.preventDefault();
                         e.stopPropagation();
                         if (e.stopImmediatePropagation) e.stopImmediatePropagation();
-                    }
-                    const current = document.documentElement.getAttribute('data-theme') || 'dark';
-                    const targetTheme = (current === 'dark') ? 'light' : 'dark';
-                    updateTheme(targetTheme);
-                };
-            }
 
-            // Bind immediately and on load
-            const initialTheme = localStorage.getItem('air_cursor_theme') || localStorage.getItem('theme') || 'dark';
-            updateTheme(initialTheme);
+                        const current = localStorage.getItem('air_cursor_theme') || document.documentElement.getAttribute('data-theme') || 'dark';
+                        const next = (current === 'dark') ? 'light' : 'dark';
+                        applyTheme(next);
+                    }, true);
+                }
 
-            window.addEventListener('DOMContentLoaded', () => {
-                updateTheme(initialTheme);
-                bindToggle();
+                // T&C & Download Logic
+                const tcAgree = document.getElementById('tcAgree');
+                const downloadBtn = document.getElementById('trigger-download-btn'); 
+                const popupOverlay = document.getElementById('custom-popup');
+                const popupCloseBtn = document.getElementById('popup-close-btn');
+                const tcLinkTrigger = document.getElementById('tcLinkTrigger');
+                const tcBox = document.getElementById('tcBox');
 
-                // Safe Native Form Submission
-                const form = document.getElementById('downloadForm');
-                if (form) {
-                    form.onsubmit = function(e) {
-                        const name = document.getElementById('name').value.trim();
-                        const email = document.getElementById('email').value.trim();
-                        if (!name || !email) {
-                            e.preventDefault();
-                            alert("Please enter both Name and Email!");
-                            return false;
+                if (tcLinkTrigger) {
+                    tcLinkTrigger.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        tcBox.classList.add('box-highlight-active');
+                        setTimeout(() => tcBox.classList.remove('box-highlight-active'), 1000);
+                    });
+                }
+
+                if (tcAgree && downloadBtn) {
+                    tcAgree.addEventListener('change', () => {
+                        if (tcAgree.checked) {
+                            downloadBtn.classList.add('btn-active');
+                        } else {
+                            downloadBtn.classList.remove('btn-active');
                         }
-                        return true;
-                    };
+                    });
+                }
+
+                if (downloadBtn) {
+                    downloadBtn.addEventListener('click', (e) => {
+                        e.preventDefault(); 
+                        if (!tcAgree || !tcAgree.checked) return;
+
+                        if (popupOverlay) popupOverlay.classList.add('active');
+
+                        setTimeout(() => {
+                            const dl = document.createElement('a');
+                            dl.href = "/download-pdf";
+                            dl.setAttribute('download', 'AirCursor_Receipt.pdf');
+                            document.body.appendChild(dl);
+                            dl.click();
+                            document.body.removeChild(dl);
+                        }, 500);
+                    });
+                }
+
+                if (popupCloseBtn && popupOverlay) {
+                    popupCloseBtn.addEventListener('click', () => {
+                        popupOverlay.classList.remove('active');
+                    });
                 }
             });
-
-            window.addEventListener('load', bindToggle);
         })();
     </script>
 </body>

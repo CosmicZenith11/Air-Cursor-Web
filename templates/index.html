@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     
     <script>
-        /* Immediate Theme Enforcement to stop flashing */
+        /* Instant Theme Enforcement on Page Load */
         (function() {
             var saved = localStorage.getItem('air_cursor_theme') || localStorage.getItem('theme') || 'dark';
             document.documentElement.setAttribute('data-theme', saved);
@@ -21,46 +21,8 @@
     </script>
 
     <style>
-        /* 💥 1. ROCK-SOLID THEME DEFINITIONS 💥 */
-        :root {
-            --bg-base: #07090E;
-            --liquid-glass-bg: rgba(15, 23, 42, 0.5);
-            --liquid-glass-card: rgba(20, 30, 55, 0.4);
-            --liquid-border: rgba(255, 255, 255, 0.14);
-            --liquid-border-hover: rgba(37, 99, 235, 0.7);
-            --liquid-sheen: inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.25), 0 20px 40px rgba(0, 0, 0, 0.6);
-            --text-main: #F8FAFC;
-            --text-sub: #94A3B8;
-            --accent: #2563EB;
-            --accent-hover: #1D4ED8;
-            --input-bg: rgba(15, 23, 42, 0.65);
-            --input-text: #F8FAFC;
-            --input-placeholder: #64748B;
-            --input-border: rgba(255, 255, 255, 0.15);
-        }
-
-        /* LIGHT THEME */
-        html[data-theme="light"],
-        body[data-theme="light"],
-        html.light-mode,
-        body.light-mode {
-            --bg-base: #F8FAFC !important;
-            --liquid-glass-bg: rgba(255, 255, 255, 0.7) !important;
-            --liquid-glass-card: rgba(255, 255, 255, 0.85) !important;
-            --liquid-border: rgba(37, 99, 235, 0.22) !important;
-            --liquid-border-hover: rgba(37, 99, 235, 0.6) !important;
-            --liquid-sheen: inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.9), 0 10px 30px rgba(0, 0, 0, 0.08) !important;
-            --text-main: #0F172A !important;
-            --text-sub: #475569 !important;
-            --accent: #2563EB !important;
-            --accent-hover: #1D4ED8 !important;
-            --input-bg: rgba(255, 255, 255, 0.95) !important;
-            --input-text: #0F172A !important;
-            --input-placeholder: #94A3B8 !important;
-            --input-border: rgba(37, 99, 235, 0.3) !important;
-        }
-
-        /* DARK THEME */
+        /* 💥 1. CSS VARIABLES FOR DARK & LIGHT 💥 */
+        :root,
         html[data-theme="dark"],
         body[data-theme="dark"],
         html.dark-mode,
@@ -81,7 +43,27 @@
             --input-border: rgba(255, 255, 255, 0.15) !important;
         }
 
-        /* 💥 PARTICLE CANVAS RESTORATION 💥 */
+        html[data-theme="light"]:not(.dark-mode),
+        body[data-theme="light"]:not(.dark-mode),
+        html.light-mode:not(.dark-mode),
+        body.light-mode:not(.dark-mode) {
+            --bg-base: #F8FAFC !important;
+            --liquid-glass-bg: rgba(255, 255, 255, 0.7) !important;
+            --liquid-glass-card: rgba(255, 255, 255, 0.85) !important;
+            --liquid-border: rgba(37, 99, 235, 0.22) !important;
+            --liquid-border-hover: rgba(37, 99, 235, 0.6) !important;
+            --liquid-sheen: inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.9), 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+            --text-main: #0F172A !important;
+            --text-sub: #475569 !important;
+            --accent: #2563EB !important;
+            --accent-hover: #1D4ED8 !important;
+            --input-bg: rgba(255, 255, 255, 0.95) !important;
+            --input-text: #0F172A !important;
+            --input-placeholder: #94A3B8 !important;
+            --input-border: rgba(37, 99, 235, 0.3) !important;
+        }
+
+        /* 💥 PARTICLE CANVAS VISIBILITY 💥 */
         #particleCanvas {
             position: fixed !important;
             top: 0 !important;
@@ -89,7 +71,7 @@
             width: 100vw !important;
             height: 100vh !important;
             pointer-events: none !important;
-            z-index: 0 !important;
+            z-index: 1 !important;
             display: block !important;
             visibility: visible !important;
             opacity: 1 !important;
@@ -102,6 +84,7 @@
             margin: 0 !important;
             padding-top: 110px !important;
             transition: background-color 0.25s ease, color 0.25s ease !important;
+            position: relative;
         }
 
         /* 💥 HEADER ROW (48PX HEIGHT IN 1 LINE) 💥 */
@@ -214,7 +197,7 @@
             outline: none;
         }
 
-        /* 💥 EXPLORE LINE VISUALLY HIDDEN BUT SAFE FOR SCRIPT.JS 💥 */
+        /* 💥 SCROLL DOWN TO EXPLORE LINE REMOVED 💥 */
         .scroll-instruction,
         .main-text {
             display: none !important;
@@ -228,14 +211,16 @@
         }
 
         .hero-section {
-            min-height: 80vh !important;
+            min-height: 85vh !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
             position: relative !important;
+            z-index: 5 !important;
+            background: transparent !important;
         }
 
-        /* CONTENT SECTIONS */
+        /* 💥 IPHONE LIQUID GLASS CONTENT SECTIONS 💥 */
         .content-section,
         #intro,
         #functions,
@@ -463,7 +448,7 @@
 </head>
 <body>
 
-    <!-- 💥 PARTICLE CANVAS REQUIRED BY SCRIPT.JS 💥 -->
+    <!-- 💥 PARTICLE CANVAS (DELTA CURSOR & WELCOME DOTS ENGINE) 💥 -->
     <canvas id="particleCanvas"></canvas>
 
     <!-- FIXED HEADER -->
@@ -506,7 +491,7 @@
                     <div class="dn-palm left">
                         <svg viewBox="0 0 40 46" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M22 46 C21 34 16 24 20 14" stroke="#5c3818" stroke-width="2.8" stroke-linecap="round"/>
-                            <path d="M20 14 C12 8 4 11 0 17 C6 13 13 14 20 14 Z" fill="#1b4332"/>
+                            <path d="M20 14 C12 8 4 11 0 17 C6 13 14 14 20 14 Z" fill="#1b4332"/>
                             <path d="M20 14 C14 4 6 5 2 8 C8 7 15 9 20 14 Z" fill="#2d6a4f"/>
                             <path d="M20 14 C22 3 30 3 35 7 C28 8 23 10 20 14 Z" fill="#40916c"/>
                             <path d="M20 14 C26 7 35 11 39 17 C33 13 26 14 20 14 Z" fill="#1b4332"/>
@@ -535,10 +520,10 @@
         </div>
     </div>
 
-    <!-- HERO SECTION (DOM PRESERVED FOR SCRIPT.JS, EXPLORE TEXT VISUALLY HIDDEN) -->
+    <!-- HERO SECTION (DOM SAFE FOR SCRIPT.JS, TEXT VISUALLY HIDDEN) -->
     <section class="hero-section">
         <div class="scroll-instruction">
-            <p class="main-text">Scroll Down to Explore</p>
+            <p class="main-text"></p>
         </div>
     </section>
 
@@ -632,7 +617,7 @@
         <p>© 2026 Air Cursor Technologies. Crafted By Developer Mode.</p>
     </footer>
 
-    <!-- 💥 DOM ELEMENTS REQUIRED BY SCRIPT.JS (CRITICAL TO AVOID NULL CRASH) 💥 -->
+    <!-- POPUPS & MODALS REQUIRED BY SCRIPT.JS -->
     <div id="custom-popup" class="popup-overlay" style="display: none;">
         <div class="popup-card">
             <div id="popup-icon" class="popup-icon-container floating-emoji">💥</div>
@@ -663,19 +648,17 @@
         </div>
     </div>
 
-    <!-- SCRIPT.JS (Particle Canvas Engine) -->
+    <!-- 💥 CRITICAL: LOAD PARTICLE CANVAS ENGINE (SCRIPT.JS) 💥 -->
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 
-    <!-- 💥 BIDIRECTIONAL THEME TOGGLE & SUBMIT HANDLER 💥 -->
+    <!-- 💥 BIDIRECTIONAL SMART THEME SYNCHRONIZER 💥 -->
     <script>
         (function() {
-            function updateTheme(theme) {
+            function syncThemeDOM(theme) {
                 const isDark = (theme === 'dark');
-                const themeName = isDark ? 'dark' : 'light';
-
-                document.documentElement.setAttribute('data-theme', themeName);
+                document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
                 if (document.body) {
-                    document.body.setAttribute('data-theme', themeName);
+                    document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
                     if (isDark) {
                         document.body.classList.remove('light-mode');
                         document.documentElement.classList.remove('light-mode');
@@ -686,50 +669,65 @@
                         document.body.classList.add('light-mode');
                     }
                 }
-
-                localStorage.setItem('air_cursor_theme', themeName);
-                localStorage.setItem('theme', themeName);
-
-                const btn = document.getElementById('themeToggle');
-                if (btn) {
-                    if (isDark) {
-                        btn.classList.add('is-night');
-                    } else {
-                        btn.classList.remove('is-night');
-                    }
-                }
+                localStorage.setItem('air_cursor_theme', isDark ? 'dark' : 'light');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
             }
 
             document.addEventListener('DOMContentLoaded', () => {
                 const savedTheme = localStorage.getItem('air_cursor_theme') || localStorage.getItem('theme') || 'dark';
-                updateTheme(savedTheme);
+                syncThemeDOM(savedTheme);
 
-                const toggleBtn = document.getElementById('themeToggle');
-                if (toggleBtn) {
-                    toggleBtn.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+                const themeBtn = document.getElementById('themeToggle');
+                if (themeBtn) {
+                    if (savedTheme === 'light') {
+                        themeBtn.classList.remove('is-night');
+                    } else {
+                        themeBtn.classList.add('is-night');
+                    }
 
-                        const current = localStorage.getItem('air_cursor_theme') || document.documentElement.getAttribute('data-theme') || 'dark';
-                        const next = (current === 'dark') ? 'light' : 'dark';
-                        updateTheme(next);
-                    }, true);
+                    let lastClick = 0;
+                    themeBtn.addEventListener('click', function() {
+                        const now = Date.now();
+                        if (now - lastClick < 200) return;
+                        lastClick = now;
+
+                        const hadNight = themeBtn.classList.contains('is-night');
+
+                        // Let script.js process the click in this tick
+                        setTimeout(() => {
+                            const hasNight = themeBtn.classList.contains('is-night');
+                            let isDark;
+                            if (hasNight !== hadNight) {
+                                isDark = hasNight;
+                            } else {
+                                isDark = !hadNight;
+                                if (isDark) {
+                                    themeBtn.classList.add('is-night');
+                                } else {
+                                    themeBtn.classList.remove('is-night');
+                                }
+                            }
+                            syncThemeDOM(isDark ? 'dark' : 'light');
+                        }, 25);
+                    });
                 }
 
-                // Native form submission validation
+                // Reminder Modal Fallback
+                const reminderOkBtn = document.getElementById('reminderOkBtn');
+                const reminderBackBtn = document.getElementById('reminderBackBtn');
+                const reminderModal = document.getElementById('reminderModal');
                 const form = document.getElementById('downloadForm');
-                if (form) {
-                    form.onsubmit = function(e) {
-                        const name = document.getElementById('name').value.trim();
-                        const email = document.getElementById('email').value.trim();
-                        if (!name || !email) {
-                            e.preventDefault();
-                            alert("Please enter both Name and Email!");
-                            return false;
-                        }
-                        return true;
-                    };
+
+                if (reminderOkBtn && form) {
+                    reminderOkBtn.addEventListener('click', function() {
+                        form.submit();
+                    });
+                }
+                if (reminderBackBtn && reminderModal) {
+                    reminderBackBtn.addEventListener('click', function() {
+                        reminderModal.classList.remove('active');
+                        reminderModal.style.display = 'none';
+                    });
                 }
             });
         })();

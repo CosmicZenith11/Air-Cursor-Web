@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     
     <style>
-        /* 💥 BULLETPROOF HEADER LOCK (LOGO LEFT, NAV CENTER, TOGGLE RIGHT) 💥 */
-        :root, body, html {
+        /* 💥 THEME VARIABLES: SUPPORTS BOTH DARK & LIGHT MODE TOGGLE 💥 */
+        :root, :root[data-theme="dark"], body.dark-mode {
             --bg-base: #0B0D13 !important;
             --glass-bg: rgba(19, 23, 34, 0.85) !important;
             --glass-border: rgba(37, 99, 235, 0.3) !important;
@@ -17,7 +17,16 @@
             --text-sub: #9CA3AF !important;
             --accent: #2563EB !important;
             --accent-hover: #1D4ED8 !important;
-            --accent-gold: #2563EB !important;
+        }
+
+        :root[data-theme="light"], body.light-mode {
+            --bg-base: #F4F5F7 !important;
+            --glass-bg: rgba(255, 255, 255, 0.9) !important;
+            --glass-border: rgba(37, 99, 235, 0.2) !important;
+            --text-main: #111827 !important;
+            --text-sub: #4B5563 !important;
+            --accent: #2563EB !important;
+            --accent-hover: #1D4ED8 !important;
         }
 
         body {
@@ -25,47 +34,51 @@
             color: var(--text-main) !important;
             font-family: system-ui, -apple-system, sans-serif !important;
             padding-top: 100px;
+            transition: background-color 0.3s ease, color 0.3s ease !important;
         }
 
-        /* 1. LOGO FIXED TO TOP-LEFT */
-        body > .app-logo-container {
+        /* HEADER CONTAINER BAR */
+        .header-bar-fixed {
             position: fixed !important;
-            top: 20px !important;
-            left: 20px !important;
-            right: auto !important;
-            bottom: auto !important;
-            transform: none !important;
-            margin: 0 !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 80px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            padding: 0 25px !important;
             z-index: 99999 !important;
+            pointer-events: none !important;
+        }
+
+        .header-bar-fixed > * {
+            pointer-events: auto !important;
+        }
+
+        /* 1. LOGO FIXED LEFT */
+        .app-logo-container {
+            position: static !important;
+            transform: none !important;
             display: flex !important;
             align-items: center !important;
             gap: 10px !important;
             padding: 10px 18px !important;
         }
 
-        /* 2. NAVBAR FIXED TO TOP-CENTER */
-        body > .top-nav {
-            position: fixed !important;
-            top: 20px !important;
+        /* 2. NAVBAR FIXED CENTER */
+        .top-nav {
+            position: absolute !important;
             left: 50% !important;
-            right: auto !important;
-            bottom: auto !important;
             transform: translateX(-50%) !important;
             margin: 0 !important;
-            z-index: 99999 !important;
             width: auto !important;
         }
 
-        /* 3. THEME TOGGLE FIXED TO TOP-RIGHT */
-        body > .theme-toggle-container {
-            position: fixed !important;
-            top: 20px !important;
-            right: 20px !important;
-            left: auto !important;
-            bottom: auto !important;
+        /* 3. THEME TOGGLE FIXED RIGHT */
+        .theme-toggle-container {
+            position: static !important;
             transform: none !important;
-            margin: 0 !important;
-            z-index: 99999 !important;
             padding: 6px !important;
         }
 
@@ -75,11 +88,11 @@
             backdrop-filter: blur(16px) !important;
             -webkit-backdrop-filter: blur(16px) !important;
             border: 1px solid var(--glass-border) !important;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
             border-radius: 16px !important;
             position: relative !important;
             overflow: hidden !important;
-            transition: transform 0.3s ease, border-color 0.3s ease !important;
+            transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease !important;
         }
 
         .glass-effect::after, .card::after, .content-section::after {
@@ -134,7 +147,7 @@
         .cta-button:hover { transform: translateY(-2px) !important; }
 
         .glass-input {
-            background: rgba(11, 13, 19, 0.8) !important;
+            background: var(--bg-base) !important;
             color: var(--text-main) !important;
             border: 1px solid var(--glass-border) !important;
             border-radius: 10px !important;
@@ -147,7 +160,7 @@
         .feature-badges span {
             color: var(--accent) !important;
             border: 1px solid var(--glass-border) !important;
-            background: rgba(37, 99, 235, 0.08) !important;
+            background: var(--glass-bg) !important;
             font-weight: 700 !important;
             padding: 6px 14px !important;
             border-radius: 8px !important;
@@ -163,77 +176,80 @@
     <!-- Particle Background Canvas -->
     <canvas id="particleCanvas"></canvas>
 
-    <!-- ૧. એપ લોગો (Top Left) -->
-    <a href="#" class="app-logo-container glass-effect" style="text-decoration: none;" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">
-        <img src="{{ url_for('static', filename='favicon.png') }}" alt="Air Cursor Logo" class="app-logo-img" style="width:24px; height:24px;">
-        <span class="app-logo-text" style="color: var(--accent) !important; font-weight: 900;">AIR CURSOR</span>
-    </a>
+    <!-- FIXED HEADER BAR WRAPPER -->
+    <div class="header-bar-fixed">
+        <!-- ૧. એપ લોગો (Top Left) -->
+        <a href="#" class="app-logo-container glass-effect" style="text-decoration: none;" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">
+            <img src="{{ url_for('static', filename='favicon.png') }}" alt="Air Cursor Logo" class="app-logo-img" style="width:24px; height:24px;">
+            <span class="app-logo-text" style="color: var(--accent) !important; font-weight: 900;">AIR CURSOR</span>
+        </a>
 
-    <!-- ૨. ફ્લોટિંગ નેવબાર (Top Center) -->
-    <header class="top-nav">
-        <div class="nav-pill glass-effect">
-            <nav class="nav-links">
-                <a href="#intro">Intro</a>
-                <a href="#functions">Functions</a>
-                <a href="#characteristics">Characteristics</a>
-                <a href="/download">Download</a>
-            </nav>
-        </div>
-    </header>
+        <!-- ૨. ફ્લોટિંગ નેવબાર (Top Center) -->
+        <header class="top-nav">
+            <div class="nav-pill glass-effect">
+                <nav class="nav-links">
+                    <a href="#intro">Intro</a>
+                    <a href="#functions">Functions</a>
+                    <a href="#characteristics">Characteristics</a>
+                    <a href="/download">Download</a>
+                </nav>
+            </div>
+        </header>
 
-    <!-- ૩. ડે / નાઇટ એનિમેટેડ થીમ ટોગલ (Top Right) -->
-    <div class="theme-toggle-container glass-effect">
-        <div class="toggle-scaler">
-            <button class="dn-toggle is-night" id="themeToggle" aria-label="Toggle Theme">
-                <div class="dn-sky"></div>
-                <div class="dn-stars">
-                    <div class="dn-star s1"></div>
-                    <div class="dn-star s2"></div>
-                    <div class="dn-star s3"></div>
-                    <div class="dn-star s4"></div>
-                    <div class="dn-star s5"></div>
-                </div>
-                <div class="dn-clouds">
-                    <div class="dn-cloud c1">
-                        <svg viewBox="0 0 34 16"><path d="M10 14h18a6 6 0 0 0 0-12 8 8 0 0 0-15 3A5 5 0 0 0 10 14z" fill="white"/></svg>
+        <!-- ૩. ડે / નાઇટ એનિમેટેડ થીમ ટોગલ (Top Right) -->
+        <div class="theme-toggle-container glass-effect">
+            <div class="toggle-scaler">
+                <button class="dn-toggle is-night" id="themeToggle" aria-label="Toggle Theme">
+                    <div class="dn-sky"></div>
+                    <div class="dn-stars">
+                        <div class="dn-star s1"></div>
+                        <div class="dn-star s2"></div>
+                        <div class="dn-star s3"></div>
+                        <div class="dn-star s4"></div>
+                        <div class="dn-star s5"></div>
                     </div>
-                    <div class="dn-cloud c2">
-                        <svg viewBox="0 0 26 13"><path d="M8 11h12a4 4 0 0 0 0-8 6 6 0 0 0-11 2 4 4 0 0 0-1 6z" fill="white"/></svg>
+                    <div class="dn-clouds">
+                        <div class="dn-cloud c1">
+                            <svg viewBox="0 0 34 16"><path d="M10 14h18a6 6 0 0 0 0-12 8 8 0 0 0-15 3A5 5 0 0 0 10 14z" fill="white"/></svg>
+                        </div>
+                        <div class="dn-cloud c2">
+                            <svg viewBox="0 0 26 13"><path d="M8 11h12a4 4 0 0 0 0-8 6 6 0 0 0-11 2 4 4 0 0 0-1 6z" fill="white"/></svg>
+                        </div>
                     </div>
-                </div>
-                <div class="dn-waves">
-                    <div class="dn-wave w1"><svg viewBox="0 0 148 30"><path d="M0 20 Q 37 10 74 20 T 148 20 V 30 H 0 Z" fill="#38a3a5"/></svg></div>
-                    <div class="dn-wave w2"><svg viewBox="0 0 148 30"><path d="M0 22 Q 37 15 74 22 T 148 22 V 30 H 0 Z" fill="#22577a"/></svg></div>
-                </div>
-                <div class="dn-palm left">
-                    <svg viewBox="0 0 40 46" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M22 46 C21 34 16 24 20 14" stroke="#5c3818" stroke-width="2.8" stroke-linecap="round"/>
-                        <path d="M20 14 C12 8 4 11 0 17 C6 13 13 14 20 14 Z" fill="#1b4332"/>
-                        <path d="M20 14 C14 4 6 5 2 8 C8 7 15 9 20 14 Z" fill="#2d6a4f"/>
-                        <path d="M20 14 C22 3 30 3 35 7 C28 8 23 10 20 14 Z" fill="#40916c"/>
-                        <path d="M20 14 C26 7 35 11 39 17 C33 13 26 14 20 14 Z" fill="#1b4332"/>
-                        <path d="M20 14 C18 6 22 4 25 3 C23 6 22 10 20 14 Z" fill="#52b788"/>
-                    </svg>
-                </div>
-                <div class="dn-palm right">
-                    <svg viewBox="0 0 40 46" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M18 46 C19 34 24 24 20 14" stroke="#5c3818" stroke-width="2.8" stroke-linecap="round"/>
-                        <path d="M20 14 C28 8 36 11 40 17 C34 13 27 14 20 14 Z" fill="#1b4332"/>
-                        <path d="M20 14 C26 4 34 5 38 8 C32 7 25 9 20 14 Z" fill="#2d6a4f"/>
-                        <path d="M20 14 C18 3 10 3 5 7 C12 8 17 10 20 14 Z" fill="#40916c"/>
-                        <path d="M20 14 C14 7 5 11 1 17 C7 13 14 14 20 14 Z" fill="#1b4332"/>
-                        <path d="M20 14 C22 6 18 4 15 3 C17 6 18 10 20 14 Z" fill="#52b788"/>
-                    </svg>
-                </div>
-                <div class="dn-orb">
-                    <div class="dn-sun"></div>
-                    <div class="dn-moon">
-                        <div class="dn-crater cr1"></div>
-                        <div class="dn-crater cr2"></div>
-                        <div class="dn-crater cr3"></div>
+                    <div class="dn-waves">
+                        <div class="dn-wave w1"><svg viewBox="0 0 148 30"><path d="M0 20 Q 37 10 74 20 T 148 20 V 30 H 0 Z" fill="#38a3a5"/></svg></div>
+                        <div class="dn-wave w2"><svg viewBox="0 0 148 30"><path d="M0 22 Q 37 15 74 22 T 148 22 V 30 H 0 Z" fill="#22577a"/></svg></div>
                     </div>
-                </div>
-            </button>
+                    <div class="dn-palm left">
+                        <svg viewBox="0 0 40 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M22 46 C21 34 16 24 20 14" stroke="#5c3818" stroke-width="2.8" stroke-linecap="round"/>
+                            <path d="M20 14 C12 8 4 11 0 17 C6 13 13 14 20 14 Z" fill="#1b4332"/>
+                            <path d="M20 14 C14 4 6 5 2 8 C8 7 15 9 20 14 Z" fill="#2d6a4f"/>
+                            <path d="M20 14 C22 3 30 3 35 7 C28 8 23 10 20 14 Z" fill="#40916c"/>
+                            <path d="M20 14 C26 7 35 11 39 17 C33 13 26 14 20 14 Z" fill="#1b4332"/>
+                            <path d="M20 14 C18 6 22 4 25 3 C23 6 22 10 20 14 Z" fill="#52b788"/>
+                        </svg>
+                    </div>
+                    <div class="dn-palm right">
+                        <svg viewBox="0 0 40 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18 46 C19 34 24 24 20 14" stroke="#5c3818" stroke-width="2.8" stroke-linecap="round"/>
+                            <path d="M20 14 C28 8 36 11 40 17 C34 13 27 14 20 14 Z" fill="#1b4332"/>
+                            <path d="M20 14 C26 4 34 5 38 8 C32 7 25 9 20 14 Z" fill="#2d6a4f"/>
+                            <path d="M20 14 C18 3 10 3 5 7 C12 8 17 10 20 14 Z" fill="#40916c"/>
+                            <path d="M20 14 C14 7 5 11 1 17 C7 13 14 14 20 14 Z" fill="#1b4332"/>
+                            <path d="M20 14 C22 6 18 4 15 3 C17 6 18 10 20 14 Z" fill="#52b788"/>
+                        </svg>
+                    </div>
+                    <div class="dn-orb">
+                        <div class="dn-sun"></div>
+                        <div class="dn-moon">
+                            <div class="dn-crater cr1"></div>
+                            <div class="dn-crater cr2"></div>
+                            <div class="dn-crater cr3"></div>
+                        </div>
+                    </div>
+                </button>
+            </div>
         </div>
     </div>
 

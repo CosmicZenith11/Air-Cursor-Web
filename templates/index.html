@@ -7,9 +7,17 @@
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     
+    <script>
+        /* Instant Theme Persistence to avoid screen flash */
+        (function() {
+            const savedTheme = localStorage.getItem('air_cursor_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+
     <style>
         /* 💥 APPLE IOS LIQUID GLASS & MATTE LOGO BLUE THEME 💥 */
-        :root {
+        :root, [data-theme="dark"] {
             --bg-base: #07090E;
             --liquid-glass-bg: rgba(15, 23, 42, 0.45);
             --liquid-glass-card: rgba(20, 30, 55, 0.35);
@@ -20,6 +28,10 @@
             --text-sub: #94A3B8;
             --accent: #2563EB;
             --accent-hover: #1D4ED8;
+            --input-bg: rgba(15, 23, 42, 0.6) !important;
+            --input-text: #F8FAFC !important;
+            --input-placeholder: #64748B !important;
+            --input-border: rgba(255, 255, 255, 0.15) !important;
         }
 
         [data-theme="light"], body.light-mode {
@@ -33,6 +45,10 @@
             --text-sub: #475569 !important;
             --accent: #2563EB !important;
             --accent-hover: #1D4ED8 !important;
+            --input-bg: rgba(255, 255, 255, 0.95) !important;
+            --input-text: #0F172A !important;
+            --input-placeholder: #94A3B8 !important;
+            --input-border: rgba(37, 99, 235, 0.3) !important;
         }
 
         body {
@@ -44,7 +60,7 @@
             transition: background-color 0.3s ease, color 0.3s ease !important;
         }
 
-        /* 💥 HEADER ROW: LOGO, NAV, TOGGLE IN 1 EXACT LINE 💥 */
+        /* 💥 HEADER ROW: LOGO, NAV, TOGGLE IN 1 LINE (48PX HEIGHT) 💥 */
         .header-bar-fixed {
             position: fixed !important;
             top: 20px !important;
@@ -83,7 +99,6 @@
             margin: 0 !important;
         }
 
-        /* Logo */
         .app-logo-container {
             position: static !important;
             transform: none !important;
@@ -105,7 +120,6 @@
             text-shadow: none !important;
         }
 
-        /* Nav */
         .top-nav {
             position: absolute !important;
             left: 50% !important;
@@ -141,7 +155,6 @@
             background: rgba(37, 99, 235, 0.15) !important;
         }
 
-        /* Toggle */
         .theme-toggle-container {
             position: static !important;
             transform: none !important;
@@ -153,7 +166,7 @@
             justify-content: center !important;
         }
 
-        /* 💥 SCROLL DOWN TO EXPLORE LINE REMOVAL 💥 */
+        /* 💥 SCROLL DOWN TO EXPLORE LINE REMOVED 💥 */
         .scroll-instruction,
         .hero-section p,
         .main-text {
@@ -166,7 +179,7 @@
         }
 
         .hero-section {
-            min-height: 42vh !important;
+            min-height: 38vh !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
@@ -194,7 +207,7 @@
             box-sizing: border-box !important;
         }
 
-        /* 💥 ૨ BOXES UPAR + ૧ BOX NICHE CENTER MA (EQUAL WIDTH) 💥 */
+        /* 💥 ૨ BOXES UPAR + ૧ BOX NICHE CENTER MA 💥 */
         .faculty-cards-layout {
             display: flex !important;
             flex-wrap: wrap !important;
@@ -312,17 +325,29 @@
             transform: translateY(-2px);
         }
 
+        /* 💥 CLEAN LIGHT & DARK INPUT BOX FIX 💥 */
         .glass-input {
-            background: rgba(11, 15, 25, 0.6) !important;
-            color: var(--text-main) !important;
-            border: 1px solid var(--liquid-border) !important;
+            background: var(--input-bg) !important;
+            color: var(--input-text) !important;
+            border: 1px solid var(--input-border) !important;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05) !important;
             border-radius: 12px !important;
             padding: 14px 18px !important;
             width: 100% !important;
+            font-size: 0.95rem !important;
             margin-bottom: 16px !important;
             box-sizing: border-box !important;
+            outline: none !important;
+            transition: border-color 0.2s ease, background 0.2s ease !important;
         }
-        .glass-input:focus { border-color: var(--accent) !important; outline: none !important; }
+        .glass-input::placeholder {
+            color: var(--input-placeholder) !important;
+            opacity: 1 !important;
+        }
+        .glass-input:focus {
+            border-color: var(--accent) !important;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2) !important;
+        }
 
         .download-form {
             border: none !important;
@@ -338,7 +363,7 @@
 
     <canvas id="particleCanvas"></canvas>
 
-    <!-- FIXED HEADER (LOGO LEFT, NAV CENTER, TOGGLE RIGHT IN 1 LINE) -->
+    <!-- FIXED HEADER -->
     <div class="header-bar-fixed">
         <a href="#" class="app-logo-container" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">
             <img src="{{ url_for('static', filename='favicon.png') }}" alt="Air Cursor Logo" class="app-logo-img">
@@ -368,12 +393,8 @@
                         <div class="dn-star s5"></div>
                     </div>
                     <div class="dn-clouds">
-                        <div class="dn-cloud c1">
-                            <svg viewBox="0 0 34 16"><path d="M10 14h18a6 6 0 0 0 0-12 8 8 0 0 0-15 3A5 5 0 0 0 10 14z" fill="white"/></svg>
-                        </div>
-                        <div class="dn-cloud c2">
-                            <svg viewBox="0 0 26 13"><path d="M8 11h12a4 4 0 0 0 0-8 6 6 0 0 0-11 2 4 4 0 0 0-1 6z" fill="white"/></svg>
-                        </div>
+                        <div class="dn-cloud c1"><svg viewBox="0 0 34 16"><path d="M10 14h18a6 6 0 0 0 0-12 8 8 0 0 0-15 3A5 5 0 0 0 10 14z" fill="white"/></svg></div>
+                        <div class="dn-cloud c2"><svg viewBox="0 0 26 13"><path d="M8 11h12a4 4 0 0 0 0-8 6 6 0 0 0-11 2 4 4 0 0 0-1 6z" fill="white"/></svg></div>
                     </div>
                     <div class="dn-waves">
                         <div class="dn-wave w1"><svg viewBox="0 0 148 30"><path d="M0 20 Q 37 10 74 20 T 148 20 V 30 H 0 Z" fill="#38a3a5"/></svg></div>
@@ -411,7 +432,7 @@
         </div>
     </div>
 
-    <!-- 💥 HERO SECTION: SCROLL DOWN TO EXPLORE REMOVED COMPLETELY 💥 -->
+    <!-- ZERO EXPLORE LINE HERO -->
     <section class="hero-section"></section>
 
     <!-- INTRO SECTION -->
@@ -426,28 +447,25 @@
         </div>
     </section>
 
-    <!-- 💥 FUNCTIONS SECTION (૨ UPAR + ૧ NICHE CENTERED + FACULTY-LEVEL CONTENT) 💥 -->
+    <!-- FUNCTIONS SECTION (૨ UPAR + ૧ NICHE CENTERED) -->
     <section id="functions" class="content-section">
         <div class="floating-emoji">⚙️</div>
         <h2>Functions</h2>
         <p>Engineered for sub-pixel cursor accuracy, low system overhead, and intuitive desktop navigation.</p>
         
         <div class="faculty-cards-layout">
-            <!-- Box 1 (Top Left) -->
             <div class="faculty-card">
                 <div class="floating-emoji">🖐️</div>
                 <h3>AI Optical Cursor Tracking</h3>
                 <p>MediaPipe Hand framework 21 distinct 3D joint landmark detection dwara index finger trajectory ne high-precision cursor coordinates ma translate kare chhe.</p>
             </div>
 
-            <!-- Box 2 (Top Right) -->
             <div class="faculty-card">
                 <div class="floating-emoji">⚡</div>
                 <h3>Real-Time Action Gestures</h3>
                 <p>Index tip ane thumb coordinates vacche Euclidean distance calculation kari left-click, right-click, dragging ane virtual scrolling mid-air touchlessly trigger kare chhe.</p>
             </div>
 
-            <!-- Box 3 (Bottom Center) -->
             <div class="faculty-card">
                 <div class="floating-emoji">🔒</div>
                 <h3>100% On-Device Edge Processing</h3>
@@ -456,28 +474,25 @@
         </div>
     </section>
 
-    <!-- 💥 CHARACTERISTICS SECTION (૨ UPAR + ૧ NICHE CENTERED + FACULTY-LEVEL CONTENT) 💥 -->
+    <!-- CHARACTERISTICS SECTION (૨ UPAR + ૧ NICHE CENTERED) -->
     <section id="characteristics" class="content-section">
         <div class="floating-emoji">🌟</div>
         <h2>Characteristics</h2>
         <p>Architected for minimal CPU load, broad hardware accessibility, and production responsiveness.</p>
         
         <div class="faculty-cards-layout">
-            <!-- Box 1 (Top Left) -->
             <div class="faculty-card">
                 <div class="floating-emoji">🚀</div>
                 <h3>Ultra-Low Latency Pipeline</h3>
                 <p>Optimized vector mathematics pipeline input frames ne 60+ FPS ane under 15ms optical latency sathe process kare chhe, jethi cursor jitter ane lag zero thay chhe.</p>
             </div>
 
-            <!-- Box 2 (Top Right) -->
             <div class="faculty-card">
                 <div class="floating-emoji">🔌</div>
                 <h3>Hardware-Agnostic Plug & Play</h3>
                 <p>Standard built-in athva external 720p/1080p USB webcam sathe seedhun chale chhe; koi expensive infrared sensor athva depth camera peripherals ni jarur nathi.</p>
             </div>
 
-            <!-- Box 3 (Bottom Center) -->
             <div class="faculty-card">
                 <div class="floating-emoji">🌐</div>
                 <h3>Native Windows Architecture</h3>
@@ -541,5 +556,34 @@
     </div>
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+    <!-- 💥 THEME SYNC & PERSISTENCE SCRIPT 💥 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggleBtn = document.getElementById('themeToggle');
+            const htmlEl = document.documentElement;
+
+            function applyTheme(theme) {
+                htmlEl.setAttribute('data-theme', theme);
+                localStorage.setItem('air_cursor_theme', theme);
+                if (theme === 'light') {
+                    toggleBtn.classList.remove('is-night');
+                } else {
+                    toggleBtn.classList.add('is-night');
+                }
+            }
+
+            const currentTheme = localStorage.getItem('air_cursor_theme') || 'dark';
+            applyTheme(currentTheme);
+
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const newTheme = htmlEl.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+                    applyTheme(newTheme);
+                });
+            }
+        });
+    </script>
 </body>
 </html>

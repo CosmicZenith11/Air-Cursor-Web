@@ -11,24 +11,24 @@
         /* 💥 APPLE IOS LIQUID GLASS & MATTE LOGO BLUE THEME 💥 */
         :root {
             --bg-base: #07090E;
-            --liquid-glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%), rgba(15, 20, 32, 0.65);
-            --liquid-glass-card: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%), rgba(20, 27, 45, 0.55);
-            --liquid-border: rgba(255, 255, 255, 0.12);
-            --liquid-border-hover: rgba(37, 99, 235, 0.6);
-            --liquid-sheen: inset 0 1px 1px 0 rgba(255, 255, 255, 0.22), 0 18px 38px rgba(0, 0, 0, 0.45);
-            --text-main: #F3F4F6;
+            --liquid-glass-bg: rgba(15, 23, 42, 0.45);
+            --liquid-glass-card: rgba(20, 30, 55, 0.35);
+            --liquid-border: rgba(255, 255, 255, 0.14);
+            --liquid-border-hover: rgba(37, 99, 235, 0.7);
+            --liquid-sheen: inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.25), 0 20px 40px rgba(0, 0, 0, 0.6);
+            --text-main: #F8FAFC;
             --text-sub: #94A3B8;
             --accent: #2563EB;
             --accent-hover: #1D4ED8;
         }
 
         [data-theme="light"], body.light-mode {
-            --bg-base: #F1F5F9 !important;
-            --liquid-glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.65) 100%) !important;
-            --liquid-glass-card: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%) !important;
+            --bg-base: #F8FAFC !important;
+            --liquid-glass-bg: rgba(255, 255, 255, 0.65) !important;
+            --liquid-glass-card: rgba(255, 255, 255, 0.75) !important;
             --liquid-border: rgba(255, 255, 255, 0.8) !important;
-            --liquid-border-hover: rgba(37, 99, 235, 0.5) !important;
-            --liquid-sheen: inset 0 1px 2px 0 rgba(255, 255, 255, 0.9), 0 10px 30px rgba(0, 0, 0, 0.06) !important;
+            --liquid-border-hover: rgba(37, 99, 235, 0.6) !important;
+            --liquid-sheen: inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.9), 0 10px 30px rgba(0, 0, 0, 0.08) !important;
             --text-main: #0F172A !important;
             --text-sub: #475569 !important;
             --accent: #2563EB !important;
@@ -38,23 +38,23 @@
         body {
             background-color: var(--bg-base) !important;
             color: var(--text-main) !important;
-            font-family: system-ui, -apple-system, sans-serif !important;
-            padding-top: 110px;
-            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+            padding-top: 110px !important;
+            margin: 0 !important;
             transition: background-color 0.3s ease, color 0.3s ease !important;
         }
 
-        /* 💥 ૧. HEADER: LOGO, NAVBAR, TOGGLE IN EXACT ONE LINE 💥 */
+        /* 💥 ૧. HEADER ROW: PERFECT 1-LINE HORIZONTAL ALIGNMENT (48PX HEIGHT) 💥 */
         .header-bar-fixed {
             position: fixed !important;
-            top: 22px !important;
+            top: 20px !important;
             left: 0 !important;
-            width: 100% !important;
+            width: 100vw !important;
             height: 48px !important;
             display: flex !important;
-            align-items: center !important;      /* Perfect vertical center */
+            align-items: center !important;
             justify-content: space-between !important;
-            padding: 0 32px !important;
+            padding: 0 30px !important;
             box-sizing: border-box !important;
             z-index: 99999 !important;
             pointer-events: none !important;
@@ -64,30 +64,31 @@
             pointer-events: auto !important;
         }
 
-        /* IOS LIQUID GLASS PILL BASE FOR HEADER ITEMS */
         .app-logo-container,
         .nav-pill,
         .theme-toggle-container {
             height: 48px !important;
+            max-height: 48px !important;
+            min-height: 48px !important;
             display: inline-flex !important;
             align-items: center !important;
             justify-content: center !important;
             background: var(--liquid-glass-bg) !important;
-            backdrop-filter: blur(26px) saturate(190%) !important;
-            -webkit-backdrop-filter: blur(26px) saturate(190%) !important;
+            backdrop-filter: blur(24px) saturate(200%) !important;
+            -webkit-backdrop-filter: blur(24px) saturate(200%) !important;
             border: 1px solid var(--liquid-border) !important;
             box-shadow: var(--liquid-sheen) !important;
             border-radius: 999px !important;
             box-sizing: border-box !important;
-            transition: border-color 0.3s ease, transform 0.2s ease !important;
+            margin: 0 !important;
         }
 
         /* Left: Logo */
         .app-logo-container {
             position: static !important;
             transform: none !important;
-            gap: 10px !important;
             padding: 0 20px !important;
+            gap: 10px !important;
             text-decoration: none !important;
         }
         .app-logo-img {
@@ -104,7 +105,7 @@
             text-shadow: none !important;
         }
 
-        /* Center: Navbar */
+        /* Center: Nav */
         .top-nav {
             position: absolute !important;
             left: 50% !important;
@@ -113,6 +114,7 @@
             height: 48px !important;
             display: flex !important;
             align-items: center !important;
+            justify-content: center !important;
         }
         .nav-pill {
             padding: 0 8px !important;
@@ -136,7 +138,7 @@
         .nav-links a.active {
             color: #2563EB !important;
             -webkit-text-fill-color: #2563EB !important;
-            background: rgba(37, 99, 235, 0.12) !important;
+            background: rgba(37, 99, 235, 0.15) !important;
         }
 
         /* Right: Toggle */
@@ -151,29 +153,32 @@
             justify-content: center !important;
         }
 
-        /* 💥 ૨. CONTENT SECTIONS: IPHONE LIQUID GLASS EFFECT 💥 */
+        /* 💥 ૨. IPHONE LIQUID GLASS CONTENT SECTIONS 💥 */
         .content-section {
             background: var(--liquid-glass-bg) !important;
-            backdrop-filter: blur(28px) saturate(180%) !important;
-            -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+            backdrop-filter: blur(28px) saturate(190%) !important;
+            -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
             border: 1px solid var(--liquid-border) !important;
             box-shadow: var(--liquid-sheen) !important;
-            border-radius: 24px !important;
+            border-radius: 26px !important;
             position: relative !important;
             overflow: hidden !important;
-            transition: border-color 0.3s ease, transform 0.3s ease !important;
             margin: 40px auto !important;
-            max-width: 980px !important;
-            padding: 42px 36px !important;
+            max-width: 1080px !important;  /* પૂરતી જગ્યા આપવા પહોળાઈ વધારી */
+            width: 92% !important;
+            padding: 45px 35px !important;
             text-align: center !important;
+            box-sizing: border-box !important;
         }
 
-        /* Inner Sub-cards (Liquid Glass Layer) */
+        /* 💥 ૩. પરફેક્ટ ૩-કાર્ડ્સ લેઆઉટ (એક જ લાઈનમાં સીધા ૩ બોક્સ) 💥 */
         .grid-cards {
             display: grid !important;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)) !important;
-            gap: 20px !important;
+            grid-template-columns: repeat(3, minmax(0, 1fr)) !important; /* ત્રણેય કાર્ડ્સ ૧ જ લાઈનમાં સમાન પહોળાઈ સાથે */
+            gap: 22px !important;
             margin-top: 32px !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
         }
 
         .grid-cards .card {
@@ -181,18 +186,26 @@
             backdrop-filter: blur(20px) !important;
             -webkit-backdrop-filter: blur(20px) !important;
             border: 1px solid var(--liquid-border) !important;
-            box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.14), 0 12px 28px rgba(0, 0, 0, 0.3) !important;
+            box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.18), 0 12px 28px rgba(0, 0, 0, 0.35) !important;
             border-radius: 18px !important;
             padding: 26px 22px !important;
             text-align: left !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: flex-start !important;
             position: relative !important;
             overflow: hidden !important;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            box-sizing: border-box !important;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease !important;
         }
 
-        /* Running Border Loop on Card Hover */
-        .grid-cards .card::after,
-        .content-section::after {
+        .grid-cards .card:hover {
+            transform: translateY(-5px) !important;
+            border-color: var(--liquid-border-hover) !important;
+        }
+
+        /* રનિંગ બોર્ડર લૂપ */
+        .grid-cards .card::after {
             content: '';
             position: absolute;
             inset: 0;
@@ -200,11 +213,6 @@
             border: 2px solid transparent;
             pointer-events: none;
             transition: border-color 0.3s ease;
-        }
-
-        .grid-cards .card:hover {
-            transform: translateY(-5px) !important;
-            border-color: var(--liquid-border-hover) !important;
         }
 
         @keyframes borderRun {
@@ -220,14 +228,20 @@
             animation: borderRun 2s linear infinite;
         }
 
-        /* Typography */
+        /* ટેબલેટ અને નાની સ્ક્રીન માટે રિસ્પોન્સિવ સેફ્ટી */
+        @media (max-width: 860px) {
+            .grid-cards {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
         h2 {
             font-weight: 800 !important;
             color: var(--text-main) !important;
             text-transform: uppercase;
             letter-spacing: -0.5px;
             font-size: 1.85rem !important;
-            margin-top: 12px !important;
+            margin-top: 10px !important;
         }
         h3 {
             font-weight: 700 !important;
@@ -248,7 +262,6 @@
             text-shadow: none !important;
         }
 
-        /* Feature Badges */
         .feature-badges span {
             color: var(--accent) !important;
             border: 1px solid var(--liquid-border) !important;
@@ -260,7 +273,6 @@
             font-size: 0.88rem !important;
         }
 
-        /* Solid Matte Blue Download Button */
         .cta-button {
             background: #2563EB !important;
             color: #FFFFFF !important;
@@ -279,7 +291,6 @@
             transform: translateY(-2px);
         }
 
-        /* Glass Input */
         .glass-input {
             background: rgba(11, 15, 25, 0.6) !important;
             color: var(--text-main) !important;
@@ -290,10 +301,7 @@
             margin-bottom: 16px !important;
             box-sizing: border-box !important;
         }
-        .glass-input:focus {
-            border-color: var(--accent) !important;
-            outline: none !important;
-        }
+        .glass-input:focus { border-color: var(--accent) !important; outline: none !important; }
 
         .download-form {
             border: none !important;
@@ -304,7 +312,6 @@
             margin: 24px auto 0 auto !important;
         }
 
-        /* Hero */
         .hero-section {
             min-height: 48vh;
             display: flex;
@@ -322,18 +329,15 @@
 </head>
 <body>
 
-    <!-- Particle Background Canvas -->
     <canvas id="particleCanvas"></canvas>
 
-    <!-- 💥 FIXED HEADER BAR (LOGO LEFT, NAV CENTER, TOGGLE RIGHT IN 1 LINE) 💥 -->
+    <!-- FIXED HEADER (LOGO LEFT, NAV CENTER, TOGGLE RIGHT IN 1 LINE) -->
     <div class="header-bar-fixed">
-        <!-- ૧. એપ લોગો (Top Left) -->
         <a href="#" class="app-logo-container" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">
             <img src="{{ url_for('static', filename='favicon.png') }}" alt="Air Cursor Logo" class="app-logo-img">
             <span class="app-logo-text">AIR CURSOR</span>
         </a>
 
-        <!-- ૨. ફ્લોટિંગ નેવબાર (Top Center) -->
         <header class="top-nav">
             <div class="nav-pill">
                 <nav class="nav-links">
@@ -345,7 +349,6 @@
             </div>
         </header>
 
-        <!-- ૩. ડે / નાઇટ એનિમેટેડ થીમ ટોગલ (Top Right) -->
         <div class="theme-toggle-container">
             <div class="toggle-scaler">
                 <button class="dn-toggle is-night" id="themeToggle" aria-label="Toggle Theme">
@@ -420,7 +423,7 @@
         </div>
     </section>
 
-    <!-- Functions સેક્શન -->
+    <!-- 💥 Functions સેક્શન (હવે ત્રણેય બોક્સ ૧ જ લાઇનમા સીધા) 💥 -->
     <section id="functions" class="content-section">
         <div class="floating-emoji">⚙️</div>
         <h2>Functions</h2>
@@ -444,7 +447,7 @@
         </div>
     </section>
 
-    <!-- Characteristics સેક્શન -->
+    <!-- 💥 Characteristics સેક્શન (હવે ત્રણેય બોક્સ ૧ જ લાઇનમા સીધા) 💥 -->
     <section id="characteristics" class="content-section">
         <div class="floating-emoji">🌟</div>
         <h2>Characteristics</h2>

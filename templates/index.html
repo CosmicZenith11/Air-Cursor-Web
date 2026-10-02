@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     
     <style>
-        /* 💥 FORCE PERFECT HEADER PLACEMENT & MATTE SLATE THEME 💥 */
+        /* 💥 ABSOLUTE HEADER LOCK: LOGO LEFT, NAV CENTER, TOGGLE RIGHT 💥 */
         :root, body, html {
             --bg-base: #0B0D13 !important;
             --glass-bg: rgba(19, 23, 34, 0.85) !important;
@@ -24,40 +24,48 @@
             background-color: var(--bg-base) !important;
             color: var(--text-main) !important;
             font-family: system-ui, -apple-system, sans-serif !important;
-            padding-top: 90px;
+            padding-top: 100px;
         }
 
-        /* 💥 EXACT HEADER ALIGNMENT (LOGO LEFT, NAV CENTER, TOGGLE RIGHT) 💥 */
+        /* 1. LOGO LOCKED TO TOP-LEFT */
         .app-logo-container {
             position: fixed !important;
             top: 20px !important;
             left: 20px !important;
             right: auto !important;
+            bottom: auto !important;
             transform: none !important;
-            z-index: 1000 !important;
+            margin: 0 !important;
+            z-index: 9999 !important;
             display: flex !important;
             align-items: center !important;
             gap: 10px !important;
             padding: 10px 18px !important;
         }
 
+        /* 2. NAVBAR LOCKED TO TOP-CENTER */
         .top-nav {
             position: fixed !important;
             top: 20px !important;
             left: 50% !important;
             right: auto !important;
+            bottom: auto !important;
             transform: translateX(-50%) !important;
-            z-index: 1000 !important;
+            margin: 0 !important;
+            z-index: 9999 !important;
             width: auto !important;
         }
 
+        /* 3. THEME TOGGLE LOCKED TO TOP-RIGHT */
         .theme-toggle-container {
             position: fixed !important;
             top: 20px !important;
             right: 20px !important;
             left: auto !important;
+            bottom: auto !important;
             transform: none !important;
-            z-index: 1000 !important;
+            margin: 0 !important;
+            z-index: 9999 !important;
             padding: 6px !important;
         }
 

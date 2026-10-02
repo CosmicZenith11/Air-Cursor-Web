@@ -11,7 +11,7 @@ from email.mime.multipart import MIMEMultipart
 from email.utils import formatdate, make_msgid
 from datetime import datetime, timedelta
 from bson.objectid import ObjectId
-from flask import Flask, render_template, request, redirect, url_for, session, make_response, abort, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, make_response, abort, jsonify, send_file
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from reportlab.lib import colors
@@ -32,7 +32,7 @@ DEFAULT_MAIN_EMAIL = os.environ.get('MAIN_ADMIN_EMAIL', 'vanshp1114@gmail.com')
 SMTP_EMAIL = os.environ.get('SMTP_EMAIL', 'aircursor.verify@gmail.com')
 SMTP_APP_PASSWORD = os.environ.get('SMTP_APP_PASSWORD', 'btajqpkrvkflsqvl')
 
-DEFAULT_AVATAR = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0%25' stop-color='%234ea5ff'/><stop offset='50%25' stop-color='%232a85ff'/><stop offset='100%25' stop-color='%231868db'/></linearGradient><linearGradient id='a' x1='0' y1='0' x2='0' y2='1'><stop offset='0%25' stop-color='%23ffffff'/><stop offset='100%25' stop-color='%23e2edfc'/></linearGradient></defs><circle cx='50' cy='50' r='50' fill='url(%23g)'/><circle cx='50' cy='37' r='15' fill='url(%23a)'/><path d='M 23.5 80 C 23.5 63 35 56 50 56 C 65 56 76.5 63 76.5 80 Z' fill='url(%23a)'/></svg>"
+DEFAULT_AVATAR = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0%25' stop-color='%232563EB'/><stop offset='50%25' stop-color='%231D4ED8'/><stop offset='100%25' stop-color='%230B0D13'/></linearGradient><linearGradient id='a' x1='0' y1='0' x2='0' y2='1'><stop offset='0%25' stop-color='%23ffffff'/><stop offset='100%25' stop-color='%23e2edfc'/></linearGradient></defs><circle cx='50' cy='50' r='50' fill='url(%23g)'/><circle cx='50' cy='37' r='15' fill='url(%23a)'/><path d='M 23.5 80 C 23.5 63 35 56 50 56 C 65 56 76.5 63 76.5 80 Z' fill='url(%23a)'/></svg>"
 
 # =========================================================
 # 💥 ૨. MONGODB ATLAS CLOUD CONNECTION 💥
@@ -250,8 +250,10 @@ def register():
     if not name or not email or '@' not in email:
         abort(400, description="Valid Full Name and Email are mandatory.")
 
+    # User registration session state
     session['user_registered'] = True
     session['user_name'] = name
+    session['user_email'] = email
     session.permanent = bool(remember)
     session['remember_me'] = bool(remember)
 
@@ -302,7 +304,6 @@ def main_admin_dashboard():
         main_avatar=main_avatar or DEFAULT_AVATAR
     )
 
-# 💥 ૧. BACKUP DOWNLOAD FOR GOOGLE DRIVE SYNC 💥
 @app.route('/admin/download-backup')
 def download_backup():
     if session.get('user_role') != 'main_admin':
@@ -333,7 +334,6 @@ def download_backup():
     response.headers['Content-Disposition'] = f'attachment; filename={filename}'
     return response
 
-# 💥 ૨. WIPE ALL DATABASE DATA (PRESERVES COLLECTIONS & ROOT ADMIN) 💥
 @app.route('/api/admin/wipe-all-data', methods=['POST'])
 def wipe_all_data():
     role = session.get('user_role')
@@ -346,26 +346,18 @@ def wipe_all_data():
     if typed_confirm != "delete all data from database":
         return jsonify({"status": "error", "message": "Verification text does not match!"}), 400
 
-    # Only wipe data records, never delete the collections/folders themselves
-    if visitors_collection is not None:
-        visitors_collection.delete_many({})
-    if audit_collection is not None:
-        audit_collection.delete_many({})
-    if messages_collection is not None:
-        messages_collection.delete_many({})
-    if requests_collection is not None:
-        requests_collection.delete_many({})
-    if captcha_logs_collection is not None:
-        captcha_logs_collection.delete_many({})
-    if instructions_collection is not None:
-        instructions_collection.delete_many({})
+    if visitors_collection is not None: visitors_collection.delete_many({})
+    if audit_collection is not None: audit_collection.delete_many({})
+    if messages_collection is not None: messages_collection.delete_many({})
+    if requests_collection is not None: requests_collection.delete_many({})
+    if captcha_logs_collection is not None: captcha_logs_collection.delete_many({})
+    if instructions_collection is not None: instructions_collection.delete_many({})
 
     executor = "Main Admin" if role == 'main_admin' else session.get('subadmin_name', 'Sub-Admin')
     log_activity(executor, session.get('subadmin_email', DEFAULT_MAIN_EMAIL), "Wiped All Cluster Records", "RESTRICTED", "All table data cleared")
 
     return jsonify({"status": "success", "message": "All database records have been securely wiped."})
 
-# 💥 ૩. DELETE ENTIRE DATABASE & WEBSITE RESET (MAIN ADMIN ONLY) 💥
 @app.route('/api/admin/destroy-system', methods=['POST'])
 def destroy_system():
     if session.get('user_role') != 'main_admin':
@@ -383,7 +375,6 @@ def destroy_system():
     if passcode != active_passcode:
         return jsonify({"status": "error", "message": "Incorrect Master Passcode!"}), 403
 
-    # Wipe all collections
     if visitors_collection is not None: visitors_collection.delete_many({})
     if subadmins_collection is not None: subadmins_collection.delete_many({})
     if audit_collection is not None: audit_collection.delete_many({})
@@ -393,7 +384,6 @@ def destroy_system():
     if instructions_collection is not None: instructions_collection.delete_many({})
     if otp_collection is not None: otp_collection.delete_many({})
 
-    # Safeguard Root Admin from Render Environment Variables!
     if config_collection is not None:
         config_collection.delete_many({})
         config_collection.insert_one({
@@ -407,7 +397,6 @@ def destroy_system():
     session.clear()
     return jsonify({"status": "success", "message": "Complete system reset successful. Redirecting..."})
 
-# 💥 AVATAR APIs 💥
 @app.route('/api/admin/avatar/upload', methods=['POST'])
 def api_admin_avatar_upload():
     if session.get('user_role') != 'main_admin':
@@ -430,7 +419,7 @@ def api_admin_avatar_remove():
         return jsonify({"status": "success", "default_avatar": DEFAULT_AVATAR})
     return jsonify({"status": "error"}), 400
 
-# 💥 OTP Workflow 💥
+# 💥 MATTE BLUE SECURITY OTP TEMPLATE (NO GOLD/NEON) 💥
 @app.route('/admin/request-profile-otp', methods=['POST'])
 def request_profile_otp():
     if session.get('user_role') != 'main_admin':
@@ -452,13 +441,13 @@ def request_profile_otp():
     subject = "🔐 [Air Cursor Security] One-Time Security Passcode (OTP)"
     plain = f"Your Security OTP is: {otp}\nVerify here: {verify_url}"
     html = f"""
-    <div style="background:#0d0e12; color:#E6E4E0; padding:30px; font-family:sans-serif;">
-        <div style="max-width:500px; margin:auto; background:#16171d; border:1px solid #C5A880; border-radius:20px; padding:30px; text-align:center;">
-            <h2 style="color:#C5A880;">Security Authorization</h2>
-            <p>Hello {main_name}, authorization code to unlock credential modification:</p>
-            <div style="font-size:32px; font-weight:800; letter-spacing:8px; color:#00e5ff; margin:20px 0;">{otp}</div>
-            <p style="font-size:13px; color:#888;">Valid for 10 minutes. Click below to verify:</p>
-            <a href="{verify_url}" style="display:inline-block; padding:12px 28px; background:linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%); color:#000; border-radius:99px; font-weight:bold; text-decoration:none; margin-top:15px;">Verify Security OTP</a>
+    <div style="background:#0B0D13; color:#F3F4F6; padding:30px; font-family:sans-serif;">
+        <div style="max-width:500px; margin:auto; background:#131722; border:1px solid #212735; border-radius:16px; padding:30px; text-align:center;">
+            <h2 style="color:#2563EB; font-weight:800; letter-spacing:-0.5px;">Security Authorization</h2>
+            <p style="color:#9CA3AF; font-size:14px;">Hello {main_name}, here is your single-use code to modify credentials:</p>
+            <div style="font-size:32px; font-weight:800; letter-spacing:8px; color:#2563EB; margin:20px 0; background:#0E1118; padding:12px; border-radius:8px; border:1px solid #212735;">{otp}</div>
+            <p style="font-size:12px; color:#6B7280;">Valid for 10 minutes. Click below to verify:</p>
+            <a href="{verify_url}" style="display:inline-block; padding:12px 28px; background:#2563EB; color:#ffffff; border-radius:8px; font-weight:bold; text-decoration:none; margin-top:15px;">Verify Security OTP</a>
         </div>
     </div>
     """
@@ -518,18 +507,19 @@ def execute_profile_update():
     log_activity("Main Admin", new_email, "Updated Root Profile Credentials", "ALLOWED")
     return redirect(url_for('main_admin_dashboard'))
 
+# 💥 MATTE BLUE PASSCODE RECOVERY TEMPLATE (NO GOLD/BROWN) 💥
 @app.route('/admin/forgot-passcode', methods=['POST'])
 def forgot_passcode():
     main_name, main_email, active_passcode, _ = get_main_admin()
     subject = "🔑 [Air Cursor Security] Master Passcode Recovery"
     plain = f"Hello {main_name},\n\nYour Master Passcode is: {active_passcode}"
     html = f"""
-    <div style="background:#0d0e12; color:#fff; padding:30px; font-family:sans-serif;">
-        <div style="max-width:500px; margin:auto; background:#16171d; border:1px solid #C5A880; border-radius:20px; padding:30px; text-align:center;">
-            <h2 style="color:#C5A880;">Passcode Recovery</h2>
-            <p>Your current Master Authorization Passcode is:</p>
-            <div style="font-size:28px; font-weight:800; color:#2ed573; margin:15px 0;">{active_passcode}</div>
-            <p style="font-size:12px; color:#888;">Do not share this passcode with unauthorized personnel.</p>
+    <div style="background:#0B0D13; color:#F3F4F6; padding:30px; font-family:sans-serif;">
+        <div style="max-width:500px; margin:auto; background:#131722; border:1px solid #212735; border-radius:16px; padding:30px; text-align:center;">
+            <h2 style="color:#2563EB; font-weight:800; letter-spacing:-0.5px;">Passcode Recovery</h2>
+            <p style="color:#9CA3AF; font-size:14px;">Your current Master Authorization Passcode is:</p>
+            <div style="font-size:28px; font-weight:800; color:#2563EB; margin:15px 0; background:#0E1118; padding:12px; border-radius:8px; border:1px solid #212735;">{active_passcode}</div>
+            <p style="font-size:12px; color:#6B7280;">Do not share this passcode with unauthorized personnel.</p>
         </div>
     </div>
     """
@@ -878,7 +868,7 @@ def logout():
     return redirect(url_for('home'))
 
 # =========================================================
-# 💥 ૭. ERROR HANDLERS & DOWNLOADS 💥
+# 💥 ૭. ERROR HANDLERS & SAFE DOWNLOADS 💥
 # =========================================================
 @app.errorhandler(HTTPException)
 def handle_http_exception(e):
@@ -894,52 +884,82 @@ def simulate_error(code):
         abort(code)
     return render_template('error.html', code=code, title="Custom Status", message="Non-standard status code."), 400
 
+# 💥 FIX: DOWNLOAD PAGE KEEPS WORKING AFTER PDF DOWNLOAD 💥
 @app.route('/download')
 def download_page():
     if not session.get('user_registered'):
         return redirect(url_for('home', action='download_click'))
     return render_template('download.html')
 
+# 💥 FIX: DO NOT CLEAR USER_REGISTERED SESSION HERE 💥
 @app.route('/reset-session')
 def reset_session():
-    if not session.get('remember_me'):
-        session.clear()
+    # Only clear if user role was guest and they explicitly wanted to reset,
+    # but keep registration active so user can re-visit download page anytime.
     return redirect(url_for('home'))
 
+# 💥 FIX: MATTE BLUE RECEIPT PDF (ZERO NEON / SAFE STREAM) 💥
 @app.route('/download-pdf')
 def download_pdf():
     if not session.get('user_registered'):
         return redirect(url_for('home', action='download_click'))
-    buffer = io.BytesIO()
-    p = canvas.Canvas(buffer, pagesize=letter)
-    width, height = letter
-    p.setFillColor(colors.HexColor("#03071e"))
-    p.rect(0, height - 130, width, 130, fill=1, stroke=0)
-    logo_path = os.path.join(app.root_path, 'static', 'favicon.png')
-    text_x = 45
-    if os.path.exists(logo_path):
-        p.drawImage(logo_path, 40, height - 100, width=65, height=65, preserveAspectRatio=True, mask='auto')
-        text_x = 120
-    p.setFillColor(colors.HexColor("#00e5ff"))
-    p.setFont("Helvetica-Bold", 26)
-    p.drawString(text_x, height - 60, "AIR CURSOR")
-    p.setFillColor(colors.HexColor("#ffffff"))
-    p.setFont("Helvetica-Bold", 13)
-    p.drawString(text_x, height - 85, "Behind Touch")
-    p.setFillColor(colors.HexColor("#0f172a"))
-    p.setFont("Helvetica-Bold", 20)
-    p.drawString(45, height - 180, "Thank You For Downloading!")
-    user_name = session.get('user_name', 'Valued User')
-    p.setFont("Helvetica", 12)
-    p.setFillColor(colors.HexColor("#334155"))
-    p.drawString(45, height - 215, f"Hello {user_name}, your Air Cursor package is ready.")
-    p.showPage()
-    p.save()
-    buffer.seek(0)
-    res = make_response(buffer.read())
-    res.headers['Content-Type'] = 'application/pdf'
-    res.headers['Content-Disposition'] = 'attachment; filename=AirCursor.pdf'
-    return res
+    
+    try:
+        buffer = io.BytesIO()
+        p = canvas.Canvas(buffer, pagesize=letter)
+        width, height = letter
+
+        # Matte Slate Header
+        p.setFillColor(colors.HexColor("#0B0D13"))
+        p.rect(0, height - 130, width, 130, fill=1, stroke=0)
+
+        logo_path = os.path.join(app.root_path, 'static', 'favicon.png')
+        text_x = 45
+        if os.path.exists(logo_path):
+            p.drawImage(logo_path, 40, height - 100, width=65, height=65, preserveAspectRatio=True, mask='auto')
+            text_x = 120
+
+        # Exact Matte Logo Blue (Zero Neon / Zero Cyan)
+        p.setFillColor(colors.HexColor("#2563EB"))
+        p.setFont("Helvetica-Bold", 26)
+        p.drawString(text_x, height - 60, "AIR CURSOR")
+
+        p.setFillColor(colors.HexColor("#9CA3AF"))
+        p.setFont("Helvetica", 13)
+        p.drawString(text_x, height - 85, "Touchless Desktop Navigation")
+
+        # Body Text
+        p.setFillColor(colors.HexColor("#111827"))
+        p.setFont("Helvetica-Bold", 18)
+        p.drawString(45, height - 180, "Installation Receipt & License Summary")
+
+        user_name = session.get('user_name', 'Valued User')
+        user_email = session.get('user_email', 'Registered User')
+        
+        p.setFont("Helvetica", 11)
+        p.setFillColor(colors.HexColor("#4B5563"))
+        p.drawString(45, height - 215, f"Licensed To: {user_name} ({user_email})")
+        p.drawString(45, height - 235, "Platform: Windows 10 / 11 Desktop (x64 Architecture)")
+        p.drawString(45, height - 255, "Security Check: Verified Hardware & Local Frame Processing")
+        p.drawString(45, height - 275, "Package: Air Cursor Desktop Core Engine")
+
+        p.setFillColor(colors.HexColor("#2563EB"))
+        p.setFont("Helvetica-Bold", 12)
+        p.drawString(45, height - 320, "Thank you for choosing Air Cursor.")
+
+        p.showPage()
+        p.save()
+        buffer.seek(0)
+
+        return send_file(
+            buffer,
+            as_attachment=True,
+            download_name="AirCursor_Receipt.pdf",
+            mimetype='application/pdf'
+        )
+    except Exception as e:
+        print(f"❌ PDF Download Error: {e}")
+        return redirect(url_for('download_page'))
 
 if __name__ == '__main__':
     app.run(debug=True)

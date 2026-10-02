@@ -154,7 +154,11 @@
         }
 
         /* 💥 ૨. IPHONE LIQUID GLASS CONTENT BOXES 💥 */
-        .content-section {
+        .content-section,
+        #intro,
+        #functions,
+        #characteristics,
+        #download {
             background: var(--liquid-glass-bg) !important;
             backdrop-filter: blur(28px) saturate(190%) !important;
             -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
@@ -164,25 +168,27 @@
             position: relative !important;
             overflow: hidden !important;
             margin: 40px auto !important;
-            max-width: 1160px !important;  /* 3 cards side-by-side māte pāki jagyā */
-            width: 94% !important;
+            max-width: 1140px !important;
+            width: 92% !important;
             padding: 45px 35px !important;
             text-align: center !important;
             box-sizing: border-box !important;
         }
 
-        /* 💥 ૩. STRICT 3-COLUMN GRID FIX (OVERRIDE ALL CSS BUGS) 💥 */
+        /* 💥 ૩. STRICT 3-COLUMN OVERRIDE RULE 💥 */
+        #functions .grid-cards,
+        #characteristics .grid-cards,
         .grid-cards {
             display: grid !important;
-            grid-template-columns: repeat(3, 1fr) !important; /* Ek j line mān exact 3 box */
-            grid-auto-flow: row !important;
+            grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
             gap: 24px !important;
             margin-top: 32px !important;
             width: 100% !important;
             box-sizing: border-box !important;
         }
 
-        /* Override any style.css flexbox or percentage widths */
+        #functions .grid-cards .card,
+        #characteristics .grid-cards .card,
         .grid-cards .card {
             width: 100% !important;
             min-width: 0 !important;
@@ -232,6 +238,15 @@
         .grid-cards .card:hover::after {
             border-color: var(--accent);
             animation: borderRun 2s linear infinite;
+        }
+
+        /* Responsive Safety for Mobile */
+        @media (max-width: 768px) {
+            #functions .grid-cards,
+            #characteristics .grid-cards,
+            .grid-cards {
+                grid-template-columns: 1fr !important;
+            }
         }
 
         h2 {
@@ -374,7 +389,7 @@
                     <div class="dn-palm left">
                         <svg viewBox="0 0 40 46" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M22 46 C21 34 16 24 20 14" stroke="#5c3818" stroke-width="2.8" stroke-linecap="round"/>
-                            <path d="M20 14 C12 8 4 11 0 17 C6 13 13 14 20 14 Z" fill="#1b4332"/>
+                            <path d="M20 14 C12 8 4 11 0 17 C6 13 14 14 20 14 Z" fill="#1b4332"/>
                             <path d="M20 14 C14 4 6 5 2 8 C8 7 15 9 20 14 Z" fill="#2d6a4f"/>
                             <path d="M20 14 C22 3 30 3 35 7 C28 8 23 10 20 14 Z" fill="#40916c"/>
                             <path d="M20 14 C26 7 35 11 39 17 C33 13 26 14 20 14 Z" fill="#1b4332"/>
@@ -422,23 +437,23 @@
         </div>
     </section>
 
-    <!-- 💥 FUNCTIONS SECTION (3 CARDS IN 1 SINGLE ROW) 💥 -->
-    <section id="functions" class="content-section">
+    <!-- 💥 FUNCTIONS SECTION: INLINE STYLES FOR STRICT 3-IN-A-ROW 💥 -->
+    <section id="functions" class="content-section" style="max-width: 1140px !important; width: 92% !important;">
         <div class="floating-emoji">⚙️</div>
         <h2>Functions</h2>
         <p>Designed for absolute precision, fluid interactivity, and effortless workflow.</p>
-        <div class="grid-cards">
-            <div class="card">
+        <div class="grid-cards" style="display: grid !important; grid-template-columns: 1fr 1fr 1fr !important; gap: 24px !important; width: 100% !important;">
+            <div class="card" style="width: 100% !important; min-width: 0 !important; max-width: none !important; margin: 0 !important;">
                 <div class="floating-emoji">🖐️</div>
                 <h3>Smooth Cursor Motion</h3>
                 <p>Real-time optical hand tracking moves your cursor precisely without physical contact.</p>
             </div>
-            <div class="card">
+            <div class="card" style="width: 100% !important; min-width: 0 !important; max-width: none !important; margin: 0 !important;">
                 <div class="floating-emoji">⚡</div>
                 <h3>Air Clicks & Gestures</h3>
                 <p>Pinch, tap, or swipe mid-air to trigger clicks, drag operations, and desktop navigation.</p>
             </div>
-            <div class="card">
+            <div class="card" style="width: 100% !important; min-width: 0 !important; max-width: none !important; margin: 0 !important;">
                 <div class="floating-emoji">🔒</div>
                 <h3>100% Privacy-First</h3>
                 <p>All camera frames are processed purely locally on your machine. No feed or data is ever recorded.</p>
@@ -446,23 +461,23 @@
         </div>
     </section>
 
-    <!-- 💥 CHARACTERISTICS SECTION (3 CARDS IN 1 SINGLE ROW) 💥 -->
-    <section id="characteristics" class="content-section">
+    <!-- 💥 CHARACTERISTICS SECTION: INLINE STYLES FOR STRICT 3-IN-A-ROW 💥 -->
+    <section id="characteristics" class="content-section" style="max-width: 1140px !important; width: 92% !important;">
         <div class="floating-emoji">🌟</div>
         <h2>Characteristics</h2>
         <p>Built for modern workflows with cutting-edge touchless responsiveness.</p>
-        <div class="grid-cards">
-            <div class="card">
+        <div class="grid-cards" style="display: grid !important; grid-template-columns: 1fr 1fr 1fr !important; gap: 24px !important; width: 100% !important;">
+            <div class="card" style="width: 100% !important; min-width: 0 !important; max-width: none !important; margin: 0 !important;">
                 <div class="floating-emoji">🚀</div>
                 <h3>Ultra Low Latency</h3>
                 <p>High frame-rate algorithms ensure instantaneous response with zero input lag.</p>
             </div>
-            <div class="card">
+            <div class="card" style="width: 100% !important; min-width: 0 !important; max-width: none !important; margin: 0 !important;">
                 <div class="floating-emoji">🔌</div>
                 <h3>Plug & Play</h3>
                 <p>Works right out of the box with your standard built-in or external USB webcam.</p>
             </div>
-            <div class="card">
+            <div class="card" style="width: 100% !important; min-width: 0 !important; max-width: none !important; margin: 0 !important;">
                 <div class="floating-emoji">🌐</div>
                 <h3>Universal Compatibility</h3>
                 <p>Engineered to operate seamlessly on Windows 10/11 and modern PC environments.</p>

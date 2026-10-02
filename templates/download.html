@@ -7,6 +7,7 @@
     <title>Air Cursor - Download & Terms</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
+        /* 💥 CLEAN MATTE LOGO BLUE THEME (ZERO NEON / ZERO BROWN) 💥 */
         :root {
             --bg-body: #0B0D13;
             --bg-card: #131722;
@@ -17,7 +18,7 @@
             --accent-rgb: 37, 99, 235;
             --accent-hover: #1D4ED8;
             --tc-bg: #0E1118;
-            --shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            --shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
         }
 
         [data-theme="light"] {
@@ -33,7 +34,14 @@
             --shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
         }
 
-        /* 💥 આખા પેજમાંથી સ્ક્રોલ બંધ 💥 */
+        /* 💥 પાછળના તમામ પાર્ટીકલ્સ અને વોટરમાર્ક કાયમ માટે બંધ 💥 */
+        canvas, #particleCanvas {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
         html, body {
             height: 100vh !important;
             min-height: 100vh !important;
@@ -41,13 +49,12 @@
             overflow: hidden !important;
             margin: 0;
             padding: 0;
-            background: var(--bg-body);
+            background: var(--bg-body) !important;
             color: var(--text-main);
             font-family: system-ui, -apple-system, sans-serif;
             transition: background 0.25s ease, color 0.25s ease;
         }
 
-        /* તમામ એલિમેન્ટ્સમાંથી સ્ક્રોલબાર અદ્રશ્ય કરવા */
         *::-webkit-scrollbar {
             display: none !important;
             width: 0 !important;
@@ -57,18 +64,6 @@
             scrollbar-width: none !important;
             -ms-overflow-style: none !important;
             box-sizing: border-box;
-        }
-
-        /* Particle Canvas Background */
-        #particleCanvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            pointer-events: none;
-            z-index: 0;
-            opacity: 0.75;
         }
 
         /* Top Left Logo */
@@ -95,11 +90,15 @@
             width: 24px;
             height: 24px;
             border-radius: 6px;
+            filter: none !important;
         }
         .app-logo-text {
             font-size: 0.95rem;
             font-weight: 800;
-            color: var(--text-main);
+            color: #2563EB !important;
+            background: none !important;
+            -webkit-text-fill-color: #2563EB !important;
+            text-shadow: none !important;
             letter-spacing: -0.3px;
         }
 
@@ -122,7 +121,7 @@
             padding: 34px 38px;
             border-radius: 18px;
             text-align: left;
-            background: var(--bg-card);
+            background: var(--bg-card) !important;
             border: 1px solid var(--border);
             box-shadow: var(--shadow);
             position: relative;
@@ -137,6 +136,8 @@
         .floating-emoji {
             font-size: 1.8rem;
             line-height: 1;
+            text-shadow: none !important;
+            filter: none !important;
         }
 
         .download-card h1 {
@@ -154,7 +155,7 @@
             color: var(--text-sub);
         }
 
-        /* 💥 T&C બોક્સ (Clean Matte Layout) 💥 */
+        /* T&C બોક્સ (Solid Matte) */
         .tc-box {
             background: var(--tc-bg);
             border: 1px solid var(--border);
@@ -179,27 +180,14 @@
             transition: background 0.3s ease, color 0.3s ease;
         }
 
-        /* 💥 Clean Matte Blink Animation (Zero Neon / Zero Flashy Glow) 💥 */
         @keyframes cleanSettingBlink {
-            0% {
+            0%, 50%, 100% {
                 background-color: transparent;
                 color: var(--text-main);
             }
-            25% {
+            25%, 75% {
                 background-color: rgba(var(--accent-rgb), 0.18);
                 color: var(--accent);
-            }
-            50% {
-                background-color: transparent;
-                color: var(--text-main);
-            }
-            75% {
-                background-color: rgba(var(--accent-rgb), 0.18);
-                color: var(--accent);
-            }
-            100% {
-                background-color: transparent;
-                color: var(--text-main);
             }
         }
 
@@ -257,17 +245,21 @@
             color: var(--text-main);
         }
 
+        /* જૂના બ્રાઉન ટેક્સ્ટને હટાવીને સોલિડ મેટ બ્લૂ */
         .tc-clickable-link {
-            color: var(--accent);
+            color: #2563EB !important;
+            background: none !important;
+            -webkit-text-fill-color: #2563EB !important;
             cursor: pointer;
             text-decoration: underline;
             text-underline-offset: 3px;
             font-weight: 600;
-            transition: color 0.2s ease;
+            text-shadow: none !important;
         }
 
         .tc-clickable-link:hover {
-            color: var(--accent-hover);
+            color: var(--accent-hover) !important;
+            -webkit-text-fill-color: var(--accent-hover) !important;
         }
 
         .btn-group {
@@ -276,27 +268,35 @@
             align-items: center;
         }
 
+        /* 💥 SOILD MATTE LOGO BLUE BUTTON (KILL ALL BROWN/GOLD) 💥 */
         .cta-button {
-            background: var(--accent);
-            color: #FFFFFF;
-            border: none;
+            background: #2563EB !important;
+            background-image: none !important;
+            color: #FFFFFF !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
             padding: 11px 22px;
             border-radius: 8px;
             font-weight: 600;
             font-size: 0.9rem;
             cursor: pointer;
             text-decoration: none;
+            box-shadow: none !important;
+            text-shadow: none !important;
             transition: background 0.2s ease;
         }
 
         .cta-button:hover:not(.btn-disabled) {
-            background: var(--accent-hover);
+            background: #1D4ED8 !important;
         }
 
         .cta-button.btn-disabled {
-            opacity: 0.35;
+            background: #1F2430 !important;
+            background-image: none !important;
+            color: #64748B !important;
+            border: 1px solid var(--border) !important;
+            opacity: 0.65 !important;
             cursor: not-allowed !important;
-            filter: grayscale(0.8);
+            filter: none !important;
             box-shadow: none !important;
             transform: none !important;
         }
@@ -318,7 +318,7 @@
             background: var(--border);
         }
 
-        /* 💥 Custom Download Popup (Solid Matte Modal) 💥 */
+        /* Modal */
         .popup-overlay {
             display: none;
             position: fixed;
@@ -351,6 +351,7 @@
         .popup-icon-container {
             font-size: 2.4rem;
             margin-bottom: 12px;
+            text-shadow: none !important;
         }
 
         .popup-card h3 {
@@ -370,8 +371,8 @@
 </head>
 <body>
 
-    <!-- Particle Canvas Background -->
-    <canvas id="particleCanvas"></canvas>
+    <!-- Particle Canvas - JS Crash ન થાય તે માટે રાખેલું છે પણ CSS થી 100% અદ્રશ્ય છે -->
+    <canvas id="particleCanvas" style="display: none !important; visibility: hidden !important;"></canvas>
 
     <!-- Top Left Clickable Logo -->
     <a href="/" class="app-logo-container">
@@ -439,7 +440,6 @@
             const tcHeader = document.getElementById('tcHeader');
             const tcBox = document.getElementById('tcBox');
 
-            // T&C Link click highlight animation
             if (tcLinkTrigger) {
                 tcLinkTrigger.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -459,7 +459,6 @@
                 });
             }
 
-            // Checkbox Toggle logic
             tcAgree.addEventListener('change', () => {
                 if (tcAgree.checked) {
                     downloadBtn.classList.remove('btn-disabled');
@@ -468,7 +467,6 @@
                 }
             });
 
-            // Download Trigger logic
             if (downloadBtn) {
                 downloadBtn.addEventListener('click', (e) => {
                     e.preventDefault(); 

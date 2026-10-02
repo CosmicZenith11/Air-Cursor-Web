@@ -8,36 +8,41 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     
     <script>
-        /* Immediate Theme Enforcement to stop flashing */
+        /* Instant Theme Apply from Storage */
         (function() {
-            const saved = localStorage.getItem('air_cursor_theme') || 'dark';
+            var saved = localStorage.getItem('air_cursor_theme') || localStorage.getItem('theme') || 'dark';
             document.documentElement.setAttribute('data-theme', saved);
+            if (saved === 'light') {
+                document.documentElement.classList.add('light-mode');
+            } else {
+                document.documentElement.classList.remove('light-mode');
+            }
         })();
     </script>
 
     <style>
-        /* 💥 1. ROCK-SOLID DARK & LIGHT VARIABLES 💥 */
-        :root,
-        html[data-theme="dark"],
-        body[data-theme="dark"] {
-            --bg-base: #07090E !important;
-            --liquid-glass-bg: rgba(15, 23, 42, 0.5) !important;
-            --liquid-glass-card: rgba(20, 30, 55, 0.4) !important;
-            --liquid-border: rgba(255, 255, 255, 0.14) !important;
-            --liquid-border-hover: rgba(37, 99, 235, 0.7) !important;
-            --liquid-sheen: inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.25), 0 20px 40px rgba(0, 0, 0, 0.6) !important;
-            --text-main: #F8FAFC !important;
-            --text-sub: #94A3B8 !important;
-            --accent: #2563EB !important;
-            --accent-hover: #1D4ED8 !important;
-            --input-bg: rgba(15, 23, 42, 0.65) !important;
-            --input-text: #F8FAFC !important;
-            --input-placeholder: #64748B !important;
-            --input-border: rgba(255, 255, 255, 0.15) !important;
+        /* 💥 1. ROCK-SOLID THEME DEFINITIONS 💥 */
+        :root {
+            --bg-base: #07090E;
+            --liquid-glass-bg: rgba(15, 23, 42, 0.5);
+            --liquid-glass-card: rgba(20, 30, 55, 0.4);
+            --liquid-border: rgba(255, 255, 255, 0.14);
+            --liquid-border-hover: rgba(37, 99, 235, 0.7);
+            --liquid-sheen: inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.25), 0 20px 40px rgba(0, 0, 0, 0.6);
+            --text-main: #F8FAFC;
+            --text-sub: #94A3B8;
+            --accent: #2563EB;
+            --accent-hover: #1D4ED8;
+            --input-bg: rgba(15, 23, 42, 0.65);
+            --input-text: #F8FAFC;
+            --input-placeholder: #64748B;
+            --input-border: rgba(255, 255, 255, 0.15);
         }
 
+        /* LIGHT THEME RULES */
         html[data-theme="light"],
         body[data-theme="light"],
+        html.light-mode,
         body.light-mode {
             --bg-base: #F8FAFC !important;
             --liquid-glass-bg: rgba(255, 255, 255, 0.7) !important;
@@ -55,7 +60,28 @@
             --input-border: rgba(37, 99, 235, 0.3) !important;
         }
 
-        /* 💥 CANVAS MUST NEVER BLOCK MOUSE CLICKS 💥 */
+        /* DARK THEME OVERRIDE (HIGHEST PRIORITY) */
+        html[data-theme="dark"],
+        body[data-theme="dark"],
+        html.dark-mode,
+        body.dark-mode {
+            --bg-base: #07090E !important;
+            --liquid-glass-bg: rgba(15, 23, 42, 0.5) !important;
+            --liquid-glass-card: rgba(20, 30, 55, 0.4) !important;
+            --liquid-border: rgba(255, 255, 255, 0.14) !important;
+            --liquid-border-hover: rgba(37, 99, 235, 0.7) !important;
+            --liquid-sheen: inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.25), 0 20px 40px rgba(0, 0, 0, 0.6) !important;
+            --text-main: #F8FAFC !important;
+            --text-sub: #94A3B8 !important;
+            --accent: #2563EB !important;
+            --accent-hover: #1D4ED8 !important;
+            --input-bg: rgba(15, 23, 42, 0.65) !important;
+            --input-text: #F8FAFC !important;
+            --input-placeholder: #64748B !important;
+            --input-border: rgba(255, 255, 255, 0.15) !important;
+        }
+
+        /* Canvas clicks block na kare te mate */
         #particleCanvas {
             position: fixed !important;
             top: 0 !important;
@@ -77,7 +103,7 @@
             z-index: 1;
         }
 
-        /* 💥 HEADER ROW: LOGO, NAV, TOGGLE IN 1 LINE (48PX HEIGHT) 💥 */
+        /* 💥 HEADER ROW (48PX HEIGHT) 💥 */
         .header-bar-fixed {
             position: fixed !important;
             top: 20px !important;
@@ -125,7 +151,6 @@
         .app-logo-img {
             width: 22px !important;
             height: 22px !important;
-            filter: none !important;
         }
         .app-logo-text {
             color: #2563EB !important;
@@ -133,7 +158,6 @@
             font-weight: 800 !important;
             letter-spacing: 1.2px !important;
             font-size: 0.95rem !important;
-            text-shadow: none !important;
         }
 
         .top-nav {
@@ -173,6 +197,7 @@
 
         .theme-toggle-container {
             padding: 0 6px !important;
+            cursor: pointer !important;
         }
         .toggle-scaler {
             display: flex !important;
@@ -180,7 +205,16 @@
             justify-content: center !important;
         }
 
-        /* 💥 ZERO EXPLORE LINE HERO 💥 */
+        /* 💥 TOGGLE BUTTON CLICK FIX 💥 */
+        #themeToggle {
+            cursor: pointer !important;
+            pointer-events: auto !important;
+            border: none;
+            background: none;
+            outline: none;
+        }
+
+        /* ZERO EXPLORE LINE HERO */
         .scroll-instruction,
         .hero-section p,
         .main-text {
@@ -199,7 +233,7 @@
             justify-content: center !important;
         }
 
-        /* 💥 IPHONE LIQUID GLASS CONTENT SECTIONS 💥 */
+        /* CONTENT SECTIONS */
         .content-section,
         #intro,
         #functions,
@@ -222,7 +256,7 @@
             box-sizing: border-box !important;
         }
 
-        /* 💥 ૨ BOXES UPAR + ૧ BOX NICHE CENTER MA 💥 */
+        /* ૨ BOXES UPAR + ૧ BOX NICHE CENTER MA */
         .faculty-cards-layout {
             display: flex !important;
             flex-wrap: wrap !important;
@@ -307,8 +341,6 @@
         .floating-emoji {
             font-size: 2rem !important;
             margin-bottom: 8px !important;
-            filter: none !important;
-            text-shadow: none !important;
         }
 
         .feature-badges span {
@@ -322,7 +354,6 @@
             font-size: 0.88rem !important;
         }
 
-        /* 💥 GUARANTEED CLICKABLE BUTTON 💥 */
         .cta-button {
             background: #2563EB !important;
             color: #FFFFFF !important;
@@ -344,7 +375,6 @@
             transform: translateY(-2px);
         }
 
-        /* 💥 GUARANTEED CLICKABLE INPUTS 💥 */
         .glass-input {
             background: var(--input-bg) !important;
             color: var(--input-text) !important;
@@ -456,7 +486,7 @@
         </div>
     </div>
 
-    <!-- ZERO EXPLORE LINE HERO[cite: 22] -->
+    <!-- ZERO EXPLORE LINE HERO -->
     <section class="hero-section"></section>
 
     <!-- INTRO SECTION -->
@@ -471,7 +501,7 @@
         </div>
     </section>
 
-    <!-- FUNCTIONS SECTION (૨ UPAR + ૧ NICHE CENTERED)[cite: 20] -->
+    <!-- FUNCTIONS SECTION (૨ UPAR + ૧ NICHE CENTERED) -->
     <section id="functions" class="content-section">
         <div class="floating-emoji">⚙️</div>
         <h2>Functions</h2>
@@ -498,7 +528,7 @@
         </div>
     </section>
 
-    <!-- CHARACTERISTICS SECTION (૨ UPAR + ૧ NICHE CENTERED)[cite: 20] -->
+    <!-- CHARACTERISTICS SECTION (૨ UPAR + ૧ NICHE CENTERED) -->
     <section id="characteristics" class="content-section">
         <div class="floating-emoji">🌟</div>
         <h2>Characteristics</h2>
@@ -525,7 +555,7 @@
         </div>
     </section>
 
-    <!-- 💥 DOWNLOAD FORM SECTION: BULLETPROOF SUBMIT 💥 -->
+    <!-- DOWNLOAD FORM SECTION -->
     <section id="download" class="content-section">
         <div class="floating-emoji">📥</div>
         <h2>Get Started Today</h2>
@@ -551,65 +581,84 @@
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 
-    <!-- 💥 NATIVE SUBMIT & CONFLICT DETACH ENGINE 💥 -->
+    <!-- 💥 100% BULLETPROOF THEME & SUBMISSION ENGINE 💥 -->
     <script>
         (function() {
-            /* 1. Theme Manager */
-            function setAppTheme(theme) {
-                document.documentElement.setAttribute('data-theme', theme);
-                document.body.setAttribute('data-theme', theme);
-                localStorage.setItem('air_cursor_theme', theme);
+            function updateTheme(theme) {
+                const isDark = (theme === 'dark');
+                
+                // Document and Body synchronization
+                document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+                if (document.body) {
+                    document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
+                    if (isDark) {
+                        document.body.classList.remove('light-mode');
+                        document.documentElement.classList.remove('light-mode');
+                        document.body.classList.add('dark-mode');
+                    } else {
+                        document.body.classList.remove('dark-mode');
+                        document.documentElement.classList.remove('dark-mode');
+                        document.body.classList.add('light-mode');
+                    }
+                }
 
+                // Storage keys
+                localStorage.setItem('air_cursor_theme', isDark ? 'dark' : 'light');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+
+                // Toggle Button Visual State
                 const btn = document.getElementById('themeToggle');
                 if (btn) {
-                    if (theme === 'light') {
-                        btn.classList.remove('is-night');
-                    } else {
+                    if (isDark) {
                         btn.classList.add('is-night');
+                    } else {
+                        btn.classList.remove('is-night');
                     }
                 }
             }
 
-            window.addEventListener('DOMContentLoaded', () => {
-                const initialTheme = localStorage.getItem('air_cursor_theme') || 'dark';
-                setAppTheme(initialTheme);
+            function bindToggle() {
+                const btn = document.getElementById('themeToggle');
+                if (!btn) return;
 
-                // Clone Toggle Button to kill duplicate listeners
-                const oldBtn = document.getElementById('themeToggle');
-                if (oldBtn) {
-                    const newBtn = oldBtn.cloneNode(true);
-                    oldBtn.parentNode.replaceChild(newBtn, oldBtn);
-
-                    newBtn.addEventListener('click', (e) => {
+                // Directly overwrite onclick to stop bubbling and duplicate listeners
+                btn.onclick = function(e) {
+                    if (e) {
                         e.preventDefault();
-                        e.stopImmediatePropagation();
-                        const current = document.documentElement.getAttribute('data-theme') || 'dark';
-                        const next = current === 'dark' ? 'light' : 'dark';
-                        setAppTheme(next);
-                    });
-                }
+                        e.stopPropagation();
+                        if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+                    }
+                    const current = document.documentElement.getAttribute('data-theme') || 'dark';
+                    const targetTheme = (current === 'dark') ? 'light' : 'dark';
+                    updateTheme(targetTheme);
+                };
+            }
 
-                // 💥 CLONE FORM TO STRIP ANY BLOCKING LISTENERS FROM SCRIPT.JS 💥
-                const originalForm = document.getElementById('downloadForm');
-                if (originalForm) {
-                    const cleanForm = originalForm.cloneNode(true);
-                    originalForm.parentNode.replaceChild(cleanForm, originalForm);
+            // Bind immediately and on load
+            const initialTheme = localStorage.getItem('air_cursor_theme') || localStorage.getItem('theme') || 'dark';
+            updateTheme(initialTheme);
 
-                    cleanForm.addEventListener('submit', function(e) {
-                        const nameVal = document.getElementById('name').value.trim();
-                        const emailVal = document.getElementById('email').value.trim();
+            window.addEventListener('DOMContentLoaded', () => {
+                updateTheme(initialTheme);
+                bindToggle();
 
-                        if (!nameVal || !emailVal) {
+                // Safe Native Form Submission
+                const form = document.getElementById('downloadForm');
+                if (form) {
+                    form.onsubmit = function(e) {
+                        const name = document.getElementById('name').value.trim();
+                        const email = document.getElementById('email').value.trim();
+                        if (!name || !email) {
                             e.preventDefault();
-                            alert("Please fill both Name and Email fields!");
+                            alert("Please enter both Name and Email!");
                             return false;
                         }
-
-                        // Allow pure native HTTP POST submit to /register
                         return true;
-                    });
+                    };
                 }
             });
+
+            window.addEventListener('load', bindToggle);
         })();
     </script>
 </body>

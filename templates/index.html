@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     
     <style>
-        /* 💥 CLEAN MATTE BLUE & IOS LIQUID GLASS OVERRIDE (NO LAYOUT DISTORTION) 💥 */
+        /* 💥 MATTE SLATE THEME & PROPER HEADER SPACING 💥 */
         :root, body, html {
             --bg-base: #0B0D13 !important;
             --glass-bg: rgba(19, 23, 34, 0.8) !important;
@@ -23,6 +23,37 @@
         body {
             background-color: var(--bg-base) !important;
             color: var(--text-main) !important;
+            font-family: system-ui, -apple-system, sans-serif !important;
+            padding-top: 90px; /* Prevents header overlap with content */
+        }
+
+        /* 💥 EXACT HEADER PLACEMENT (LOGO LEFT, NAV CENTER, TOGGLE RIGHT) 💥 */
+        .app-logo-container {
+            position: fixed !important;
+            top: 20px !important;
+            left: 20px !important;
+            z-index: 1000 !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 10px !important;
+            padding: 10px 18px !important;
+        }
+
+        .top-nav {
+            position: fixed !important;
+            top: 20px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            z-index: 1000 !important;
+            width: auto !important;
+        }
+
+        .theme-toggle-container {
+            position: fixed !important;
+            top: 20px !important;
+            right: 20px !important;
+            z-index: 1000 !important;
+            padding: 6px !important;
         }
 
         /* IOS LIQUID GLASS BOXES WITH RUNNING BORDER ANIMATION */
@@ -121,11 +152,11 @@
 
     <!-- ૧. એપ લોગો (Top Left) -->
     <a href="#" class="app-logo-container glass-effect" style="text-decoration: none;" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">
-        <img src="{{ url_for('static', filename='favicon.png') }}" alt="Air Cursor Logo" class="app-logo-img">
-        <span class="app-logo-text" style="color: var(--accent) !important;">AIR CURSOR</span>
+        <img src="{{ url_for('static', filename='favicon.png') }}" alt="Air Cursor Logo" class="app-logo-img" style="width:24px; height:24px;">
+        <span class="app-logo-text" style="color: var(--accent) !important; font-weight: 900;">AIR CURSOR</span>
     </a>
 
-    <!-- ૨. ફ્લોટિંગ નેવબાર (Center) -->
+    <!-- ૨. ફ્લોટિંગ નેવબાર (Top Center) -->
     <header class="top-nav">
         <div class="nav-pill glass-effect">
             <nav class="nav-links">
@@ -137,7 +168,7 @@
         </div>
     </header>
 
-    <!-- ૩. ડે / નાઇટ એનિમેટેડ થીમ ટોગલ -->
+    <!-- ૩. ડે / નાઇટ એનિમેટેડ થીમ ટોગલ (Top Right) -->
     <div class="theme-toggle-container glass-effect">
         <div class="toggle-scaler">
             <button class="dn-toggle is-night" id="themeToggle" aria-label="Toggle Theme">
@@ -205,7 +236,7 @@
         <div class="floating-emoji header-emoji">✨</div>
         <h2>Control Your Screen Effortlessly Without Touching</h2>
         <p>Experience the next generation of touchless navigation. Control your screen effortlessly with smooth, intuitive optical gesture recognition.</p>
-        <div class="feature-badges">
+        <div class="feature-badges" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
             <span>⚡ Zero Hardware Setup</span>
             <span>🧠 AI Gesture Engine</span>
             <span>🚀 Ultra Responsive</span>
@@ -283,7 +314,7 @@
         <p>© 2026 Air Cursor Technologies. Crafted By Developer Mode.</p>
     </footer>
 
-    <!-- પોપઅપ્સ માટેના કન્ટેનર્સ -->
+    <!-- પોપઅપ્સ -->
     <div id="custom-popup" class="popup-overlay" style="display: none;">
         <div class="popup-card">
             <div id="popup-icon" class="popup-icon-container floating-emoji">💥</div>

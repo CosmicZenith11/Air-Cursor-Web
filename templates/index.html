@@ -243,7 +243,7 @@
             box-sizing: border-box !important;
         }
 
-        /* ૨ BOXES UPAR + ૧ BOX NICHE CENTER MA */
+        /* 💥 ૨ BOXES UPAR + ૧ BOX NICHE CENTER MA (EQUAL WIDTH) 💥 */
         .faculty-cards-layout {
             display: flex !important;
             flex-wrap: wrap !important;
@@ -448,7 +448,7 @@
 </head>
 <body>
 
-    <!-- 💥 PARTICLE CANVAS (DELTA CURSOR & WELCOME DOTS ENGINE) 💥 -->
+    <!-- 💥 PARTICLE CANVAS ENGINE 💥 -->
     <canvas id="particleCanvas"></canvas>
 
     <!-- FIXED HEADER -->
@@ -491,7 +491,7 @@
                     <div class="dn-palm left">
                         <svg viewBox="0 0 40 46" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M22 46 C21 34 16 24 20 14" stroke="#5c3818" stroke-width="2.8" stroke-linecap="round"/>
-                            <path d="M20 14 C12 8 4 11 0 17 C6 13 14 14 20 14 Z" fill="#1b4332"/>
+                            <path d="M20 14 C12 8 4 11 0 17 C6 13 13 14 20 14 Z" fill="#1b4332"/>
                             <path d="M20 14 C14 4 6 5 2 8 C8 7 15 9 20 14 Z" fill="#2d6a4f"/>
                             <path d="M20 14 C22 3 30 3 35 7 C28 8 23 10 20 14 Z" fill="#40916c"/>
                             <path d="M20 14 C26 7 35 11 39 17 C33 13 26 14 20 14 Z" fill="#1b4332"/>
@@ -539,56 +539,62 @@
         </div>
     </section>
 
-    <!-- FUNCTIONS SECTION (૨ UPAR + ૧ NICHE CENTERED) -->
+    <!-- 💥 FUNCTIONS SECTION (PURE ENGLISH & CLEAR SUMMARY) 💥 -->
     <section id="functions" class="content-section">
         <div class="floating-emoji">⚙️</div>
         <h2>Functions</h2>
         <p>Engineered for sub-pixel cursor accuracy, low system overhead, and intuitive desktop navigation.</p>
         
         <div class="faculty-cards-layout">
+            <!-- Box 1 (Top Left) -->
             <div class="faculty-card">
                 <div class="floating-emoji">🖐️</div>
-                <h3>AI Optical Cursor Tracking</h3>
-                <p>MediaPipe Hand framework 21 distinct 3D joint landmark detection dwara index finger trajectory ne high-precision cursor coordinates ma translate kare chhe.</p>
+                <h3>Optical Cursor Tracking</h3>
+                <p>Tracks 21 3D hand landmarks in real time via webcam to convert your index fingertip movement directly into smooth on-screen cursor motion.</p>
             </div>
 
+            <!-- Box 2 (Top Right) -->
             <div class="faculty-card">
                 <div class="floating-emoji">⚡</div>
-                <h3>Real-Time Action Gestures</h3>
-                <p>Index tip ane thumb coordinates vacche Euclidean distance calculation kari left-click, right-click, dragging ane virtual scrolling mid-air touchlessly trigger kare chhe.</p>
+                <h3>Touchless Action Gestures</h3>
+                <p>Performs instant air gestures—pinch to left-click, double tap to right-click, grab to drag windows, and scroll pages mid-air without touching hardware.</p>
             </div>
 
+            <!-- Box 3 (Bottom Center) -->
             <div class="faculty-card">
                 <div class="floating-emoji">🔒</div>
-                <h3>100% On-Device Edge Processing</h3>
-                <p>Dareke video frame client machine ni local RAM ma execute thay chhe. Zero cloud transmission, biometrics athva camera feed kadapi store ke upload thati nathi.</p>
+                <h3>100% On-Device Privacy</h3>
+                <p>All camera frames are processed strictly in local client memory. No video streams, photos, or biometric data are ever saved or uploaded to any server.</p>
             </div>
         </div>
     </section>
 
-    <!-- CHARACTERISTICS SECTION (૨ UPAR + ૧ NICHE CENTERED) -->
+    <!-- 💥 CHARACTERISTICS SECTION (PURE ENGLISH & CLEAR SUMMARY) 💥 -->
     <section id="characteristics" class="content-section">
         <div class="floating-emoji">🌟</div>
         <h2>Characteristics</h2>
         <p>Architected for minimal CPU load, broad hardware accessibility, and production responsiveness.</p>
         
         <div class="faculty-cards-layout">
+            <!-- Box 1 (Top Left) -->
             <div class="faculty-card">
                 <div class="floating-emoji">🚀</div>
-                <h3>Ultra-Low Latency Pipeline</h3>
-                <p>Optimized vector mathematics pipeline input frames ne 60+ FPS ane under 15ms optical latency sathe process kare chhe, jethi cursor jitter ane lag zero thay chhe.</p>
+                <h3>Ultra-Low Latency</h3>
+                <p>Runs an optimized computer vision pipeline delivering 60+ FPS with under 15ms optical latency for instantaneous, jitter-free cursor tracking.</p>
             </div>
 
+            <!-- Box 2 (Top Right) -->
             <div class="faculty-card">
                 <div class="floating-emoji">🔌</div>
-                <h3>Hardware-Agnostic Plug & Play</h3>
-                <p>Standard built-in athva external 720p/1080p USB webcam sathe seedhun chale chhe; koi expensive infrared sensor athva depth camera peripherals ni jarur nathi.</p>
+                <h3>Plug & Play Compatibility</h3>
+                <p>Works right out of the box with any standard built-in or USB webcam—no expensive depth sensors, infrared cameras, or extra hardware needed.</p>
             </div>
 
+            <!-- Box 3 (Bottom Center) -->
             <div class="faculty-card">
                 <div class="floating-emoji">🌐</div>
-                <h3>Native Windows Architecture</h3>
-                <p>Windows 10 ane 11 environments mate lightweight multi-threaded Python backend routines dwara minimal RAM ane battery impact sathe design karel chhe.</p>
+                <h3>Lightweight Windows Build</h3>
+                <p>Engineered specifically for Windows 10 & 11 with multi-threaded Python routines, consuming less than 5% CPU for seamless background operation.</p>
             </div>
         </div>
     </section>
@@ -693,7 +699,6 @@
 
                         const hadNight = themeBtn.classList.contains('is-night');
 
-                        // Let script.js process the click in this tick
                         setTimeout(() => {
                             const hasNight = themeBtn.classList.contains('is-night');
                             let isDark;

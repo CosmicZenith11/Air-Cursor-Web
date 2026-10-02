@@ -93,7 +93,7 @@
             text-shadow: none !important;
         }
 
-        /* 💥 NAVBAR: KILL ALL CREAM / GOLD COLORS COMPLETELY 💥 */
+        /* 💥 NAVBAR: KILL ALL CREAM / GOLD ON TEXT & BORDER 💥 */
         .top-nav {
             position: absolute !important;
             left: 50% !important;
@@ -104,17 +104,20 @@
 
         .nav-pill {
             background: var(--glass-bg) !important;
-            border: 1px solid var(--glass-border) !important;
+            border: 1px solid rgba(37, 99, 235, 0.35) !important; /* Force Blue border, kill cream */
             border-radius: 99px !important;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35) !important;
             padding: 4px 10px !important;
+            outline: none !important;
         }
 
-        /* ALL NAVBAR LINKS (DEFAULT MUTED TEXT) */
-        .nav-links a {
-            color: var(--text-sub) !important;
-            -webkit-text-fill-color: var(--text-sub) !important;
-            background: none !important;
+        /* NORMAL STATE (MUTED SLATE) */
+        .nav-links a,
+        .nav-pill nav a,
+        .top-nav a {
+            color: #9CA3AF !important;
+            -webkit-text-fill-color: #9CA3AF !important;
+            background: transparent !important;
             background-image: none !important;
             -webkit-background-clip: initial !important;
             background-clip: initial !important;
@@ -124,17 +127,22 @@
             text-decoration: none !important;
             padding: 8px 16px !important;
             border-radius: 99px !important;
-            transition: color 0.2s ease, -webkit-text-fill-color 0.2s ease !important;
+            transition: all 0.2s ease !important;
         }
 
-        /* ACTIVE & HOVER LINK (PURE MATTE BLUE, NO CREAM/GOLD) */
+        /* 💥 ACTIVE / HOVER / SCROLL-ACTIVE (MATTE LOGO BLUE - ZERO CREAM) 💥 */
         .nav-links a:hover,
         .nav-links a.active,
         .nav-links a:focus,
-        .nav-links a[aria-current="page"] {
+        .nav-links a.current,
+        .nav-links a[aria-current="page"],
+        .nav-pill nav a:hover,
+        .nav-pill nav a.active,
+        .top-nav a:hover,
+        .top-nav a.active {
             color: #2563EB !important;
             -webkit-text-fill-color: #2563EB !important;
-            background: rgba(37, 99, 235, 0.1) !important;
+            background: rgba(37, 99, 235, 0.12) !important;
             background-image: none !important;
             -webkit-background-clip: initial !important;
             background-clip: initial !important;

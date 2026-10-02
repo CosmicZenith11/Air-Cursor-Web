@@ -44,7 +44,7 @@
             transition: background-color 0.3s ease, color 0.3s ease !important;
         }
 
-        /* 💥 ૧. HEADER ROW: PERFECT 1-LINE HORIZONTAL ALIGNMENT (48PX HEIGHT) 💥 */
+        /* 💥 ૧. HEADER ROW: LOGO, NAV, TOGGLE IN 1 LINE (48PX HEIGHT) 💥 */
         .header-bar-fixed {
             position: fixed !important;
             top: 20px !important;
@@ -153,7 +153,7 @@
             justify-content: center !important;
         }
 
-        /* 💥 ૨. IPHONE LIQUID GLASS CONTENT SECTIONS 💥 */
+        /* 💥 ૨. IPHONE LIQUID GLASS CONTENT BOXES 💥 */
         .content-section {
             background: var(--liquid-glass-bg) !important;
             backdrop-filter: blur(28px) saturate(190%) !important;
@@ -164,24 +164,31 @@
             position: relative !important;
             overflow: hidden !important;
             margin: 40px auto !important;
-            max-width: 1080px !important;  /* પૂરતી જગ્યા આપવા પહોળાઈ વધારી */
-            width: 92% !important;
+            max-width: 1160px !important;  /* 3 cards side-by-side māte pāki jagyā */
+            width: 94% !important;
             padding: 45px 35px !important;
             text-align: center !important;
             box-sizing: border-box !important;
         }
 
-        /* 💥 ૩. પરફેક્ટ ૩-કાર્ડ્સ લેઆઉટ (એક જ લાઈનમાં સીધા ૩ બોક્સ) 💥 */
+        /* 💥 ૩. STRICT 3-COLUMN GRID FIX (OVERRIDE ALL CSS BUGS) 💥 */
         .grid-cards {
             display: grid !important;
-            grid-template-columns: repeat(3, minmax(0, 1fr)) !important; /* ત્રણેય કાર્ડ્સ ૧ જ લાઈનમાં સમાન પહોળાઈ સાથે */
-            gap: 22px !important;
+            grid-template-columns: repeat(3, 1fr) !important; /* Ek j line mān exact 3 box */
+            grid-auto-flow: row !important;
+            gap: 24px !important;
             margin-top: 32px !important;
             width: 100% !important;
             box-sizing: border-box !important;
         }
 
+        /* Override any style.css flexbox or percentage widths */
         .grid-cards .card {
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: none !important;
+            flex: none !important;
+            margin: 0 !important;
             background: var(--liquid-glass-card) !important;
             backdrop-filter: blur(20px) !important;
             -webkit-backdrop-filter: blur(20px) !important;
@@ -204,7 +211,6 @@
             border-color: var(--liquid-border-hover) !important;
         }
 
-        /* રનિંગ બોર્ડર લૂપ */
         .grid-cards .card::after {
             content: '';
             position: absolute;
@@ -226,13 +232,6 @@
         .grid-cards .card:hover::after {
             border-color: var(--accent);
             animation: borderRun 2s linear infinite;
-        }
-
-        /* ટેબલેટ અને નાની સ્ક્રીન માટે રિસ્પોન્સિવ સેફ્ટી */
-        @media (max-width: 860px) {
-            .grid-cards {
-                grid-template-columns: 1fr !important;
-            }
         }
 
         h2 {
@@ -331,7 +330,7 @@
 
     <canvas id="particleCanvas"></canvas>
 
-    <!-- FIXED HEADER (LOGO LEFT, NAV CENTER, TOGGLE RIGHT IN 1 LINE) -->
+    <!-- FIXED HEADER (LOGO, NAV, TOGGLE IN 1 LINE) -->
     <div class="header-bar-fixed">
         <a href="#" class="app-logo-container" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">
             <img src="{{ url_for('static', filename='favicon.png') }}" alt="Air Cursor Logo" class="app-logo-img">
@@ -404,14 +403,14 @@
         </div>
     </div>
 
-    <!-- હીરો સેક્શન -->
+    <!-- HERO SECTION -->
     <section class="hero-section">
         <div class="scroll-instruction">
             <p class="main-text">Scroll Down to Explore</p>
         </div>
     </section>
 
-    <!-- Intro સેક્શન -->
+    <!-- INTRO SECTION -->
     <section id="intro" class="content-section">
         <div class="floating-emoji">✨</div>
         <h2>Control Your Screen Effortlessly Without Touching</h2>
@@ -423,7 +422,7 @@
         </div>
     </section>
 
-    <!-- 💥 Functions સેક્શન (હવે ત્રણેય બોક્સ ૧ જ લાઇનમા સીધા) 💥 -->
+    <!-- 💥 FUNCTIONS SECTION (3 CARDS IN 1 SINGLE ROW) 💥 -->
     <section id="functions" class="content-section">
         <div class="floating-emoji">⚙️</div>
         <h2>Functions</h2>
@@ -447,7 +446,7 @@
         </div>
     </section>
 
-    <!-- 💥 Characteristics સેક્શન (હવે ત્રણેય બોક્સ ૧ જ લાઇનમા સીધા) 💥 -->
+    <!-- 💥 CHARACTERISTICS SECTION (3 CARDS IN 1 SINGLE ROW) 💥 -->
     <section id="characteristics" class="content-section">
         <div class="floating-emoji">🌟</div>
         <h2>Characteristics</h2>
@@ -471,7 +470,7 @@
         </div>
     </section>
 
-    <!-- Download સેક્શન -->
+    <!-- DOWNLOAD SECTION -->
     <section id="download" class="content-section">
         <div class="floating-emoji">📥</div>
         <h2>Get Started Today</h2>
@@ -489,12 +488,12 @@
         </form>
     </section>
 
-    <!-- ફુટર -->
+    <!-- FOOTER -->
     <footer class="site-footer" style="text-align: center; padding: 35px 20px; color: var(--text-sub);">
         <p>© 2026 Air Cursor Technologies. Crafted By Developer Mode.</p>
     </footer>
 
-    <!-- પોપઅપ્સ -->
+    <!-- POPUPS -->
     <div id="custom-popup" class="popup-overlay" style="display: none;">
         <div class="popup-card">
             <div id="popup-icon" class="popup-icon-container floating-emoji">💥</div>

@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     
     <style>
-        /* 💥 CLEAN MATTE LOGO BLUE THEME (ZERO NEON / ZERO SPARK) 💥 */
+        /* 💥 CLEAN MATTE LOGO BLUE THEME (ZERO CREAM / ZERO NEON) 💥 */
         :root {
             --bg-base: #0B0D13;
             --glass-bg: rgba(19, 23, 34, 0.88);
@@ -37,7 +37,7 @@
             transition: background-color 0.3s ease, color 0.3s ease !important;
         }
 
-        /* 💥 FIXED HEADER (LOGO LEFT, NAV CENTER, TOGGLE RIGHT) 💥 */
+        /* 💥 FIXED HEADER BAR (LOGO LEFT, NAV CENTER, TOGGLE RIGHT) 💥 */
         .header-bar-fixed {
             position: fixed !important;
             top: 0 !important;
@@ -56,7 +56,7 @@
             pointer-events: auto !important;
         }
 
-        /* 💥 LOGO BUTTON & TEXT: 100% MATTE LOGO BLUE (NO GOLD/NEON) 💥 */
+        /* LOGO BUTTON */
         .app-logo-container {
             position: static !important;
             transform: none !important;
@@ -74,25 +74,71 @@
         .app-logo-img {
             width: 24px !important;
             height: 24px !important;
-            filter: none !important;       /* Removes neon glow/sparks */
+            filter: none !important;
             box-shadow: none !important;
         }
 
-        .app-logo-text {
-            color: #2563EB !important;     /* Pure Matte Logo Blue */
+        .app-logo-text,
+        a.app-logo-container span,
+        .app-logo-container .app-logo-text {
+            background: none !important;
+            background-image: none !important;
+            -webkit-background-clip: initial !important;
+            background-clip: initial !important;
+            -webkit-text-fill-color: #2563EB !important;
+            color: #2563EB !important;
             font-weight: 900 !important;
             letter-spacing: 1.5px !important;
             font-size: 1.05rem !important;
-            text-shadow: none !important;  /* No spark/shine */
+            text-shadow: none !important;
         }
 
-        /* NAVBAR FIXED CENTER */
+        /* 💥 NAVBAR: KILL ALL CREAM / GOLD COLORS COMPLETELY 💥 */
         .top-nav {
             position: absolute !important;
             left: 50% !important;
             transform: translateX(-50%) !important;
             margin: 0 !important;
             width: auto !important;
+        }
+
+        .nav-pill {
+            background: var(--glass-bg) !important;
+            border: 1px solid var(--glass-border) !important;
+            border-radius: 99px !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35) !important;
+            padding: 4px 10px !important;
+        }
+
+        /* ALL NAVBAR LINKS (DEFAULT MUTED TEXT) */
+        .nav-links a {
+            color: var(--text-sub) !important;
+            -webkit-text-fill-color: var(--text-sub) !important;
+            background: none !important;
+            background-image: none !important;
+            -webkit-background-clip: initial !important;
+            background-clip: initial !important;
+            text-shadow: none !important;
+            font-weight: 600 !important;
+            font-size: 0.92rem !important;
+            text-decoration: none !important;
+            padding: 8px 16px !important;
+            border-radius: 99px !important;
+            transition: color 0.2s ease, -webkit-text-fill-color 0.2s ease !important;
+        }
+
+        /* ACTIVE & HOVER LINK (PURE MATTE BLUE, NO CREAM/GOLD) */
+        .nav-links a:hover,
+        .nav-links a.active,
+        .nav-links a:focus,
+        .nav-links a[aria-current="page"] {
+            color: #2563EB !important;
+            -webkit-text-fill-color: #2563EB !important;
+            background: rgba(37, 99, 235, 0.1) !important;
+            background-image: none !important;
+            -webkit-background-clip: initial !important;
+            background-clip: initial !important;
+            text-shadow: none !important;
         }
 
         /* THEME TOGGLE FIXED RIGHT */
@@ -188,8 +234,6 @@
             border-radius: 8px !important;
         }
 
-        .nav-links a { color: var(--text-main) !important; font-weight: 600 !important; }
-        .nav-links a:hover { color: var(--accent) !important; }
         .download-form { border: none !important; background: transparent !important; box-shadow: none !important; padding: 0 !important; }
     </style>
 </head>
@@ -267,7 +311,6 @@
                         <div class="dn-moon">
                             <div class="dn-crater cr1"></div>
                             <div class="dn-crater cr2"></div>
-                            <div class="dn-crater cr3"></div>
                         </div>
                     </div>
                 </button>

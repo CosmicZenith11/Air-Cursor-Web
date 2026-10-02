@@ -55,6 +55,17 @@
             --input-border: rgba(37, 99, 235, 0.3) !important;
         }
 
+        /* 💥 CANVAS MUST NEVER BLOCK MOUSE CLICKS 💥 */
+        #particleCanvas {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            pointer-events: none !important;
+            z-index: 0 !important;
+        }
+
         html, body {
             background-color: var(--bg-base) !important;
             color: var(--text-main) !important;
@@ -62,6 +73,8 @@
             margin: 0 !important;
             padding-top: 110px !important;
             transition: background-color 0.25s ease, color 0.25s ease !important;
+            position: relative;
+            z-index: 1;
         }
 
         /* 💥 HEADER ROW: LOGO, NAV, TOGGLE IN 1 LINE (48PX HEIGHT) 💥 */
@@ -107,6 +120,7 @@
             padding: 0 20px !important;
             gap: 10px !important;
             text-decoration: none !important;
+            cursor: pointer !important;
         }
         .app-logo-img {
             width: 22px !important;
@@ -198,6 +212,7 @@
             box-shadow: var(--liquid-sheen) !important;
             border-radius: 26px !important;
             position: relative !important;
+            z-index: 10 !important;
             overflow: hidden !important;
             margin: 40px auto !important;
             max-width: 960px !important;
@@ -307,6 +322,7 @@
             font-size: 0.88rem !important;
         }
 
+        /* 💥 GUARANTEED CLICKABLE BUTTON 💥 */
         .cta-button {
             background: #2563EB !important;
             color: #FFFFFF !important;
@@ -318,6 +334,9 @@
             border-radius: 999px !important;
             padding: 14px 34px !important;
             cursor: pointer !important;
+            pointer-events: auto !important;
+            position: relative !important;
+            z-index: 50 !important;
             transition: all 0.2s ease !important;
         }
         .cta-button:hover {
@@ -325,7 +344,7 @@
             transform: translateY(-2px);
         }
 
-        /* 💥 CLEAN LIGHT & DARK INPUT BOX FIX 💥 */
+        /* 💥 GUARANTEED CLICKABLE INPUTS 💥 */
         .glass-input {
             background: var(--input-bg) !important;
             color: var(--input-text) !important;
@@ -338,6 +357,9 @@
             margin-bottom: 16px !important;
             box-sizing: border-box !important;
             outline: none !important;
+            pointer-events: auto !important;
+            position: relative !important;
+            z-index: 50 !important;
             transition: border-color 0.2s ease, background 0.2s ease !important;
         }
         .glass-input::placeholder {
@@ -356,56 +378,8 @@
             padding: 0 !important;
             max-width: 440px !important;
             margin: 24px auto 0 auto !important;
-        }
-
-        /* 💥 MODAL & POPUP LIQUID GLASS STYLES 💥 */
-        .modal-overlay,
-        .popup-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-            align-items: center;
-            justify-content: center;
-            z-index: 100000 !important;
-            padding: 20px;
-        }
-
-        .modal-overlay.active,
-        .popup-overlay.active {
-            display: flex !important;
-        }
-
-        .glass-modal,
-        .popup-card {
-            background: var(--liquid-glass-card) !important;
-            backdrop-filter: blur(28px) saturate(190%) !important;
-            -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
-            border: 1px solid var(--liquid-border) !important;
-            box-shadow: var(--liquid-sheen) !important;
-            border-radius: 22px !important;
-            padding: 32px 28px !important;
-            max-width: 430px !important;
-            width: 100% !important;
-            text-align: center !important;
-            box-sizing: border-box !important;
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.08) !important;
-            color: var(--text-main) !important;
-            border: 1px solid var(--liquid-border) !important;
-            padding: 12px 24px !important;
-            border-radius: 999px !important;
-            font-weight: 600 !important;
-            font-size: 0.9rem !important;
-            cursor: pointer !important;
-            transition: background 0.2s ease !important;
-        }
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.15) !important;
+            position: relative !important;
+            z-index: 30 !important;
         }
     </style>
 </head>
@@ -551,13 +525,12 @@
         </div>
     </section>
 
-    <!-- DOWNLOAD FORM SECTION -->
+    <!-- 💥 DOWNLOAD FORM SECTION: BULLETPROOF SUBMIT 💥 -->
     <section id="download" class="content-section">
         <div class="floating-emoji">📥</div>
         <h2>Get Started Today</h2>
         <p>Experience touchless desktop navigation. Register below to download the Air Cursor client.</p>
         
-        <!-- 💥 FIXED IDS AND DIRECT POST ACTION 💥 -->
         <form action="/register" method="POST" id="downloadForm" class="download-form">
             <input type="text" name="name" id="name" class="glass-input" placeholder="Your Name (eg: Rahul)" autocomplete="name" required>
             <input type="email" name="email" id="email" class="glass-input" placeholder="Email Address (eg: rahul123@gmail.com)" autocomplete="email" required>
@@ -576,32 +549,9 @@
         <p>© 2026 Air Cursor Technologies. Crafted By Developer Mode.</p>
     </footer>
 
-    <!-- POPUPS -->
-    <div id="custom-popup" class="popup-overlay">
-        <div class="popup-card">
-            <div id="popup-icon" class="popup-icon-container floating-emoji">💥</div>
-            <h3 id="popup-title">Action Required!</h3>
-            <p id="popup-message">Please fill out both name and email fields!</p>
-            <button type="button" id="popup-close-btn" class="cta-button" style="width: 100%;">OK</button>
-        </div>
-    </div>
-
-    <!-- REMINDER MODAL -->
-    <div id="reminderModal" class="modal-overlay">
-        <div class="glass-modal">
-            <div class="modal-icon floating-emoji">💡</div>
-            <h3>Are you sure?</h3>
-            <p>You haven't checked <strong>'Remember me'</strong>. Your session won't be saved for <strong>30 days</strong>.</p>
-            <div style="display: flex; gap: 12px; justify-content: center; margin-top: 20px;">
-                <button type="button" id="reminderBackBtn" class="btn-secondary">Back</button>
-                <button type="button" id="reminderOkBtn" class="cta-button" style="width: auto; padding: 10px 24px;">Proceed</button>
-            </div>
-        </div>
-    </div>
-
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 
-    <!-- 💥 FOOLPROOF FORM SUBMISSION & THEME ENGINE 💥 -->
+    <!-- 💥 NATIVE SUBMIT & CONFLICT DETACH ENGINE 💥 -->
     <script>
         (function() {
             /* 1. Theme Manager */
@@ -624,6 +574,7 @@
                 const initialTheme = localStorage.getItem('air_cursor_theme') || 'dark';
                 setAppTheme(initialTheme);
 
+                // Clone Toggle Button to kill duplicate listeners
                 const oldBtn = document.getElementById('themeToggle');
                 if (oldBtn) {
                     const newBtn = oldBtn.cloneNode(true);
@@ -638,70 +589,24 @@
                     });
                 }
 
-                /* 2. Guaranteed Form Submit Logic */
-                const form = document.getElementById('downloadForm');
-                const nameInp = document.getElementById('name');
-                const emailInp = document.getElementById('email');
-                const rememberInp = document.getElementById('remember');
-                const reminderModal = document.getElementById('reminderModal');
-                const reminderOkBtn = document.getElementById('reminderOkBtn');
-                const reminderBackBtn = document.getElementById('reminderBackBtn');
-                const customPopup = document.getElementById('custom-popup');
-                const popupCloseBtn = document.getElementById('popup-close-btn');
+                // 💥 CLONE FORM TO STRIP ANY BLOCKING LISTENERS FROM SCRIPT.JS 💥
+                const originalForm = document.getElementById('downloadForm');
+                if (originalForm) {
+                    const cleanForm = originalForm.cloneNode(true);
+                    originalForm.parentNode.replaceChild(cleanForm, originalForm);
 
-                let isDirectSubmit = false;
-
-                if (form) {
-                    form.addEventListener('submit', function(e) {
-                        if (isDirectSubmit) {
-                            return true; // Form submits natively
-                        }
-
-                        e.preventDefault();
-
-                        const nameVal = nameInp ? nameInp.value.trim() : '';
-                        const emailVal = emailInp ? emailInp.value.trim() : '';
+                    cleanForm.addEventListener('submit', function(e) {
+                        const nameVal = document.getElementById('name').value.trim();
+                        const emailVal = document.getElementById('email').value.trim();
 
                         if (!nameVal || !emailVal) {
-                            if (customPopup) {
-                                customPopup.classList.add('active');
-                            } else {
-                                alert("Please fill out both name and email fields!");
-                            }
-                            return;
+                            e.preventDefault();
+                            alert("Please fill both Name and Email fields!");
+                            return false;
                         }
 
-                        // Check if Remember Me is not checked
-                        if (rememberInp && !rememberInp.checked) {
-                            if (reminderModal) {
-                                reminderModal.classList.add('active');
-                                return;
-                            }
-                        }
-
-                        // Submit directly to /register
-                        isDirectSubmit = true;
-                        form.submit();
-                    });
-                }
-
-                if (reminderOkBtn && form) {
-                    reminderOkBtn.addEventListener('click', function() {
-                        if (reminderModal) reminderModal.classList.remove('active');
-                        isDirectSubmit = true;
-                        form.submit();
-                    });
-                }
-
-                if (reminderBackBtn && reminderModal) {
-                    reminderBackBtn.addEventListener('click', function() {
-                        reminderModal.classList.remove('active');
-                    });
-                }
-
-                if (popupCloseBtn && customPopup) {
-                    popupCloseBtn.addEventListener('click', function() {
-                        customPopup.classList.remove('active');
+                        // Allow pure native HTTP POST submit to /register
+                        return true;
                     });
                 }
             });

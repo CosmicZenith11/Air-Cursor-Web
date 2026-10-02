@@ -8,37 +8,41 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     
     <script>
-        /* Instant Theme Persistence to avoid screen flash */
+        /* Immediate Theme Enforcement to stop flashing */
         (function() {
-            const savedTheme = localStorage.getItem('air_cursor_theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', savedTheme);
+            const saved = localStorage.getItem('air_cursor_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', saved);
         })();
     </script>
 
     <style>
-        /* 💥 APPLE IOS LIQUID GLASS & MATTE LOGO BLUE THEME 💥 */
-        :root, [data-theme="dark"] {
-            --bg-base: #07090E;
-            --liquid-glass-bg: rgba(15, 23, 42, 0.45);
-            --liquid-glass-card: rgba(20, 30, 55, 0.35);
-            --liquid-border: rgba(255, 255, 255, 0.14);
-            --liquid-border-hover: rgba(37, 99, 235, 0.7);
-            --liquid-sheen: inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.25), 0 20px 40px rgba(0, 0, 0, 0.6);
-            --text-main: #F8FAFC;
-            --text-sub: #94A3B8;
-            --accent: #2563EB;
-            --accent-hover: #1D4ED8;
-            --input-bg: rgba(15, 23, 42, 0.6) !important;
+        /* 💥 1. ROCK-SOLID DARK & LIGHT VARIABLES (EQUAL SPECIFICITY) 💥 */
+        :root,
+        html[data-theme="dark"],
+        body[data-theme="dark"] {
+            --bg-base: #07090E !important;
+            --liquid-glass-bg: rgba(15, 23, 42, 0.5) !important;
+            --liquid-glass-card: rgba(20, 30, 55, 0.4) !important;
+            --liquid-border: rgba(255, 255, 255, 0.14) !important;
+            --liquid-border-hover: rgba(37, 99, 235, 0.7) !important;
+            --liquid-sheen: inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.25), 0 20px 40px rgba(0, 0, 0, 0.6) !important;
+            --text-main: #F8FAFC !important;
+            --text-sub: #94A3B8 !important;
+            --accent: #2563EB !important;
+            --accent-hover: #1D4ED8 !important;
+            --input-bg: rgba(15, 23, 42, 0.65) !important;
             --input-text: #F8FAFC !important;
             --input-placeholder: #64748B !important;
             --input-border: rgba(255, 255, 255, 0.15) !important;
         }
 
-        [data-theme="light"], body.light-mode {
+        html[data-theme="light"],
+        body[data-theme="light"],
+        body.light-mode {
             --bg-base: #F8FAFC !important;
-            --liquid-glass-bg: rgba(255, 255, 255, 0.65) !important;
-            --liquid-glass-card: rgba(255, 255, 255, 0.75) !important;
-            --liquid-border: rgba(255, 255, 255, 0.8) !important;
+            --liquid-glass-bg: rgba(255, 255, 255, 0.7) !important;
+            --liquid-glass-card: rgba(255, 255, 255, 0.85) !important;
+            --liquid-border: rgba(37, 99, 235, 0.22) !important;
             --liquid-border-hover: rgba(37, 99, 235, 0.6) !important;
             --liquid-sheen: inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.9), 0 10px 30px rgba(0, 0, 0, 0.08) !important;
             --text-main: #0F172A !important;
@@ -51,13 +55,13 @@
             --input-border: rgba(37, 99, 235, 0.3) !important;
         }
 
-        body {
+        html, body {
             background-color: var(--bg-base) !important;
             color: var(--text-main) !important;
             font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-            padding-top: 110px !important;
             margin: 0 !important;
-            transition: background-color 0.3s ease, color 0.3s ease !important;
+            padding-top: 110px !important;
+            transition: background-color 0.25s ease, color 0.25s ease !important;
         }
 
         /* 💥 HEADER ROW: LOGO, NAV, TOGGLE IN 1 LINE (48PX HEIGHT) 💥 */
@@ -100,8 +104,6 @@
         }
 
         .app-logo-container {
-            position: static !important;
-            transform: none !important;
             padding: 0 20px !important;
             gap: 10px !important;
             text-decoration: none !important;
@@ -156,8 +158,6 @@
         }
 
         .theme-toggle-container {
-            position: static !important;
-            transform: none !important;
             padding: 0 6px !important;
         }
         .toggle-scaler {
@@ -166,7 +166,7 @@
             justify-content: center !important;
         }
 
-        /* 💥 SCROLL DOWN TO EXPLORE LINE REMOVED 💥 */
+        /* 💥 ZERO EXPLORE LINE HERO 💥 */
         .scroll-instruction,
         .hero-section p,
         .main-text {
@@ -557,33 +557,44 @@
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 
-    <!-- 💥 THEME SYNC & PERSISTENCE SCRIPT 💥 -->
+    <!-- 💥 CONFLICT-FREE BULLETPROOF THEME ENGINE 💥 -->
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const toggleBtn = document.getElementById('themeToggle');
-            const htmlEl = document.documentElement;
-
-            function applyTheme(theme) {
-                htmlEl.setAttribute('data-theme', theme);
+        (function() {
+            function setAppTheme(theme) {
+                document.documentElement.setAttribute('data-theme', theme);
+                document.body.setAttribute('data-theme', theme);
                 localStorage.setItem('air_cursor_theme', theme);
-                if (theme === 'light') {
-                    toggleBtn.classList.remove('is-night');
-                } else {
-                    toggleBtn.classList.add('is-night');
+
+                const btn = document.getElementById('themeToggle');
+                if (btn) {
+                    if (theme === 'light') {
+                        btn.classList.remove('is-night');
+                    } else {
+                        btn.classList.add('is-night');
+                    }
                 }
             }
 
-            const currentTheme = localStorage.getItem('air_cursor_theme') || 'dark';
-            applyTheme(currentTheme);
+            window.addEventListener('DOMContentLoaded', () => {
+                const initialTheme = localStorage.getItem('air_cursor_theme') || 'dark';
+                setAppTheme(initialTheme);
 
-            if (toggleBtn) {
-                toggleBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const newTheme = htmlEl.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-                    applyTheme(newTheme);
-                });
-            }
-        });
+                const oldBtn = document.getElementById('themeToggle');
+                if (oldBtn) {
+                    // Clone node to kill any duplicate listeners from script.js
+                    const newBtn = oldBtn.cloneNode(true);
+                    oldBtn.parentNode.replaceChild(newBtn, oldBtn);
+
+                    newBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopImmediatePropagation();
+                        const current = document.documentElement.getAttribute('data-theme') || 'dark';
+                        const next = current === 'dark' ? 'light' : 'dark';
+                        setAppTheme(next);
+                    });
+                }
+            });
+        })();
     </script>
 </body>
 </html>

@@ -7,7 +7,7 @@
     <title>Air Cursor - Download & Terms</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
-        /* 💥 ZERO NEON / ZERO SHINE / 100% SOLID MATTE THEME 💥 */
+        /* 💥 CLEAN MATTE THEME (ZERO NEON / ZERO BROWN / ZERO WATERMARK) 💥 */
         :root {
             --bg-body: #0B0D13;
             --bg-card: #131722;
@@ -32,7 +32,7 @@
             --shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
         }
 
-        /* 💥 પાછળના તમામ કેન્વાસ, પાર્ટીકલ્સ અને વોટરમાર્ક કાયમ માટે બંધ 💥 */
+        /* પાછળના તમામ કેન્વાસ અને વોટરમાર્ક સંપૂર્ણપણે બંધ */
         canvas, #particleCanvas, .particles-js-canvas-el {
             display: none !important;
             opacity: 0 !important;
@@ -137,7 +137,7 @@
             color: var(--text-sub);
         }
 
-        /* T&C Box */
+        /* Terms & Conditions Box */
         .tc-box {
             background: var(--tc-bg);
             border: 1px solid var(--border);
@@ -205,7 +205,7 @@
             color: var(--text-main);
         }
 
-        /* T&C Link: 100% Matte Blue */
+        /* T&C Link: 100% Matte Blue (No Cream/Gold) */
         .tc-clickable-link {
             color: #2563EB !important;
             -webkit-text-fill-color: #2563EB !important;
@@ -226,7 +226,7 @@
             align-items: center;
         }
 
-        /* 💥 SOILD MATTE LOGO BLUE BUTTON (NO BROWN / NO GOLD) 💥 */
+        /* 💥 SOLID MATTE BUTTON (DISABLED = DARK SLATE / CHECKED = MATTE BLUE) 💥 */
         #trigger-download-btn {
             background-color: #1E2330 !important;
             background-image: none !important;
@@ -245,7 +245,6 @@
             flex: 1 !important;
             box-shadow: none !important;
             text-shadow: none !important;
-            filter: none !important;
             opacity: 0.7 !important;
             transition: all 0.2s ease !important;
         }
@@ -363,8 +362,7 @@
         </div>
     </div>
 
-    <!-- NO SCRIPT.JS HERE: Removes delta arrow & Welcome watermark permanently -->
-
+    <!-- 💥 BACKGROUND DOWNLOAD HANDLER (પેજ રીડાયરેક્ટ નહીં થાય) 💥 -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const tcAgree = document.getElementById('tcAgree');
@@ -374,7 +372,6 @@
             const tcLinkTrigger = document.getElementById('tcLinkTrigger');
             const tcBox = document.getElementById('tcBox');
 
-            // Click T&C link to highlight box
             if (tcLinkTrigger) {
                 tcLinkTrigger.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -383,7 +380,7 @@
                 });
             }
 
-            // Checkbox logic: strictly toggles between dark slate and brand blue
+            // Checkbox Toggle: Matte Dark થી Matte Blue
             tcAgree.addEventListener('change', () => {
                 if (tcAgree.checked) {
                     downloadBtn.classList.add('btn-active');
@@ -398,7 +395,7 @@
                 }
             });
 
-            // Trigger download on click
+            // Silent Background Download (URL બદલાશે નહીં)
             if (downloadBtn) {
                 downloadBtn.addEventListener('click', (e) => {
                     e.preventDefault(); 
@@ -407,8 +404,13 @@
                     if (popupOverlay) popupOverlay.classList.add('active');
 
                     setTimeout(() => {
-                        window.location.href = "/download-pdf";
-                    }, 1000);
+                        const dl = document.createElement('a');
+                        dl.href = "/download-pdf";
+                        dl.setAttribute('download', 'AirCursor_Receipt.pdf');
+                        document.body.appendChild(dl);
+                        dl.click();
+                        document.body.removeChild(dl);
+                    }, 500);
                 });
             }
 

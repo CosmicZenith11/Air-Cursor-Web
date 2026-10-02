@@ -44,7 +44,7 @@
             transition: background-color 0.3s ease, color 0.3s ease !important;
         }
 
-        /* 💥 ૧. HEADER ROW: LOGO, NAV, TOGGLE IN 1 LINE (48PX HEIGHT) 💥 */
+        /* 💥 HEADER ROW: LOGO, NAV, TOGGLE IN 1 LINE (48PX HEIGHT) 💥 */
         .header-bar-fixed {
             position: fixed !important;
             top: 20px !important;
@@ -83,7 +83,7 @@
             margin: 0 !important;
         }
 
-        /* Left: Logo */
+        /* Logo */
         .app-logo-container {
             position: static !important;
             transform: none !important;
@@ -105,7 +105,7 @@
             text-shadow: none !important;
         }
 
-        /* Center: Nav */
+        /* Navbar */
         .top-nav {
             position: absolute !important;
             left: 50% !important;
@@ -141,7 +141,7 @@
             background: rgba(37, 99, 235, 0.15) !important;
         }
 
-        /* Right: Toggle */
+        /* Toggle */
         .theme-toggle-container {
             position: static !important;
             transform: none !important;
@@ -153,7 +153,7 @@
             justify-content: center !important;
         }
 
-        /* 💥 ૨. IPHONE LIQUID GLASS CONTENT BOXES 💥 */
+        /* 💥 IPHONE LIQUID GLASS MAIN SECTION BOXES 💥 */
         .content-section,
         #intro,
         #functions,
@@ -168,33 +168,30 @@
             position: relative !important;
             overflow: hidden !important;
             margin: 40px auto !important;
-            max-width: 1140px !important;
+            max-width: 980px !important;
             width: 92% !important;
             padding: 45px 35px !important;
             text-align: center !important;
             box-sizing: border-box !important;
         }
 
-        /* 💥 ૩. STRICT 3-COLUMN OVERRIDE RULE 💥 */
-        #functions .grid-cards,
-        #characteristics .grid-cards,
-        .grid-cards {
-            display: grid !important;
-            grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-            gap: 24px !important;
+        /* 💥 ૨ ઉપર અને ૧ નીચે (બધા વચોવચ સેન્ટરમાં) 💥 */
+        .cards-2-1-container {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            justify-content: center !important;
+            align-items: stretch !important;
+            gap: 22px !important;
             margin-top: 32px !important;
             width: 100% !important;
             box-sizing: border-box !important;
         }
 
-        #functions .grid-cards .card,
-        #characteristics .grid-cards .card,
-        .grid-cards .card {
+        .card-custom {
+            flex: 0 1 420px !important;
+            max-width: 440px !important;
+            min-width: 300px !important;
             width: 100% !important;
-            min-width: 0 !important;
-            max-width: none !important;
-            flex: none !important;
-            margin: 0 !important;
             background: var(--liquid-glass-card) !important;
             backdrop-filter: blur(20px) !important;
             -webkit-backdrop-filter: blur(20px) !important;
@@ -212,12 +209,12 @@
             transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease !important;
         }
 
-        .grid-cards .card:hover {
+        .card-custom:hover {
             transform: translateY(-5px) !important;
             border-color: var(--liquid-border-hover) !important;
         }
 
-        .grid-cards .card::after {
+        .card-custom::after {
             content: '';
             position: absolute;
             inset: 0;
@@ -235,18 +232,9 @@
             100% { clip-path: inset(0 100% 100% 0); }
         }
 
-        .grid-cards .card:hover::after {
+        .card-custom:hover::after {
             border-color: var(--accent);
             animation: borderRun 2s linear infinite;
-        }
-
-        /* Responsive Safety for Mobile */
-        @media (max-width: 768px) {
-            #functions .grid-cards,
-            #characteristics .grid-cards,
-            .grid-cards {
-                grid-template-columns: 1fr !important;
-            }
         }
 
         h2 {
@@ -266,7 +254,7 @@
         p {
             color: var(--text-sub) !important;
             line-height: 1.6 !important;
-            font-size: 0.95rem !important;
+            font-size: 0.93rem !important;
         }
 
         .floating-emoji {
@@ -345,7 +333,7 @@
 
     <canvas id="particleCanvas"></canvas>
 
-    <!-- FIXED HEADER (LOGO, NAV, TOGGLE IN 1 LINE) -->
+    <!-- FIXED HEADER (LOGO LEFT, NAV CENTER, TOGGLE RIGHT IN 1 LINE) -->
     <div class="header-bar-fixed">
         <a href="#" class="app-logo-container" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">
             <img src="{{ url_for('static', filename='favicon.png') }}" alt="Air Cursor Logo" class="app-logo-img">
@@ -389,7 +377,7 @@
                     <div class="dn-palm left">
                         <svg viewBox="0 0 40 46" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M22 46 C21 34 16 24 20 14" stroke="#5c3818" stroke-width="2.8" stroke-linecap="round"/>
-                            <path d="M20 14 C12 8 4 11 0 17 C6 13 14 14 20 14 Z" fill="#1b4332"/>
+                            <path d="M20 14 C12 8 4 11 0 17 C6 13 13 14 20 14 Z" fill="#1b4332"/>
                             <path d="M20 14 C14 4 6 5 2 8 C8 7 15 9 20 14 Z" fill="#2d6a4f"/>
                             <path d="M20 14 C22 3 30 3 35 7 C28 8 23 10 20 14 Z" fill="#40916c"/>
                             <path d="M20 14 C26 7 35 11 39 17 C33 13 26 14 20 14 Z" fill="#1b4332"/>
@@ -429,58 +417,70 @@
     <section id="intro" class="content-section">
         <div class="floating-emoji">✨</div>
         <h2>Control Your Screen Effortlessly Without Touching</h2>
-        <p>Experience the next generation of touchless navigation. Control your screen effortlessly with smooth, intuitive optical gesture recognition.</p>
+        <p>A next-generation touchless navigation engine powered by real-time Computer Vision. Translates optical finger coordinates into zero-friction desktop controls.</p>
         <div class="feature-badges" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 24px;">
-            <span>⚡ Zero Hardware Setup</span>
-            <span>🧠 AI Gesture Engine</span>
-            <span>🚀 Ultra Responsive</span>
+            <span>⚡ Zero Extra Hardware</span>
+            <span>🧠 MediaPipe AI Engine</span>
+            <span>🚀 60+ FPS Real-Time</span>
         </div>
     </section>
 
-    <!-- 💥 FUNCTIONS SECTION: INLINE STYLES FOR STRICT 3-IN-A-ROW 💥 -->
-    <section id="functions" class="content-section" style="max-width: 1140px !important; width: 92% !important;">
+    <!-- 💥 FUNCTIONS SECTION (2 ઉપર + 1 નીચે CENTERED + ACADEMIC CONTENT) 💥 -->
+    <section id="functions" class="content-section">
         <div class="floating-emoji">⚙️</div>
         <h2>Functions</h2>
-        <p>Designed for absolute precision, fluid interactivity, and effortless workflow.</p>
-        <div class="grid-cards" style="display: grid !important; grid-template-columns: 1fr 1fr 1fr !important; gap: 24px !important; width: 100% !important;">
-            <div class="card" style="width: 100% !important; min-width: 0 !important; max-width: none !important; margin: 0 !important;">
+        <p>Engineered for sub-pixel cursor accuracy, low system overhead, and intuitive desktop navigation.</p>
+        
+        <div class="cards-2-1-container">
+            <!-- Box 1 (Top Left) -->
+            <div class="card-custom">
                 <div class="floating-emoji">🖐️</div>
-                <h3>Smooth Cursor Motion</h3>
-                <p>Real-time optical hand tracking moves your cursor precisely without physical contact.</p>
+                <h3>AI Optical Cursor Tracking</h3>
+                <p>Utilizes MediaPipe hand landmark detection to map 21 distinct 3D joint coordinates, translating index finger trajectories into fluid cursor motion.</p>
             </div>
-            <div class="card" style="width: 100% !important; min-width: 0 !important; max-width: none !important; margin: 0 !important;">
+
+            <!-- Box 2 (Top Right) -->
+            <div class="card-custom">
                 <div class="floating-emoji">⚡</div>
-                <h3>Air Clicks & Gestures</h3>
-                <p>Pinch, tap, or swipe mid-air to trigger clicks, drag operations, and desktop navigation.</p>
+                <h3>Air Clicks & Action Gestures</h3>
+                <p>Calculates Euclidean distances between index tip and thumb coordinates in real time to trigger left-click, right-click, dragging, and virtual scrolling touchlessly.</p>
             </div>
-            <div class="card" style="width: 100% !important; min-width: 0 !important; max-width: none !important; margin: 0 !important;">
+
+            <!-- Box 3 (Bottom Center) -->
+            <div class="card-custom">
                 <div class="floating-emoji">🔒</div>
-                <h3>100% Privacy-First</h3>
-                <p>All camera frames are processed purely locally on your machine. No feed or data is ever recorded.</p>
+                <h3>100% On-Device Frame Processing</h3>
+                <p>Every webcam video frame is processed purely in local client RAM. No video feeds or biometrics are ever stored, transmitted, or uploaded to external servers.</p>
             </div>
         </div>
     </section>
 
-    <!-- 💥 CHARACTERISTICS SECTION: INLINE STYLES FOR STRICT 3-IN-A-ROW 💥 -->
-    <section id="characteristics" class="content-section" style="max-width: 1140px !important; width: 92% !important;">
+    <!-- 💥 CHARACTERISTICS SECTION (2 ઉપર + 1 નીચે CENTERED + ACADEMIC CONTENT) 💥 -->
+    <section id="characteristics" class="content-section">
         <div class="floating-emoji">🌟</div>
         <h2>Characteristics</h2>
-        <p>Built for modern workflows with cutting-edge touchless responsiveness.</p>
-        <div class="grid-cards" style="display: grid !important; grid-template-columns: 1fr 1fr 1fr !important; gap: 24px !important; width: 100% !important;">
-            <div class="card" style="width: 100% !important; min-width: 0 !important; max-width: none !important; margin: 0 !important;">
+        <p>Architected for minimal CPU load, broad hardware accessibility, and production responsiveness.</p>
+        
+        <div class="cards-2-1-container">
+            <!-- Box 1 (Top Left) -->
+            <div class="card-custom">
                 <div class="floating-emoji">🚀</div>
-                <h3>Ultra Low Latency</h3>
-                <p>High frame-rate algorithms ensure instantaneous response with zero input lag.</p>
+                <h3>Ultra-Low Latency Pipeline</h3>
+                <p>Optimized vector mathematics pipeline processes input frames at 60+ FPS with under 15ms optical latency, eliminating cursor jitter and lag.</p>
             </div>
-            <div class="card" style="width: 100% !important; min-width: 0 !important; max-width: none !important; margin: 0 !important;">
+
+            <!-- Box 2 (Top Right) -->
+            <div class="card-custom">
                 <div class="floating-emoji">🔌</div>
-                <h3>Plug & Play</h3>
-                <p>Works right out of the box with your standard built-in or external USB webcam.</p>
+                <h3>Hardware-Agnostic Plug & Play</h3>
+                <p>Runs out of the box using any standard built-in or external 720p/1080p USB webcam without requiring expensive infrared or depth sensor peripherals.</p>
             </div>
-            <div class="card" style="width: 100% !important; min-width: 0 !important; max-width: none !important; margin: 0 !important;">
+
+            <!-- Box 3 (Bottom Center) -->
+            <div class="card-custom">
                 <div class="floating-emoji">🌐</div>
-                <h3>Universal Compatibility</h3>
-                <p>Engineered to operate seamlessly on Windows 10/11 and modern PC environments.</p>
+                <h3>Native Windows Architecture</h3>
+                <p>Designed for Windows 10 and 11 environments using lightweight multi-threaded Python backend routines for negligible RAM and battery impact.</p>
             </div>
         </div>
     </section>
@@ -489,7 +489,7 @@
     <section id="download" class="content-section">
         <div class="floating-emoji">📥</div>
         <h2>Get Started Today</h2>
-        <p>Download Air Cursor and transform how you interact with your desktop instantly.</p>
+        <p>Experience touchless desktop navigation. Register below to download the Air Cursor client.</p>
         <form action="/register" method="POST" id="downloadForm" class="download-form" novalidate>
             <input type="text" name="name" class="glass-input" placeholder="Your Name (eg: Rahul)" autocomplete="name">
             <input type="email" name="email" class="glass-input" placeholder="Email Address (eg: rahul123@gmail.com)" autocomplete="email">

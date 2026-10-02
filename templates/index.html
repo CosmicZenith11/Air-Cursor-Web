@@ -44,7 +44,7 @@
             transition: background-color 0.3s ease, color 0.3s ease !important;
         }
 
-        /* 💥 HEADER ROW: LOGO, NAV, TOGGLE IN 1 LINE (48PX HEIGHT) 💥 */
+        /* 💥 HEADER ROW: LOGO, NAV, TOGGLE IN 1 EXACT LINE 💥 */
         .header-bar-fixed {
             position: fixed !important;
             top: 20px !important;
@@ -105,7 +105,7 @@
             text-shadow: none !important;
         }
 
-        /* Navbar */
+        /* Nav */
         .top-nav {
             position: absolute !important;
             left: 50% !important;
@@ -153,7 +153,26 @@
             justify-content: center !important;
         }
 
-        /* 💥 IPHONE LIQUID GLASS MAIN SECTION BOXES 💥 */
+        /* 💥 SCROLL DOWN TO EXPLORE LINE REMOVAL 💥 */
+        .scroll-instruction,
+        .hero-section p,
+        .main-text {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .hero-section {
+            min-height: 42vh !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        /* 💥 IPHONE LIQUID GLASS CONTENT SECTIONS 💥 */
         .content-section,
         #intro,
         #functions,
@@ -168,30 +187,30 @@
             position: relative !important;
             overflow: hidden !important;
             margin: 40px auto !important;
-            max-width: 980px !important;
+            max-width: 960px !important;
             width: 92% !important;
             padding: 45px 35px !important;
             text-align: center !important;
             box-sizing: border-box !important;
         }
 
-        /* 💥 ૨ ઉપર અને ૧ નીચે (બધા વચોવચ સેન્ટરમાં) 💥 */
-        .cards-2-1-container {
+        /* 💥 ૨ BOXES UPAR + ૧ BOX NICHE CENTER MA (EQUAL WIDTH) 💥 */
+        .faculty-cards-layout {
             display: flex !important;
             flex-wrap: wrap !important;
             justify-content: center !important;
             align-items: stretch !important;
-            gap: 22px !important;
-            margin-top: 32px !important;
+            gap: 24px !important;
+            margin: 34px auto 0 auto !important;
+            max-width: 820px !important;
             width: 100% !important;
             box-sizing: border-box !important;
         }
 
-        .card-custom {
-            flex: 0 1 420px !important;
-            max-width: 440px !important;
-            min-width: 300px !important;
-            width: 100% !important;
+        .faculty-card {
+            width: 380px !important;
+            max-width: 100% !important;
+            flex: 0 0 380px !important;
             background: var(--liquid-glass-card) !important;
             backdrop-filter: blur(20px) !important;
             -webkit-backdrop-filter: blur(20px) !important;
@@ -209,12 +228,12 @@
             transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease !important;
         }
 
-        .card-custom:hover {
+        .faculty-card:hover {
             transform: translateY(-5px) !important;
             border-color: var(--liquid-border-hover) !important;
         }
 
-        .card-custom::after {
+        .faculty-card::after {
             content: '';
             position: absolute;
             inset: 0;
@@ -232,7 +251,7 @@
             100% { clip-path: inset(0 100% 100% 0); }
         }
 
-        .card-custom:hover::after {
+        .faculty-card:hover::after {
             border-color: var(--accent);
             animation: borderRun 2s linear infinite;
         }
@@ -313,20 +332,6 @@
             max-width: 440px !important;
             margin: 24px auto 0 auto !important;
         }
-
-        .hero-section {
-            min-height: 48vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .scroll-instruction .main-text {
-            color: var(--text-sub);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
     </style>
 </head>
 <body>
@@ -406,12 +411,8 @@
         </div>
     </div>
 
-    <!-- HERO SECTION -->
-    <section class="hero-section">
-        <div class="scroll-instruction">
-            <p class="main-text">Scroll Down to Explore</p>
-        </div>
-    </section>
+    <!-- 💥 HERO SECTION: SCROLL DOWN TO EXPLORE REMOVED COMPLETELY 💥 -->
+    <section class="hero-section"></section>
 
     <!-- INTRO SECTION -->
     <section id="intro" class="content-section">
@@ -425,62 +426,62 @@
         </div>
     </section>
 
-    <!-- 💥 FUNCTIONS SECTION (2 ઉપર + 1 નીચે CENTERED + ACADEMIC CONTENT) 💥 -->
+    <!-- 💥 FUNCTIONS SECTION (૨ UPAR + ૧ NICHE CENTERED + FACULTY-LEVEL CONTENT) 💥 -->
     <section id="functions" class="content-section">
         <div class="floating-emoji">⚙️</div>
         <h2>Functions</h2>
         <p>Engineered for sub-pixel cursor accuracy, low system overhead, and intuitive desktop navigation.</p>
         
-        <div class="cards-2-1-container">
+        <div class="faculty-cards-layout">
             <!-- Box 1 (Top Left) -->
-            <div class="card-custom">
+            <div class="faculty-card">
                 <div class="floating-emoji">🖐️</div>
                 <h3>AI Optical Cursor Tracking</h3>
-                <p>Utilizes MediaPipe hand landmark detection to map 21 distinct 3D joint coordinates, translating index finger trajectories into fluid cursor motion.</p>
+                <p>MediaPipe Hand framework 21 distinct 3D joint landmark detection dwara index finger trajectory ne high-precision cursor coordinates ma translate kare chhe.</p>
             </div>
 
             <!-- Box 2 (Top Right) -->
-            <div class="card-custom">
+            <div class="faculty-card">
                 <div class="floating-emoji">⚡</div>
-                <h3>Air Clicks & Action Gestures</h3>
-                <p>Calculates Euclidean distances between index tip and thumb coordinates in real time to trigger left-click, right-click, dragging, and virtual scrolling touchlessly.</p>
+                <h3>Real-Time Action Gestures</h3>
+                <p>Index tip ane thumb coordinates vacche Euclidean distance calculation kari left-click, right-click, dragging ane virtual scrolling mid-air touchlessly trigger kare chhe.</p>
             </div>
 
             <!-- Box 3 (Bottom Center) -->
-            <div class="card-custom">
+            <div class="faculty-card">
                 <div class="floating-emoji">🔒</div>
-                <h3>100% On-Device Frame Processing</h3>
-                <p>Every webcam video frame is processed purely in local client RAM. No video feeds or biometrics are ever stored, transmitted, or uploaded to external servers.</p>
+                <h3>100% On-Device Edge Processing</h3>
+                <p>Dareke video frame client machine ni local RAM ma execute thay chhe. Zero cloud transmission, biometrics athva camera feed kadapi store ke upload thati nathi.</p>
             </div>
         </div>
     </section>
 
-    <!-- 💥 CHARACTERISTICS SECTION (2 ઉપર + 1 નીચે CENTERED + ACADEMIC CONTENT) 💥 -->
+    <!-- 💥 CHARACTERISTICS SECTION (૨ UPAR + ૧ NICHE CENTERED + FACULTY-LEVEL CONTENT) 💥 -->
     <section id="characteristics" class="content-section">
         <div class="floating-emoji">🌟</div>
         <h2>Characteristics</h2>
         <p>Architected for minimal CPU load, broad hardware accessibility, and production responsiveness.</p>
         
-        <div class="cards-2-1-container">
+        <div class="faculty-cards-layout">
             <!-- Box 1 (Top Left) -->
-            <div class="card-custom">
+            <div class="faculty-card">
                 <div class="floating-emoji">🚀</div>
                 <h3>Ultra-Low Latency Pipeline</h3>
-                <p>Optimized vector mathematics pipeline processes input frames at 60+ FPS with under 15ms optical latency, eliminating cursor jitter and lag.</p>
+                <p>Optimized vector mathematics pipeline input frames ne 60+ FPS ane under 15ms optical latency sathe process kare chhe, jethi cursor jitter ane lag zero thay chhe.</p>
             </div>
 
             <!-- Box 2 (Top Right) -->
-            <div class="card-custom">
+            <div class="faculty-card">
                 <div class="floating-emoji">🔌</div>
                 <h3>Hardware-Agnostic Plug & Play</h3>
-                <p>Runs out of the box using any standard built-in or external 720p/1080p USB webcam without requiring expensive infrared or depth sensor peripherals.</p>
+                <p>Standard built-in athva external 720p/1080p USB webcam sathe seedhun chale chhe; koi expensive infrared sensor athva depth camera peripherals ni jarur nathi.</p>
             </div>
 
             <!-- Box 3 (Bottom Center) -->
-            <div class="card-custom">
+            <div class="faculty-card">
                 <div class="floating-emoji">🌐</div>
                 <h3>Native Windows Architecture</h3>
-                <p>Designed for Windows 10 and 11 environments using lightweight multi-threaded Python backend routines for negligible RAM and battery impact.</p>
+                <p>Windows 10 ane 11 environments mate lightweight multi-threaded Python backend routines dwara minimal RAM ane battery impact sathe design karel chhe.</p>
             </div>
         </div>
     </section>

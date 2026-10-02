@@ -7,16 +7,15 @@
     <title>Air Cursor - Download & Terms</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
-        /* 💥 CLEAN MATTE LOGO BLUE THEME (ZERO NEON / ZERO BROWN) 💥 */
+        /* 💥 ZERO NEON / ZERO SHINE / 100% SOLID MATTE THEME 💥 */
         :root {
             --bg-body: #0B0D13;
             --bg-card: #131722;
             --border: #212735;
             --text-main: #F3F4F6;
             --text-sub: #9CA3AF;
-            --accent: #2563EB;
-            --accent-rgb: 37, 99, 235;
-            --accent-hover: #1D4ED8;
+            --brand-blue: #2563EB;
+            --brand-blue-hover: #1D4ED8;
             --tc-bg: #0E1118;
             --shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
         }
@@ -27,19 +26,26 @@
             --border: #E5E7EB;
             --text-main: #111827;
             --text-sub: #6B7280;
-            --accent: #1D4ED8;
-            --accent-rgb: 29, 78, 216;
-            --accent-hover: #1E40AF;
+            --brand-blue: #1D4ED8;
+            --brand-blue-hover: #1E40AF;
             --tc-bg: #F9FAFB;
             --shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
         }
 
-        /* 💥 પાછળના તમામ પાર્ટીકલ્સ અને વોટરમાર્ક કાયમ માટે બંધ 💥 */
-        canvas, #particleCanvas {
+        /* 💥 પાછળના તમામ કેન્વાસ, પાર્ટીકલ્સ અને વોટરમાર્ક કાયમ માટે બંધ 💥 */
+        canvas, #particleCanvas, .particles-js-canvas-el {
             display: none !important;
-            visibility: hidden !important;
             opacity: 0 !important;
+            visibility: hidden !important;
+            width: 0 !important;
+            height: 0 !important;
             pointer-events: none !important;
+        }
+
+        body::before, body::after,
+        .download-page-wrap::before, .download-page-wrap::after {
+            display: none !important;
+            content: none !important;
         }
 
         html, body {
@@ -52,21 +58,13 @@
             background: var(--bg-body) !important;
             color: var(--text-main);
             font-family: system-ui, -apple-system, sans-serif;
-            transition: background 0.25s ease, color 0.25s ease;
+            transition: background 0.2s ease, color 0.2s ease;
         }
 
-        *::-webkit-scrollbar {
-            display: none !important;
-            width: 0 !important;
-            height: 0 !important;
-        }
-        * {
-            scrollbar-width: none !important;
-            -ms-overflow-style: none !important;
-            box-sizing: border-box;
-        }
+        *::-webkit-scrollbar { display: none !important; }
+        * { scrollbar-width: none !important; box-sizing: border-box; }
 
-        /* Top Left Logo */
+        /* Top Left Logo (Matte Blue) */
         .app-logo-container {
             position: fixed;
             top: 24px;
@@ -81,10 +79,10 @@
             text-decoration: none;
             z-index: 100;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-            transition: border-color 0.2s ease, background 0.2s ease;
+            transition: border-color 0.2s ease;
         }
         .app-logo-container:hover {
-            border-color: var(--accent);
+            border-color: var(--brand-blue);
         }
         .app-logo-img {
             width: 24px;
@@ -95,10 +93,9 @@
         .app-logo-text {
             font-size: 0.95rem;
             font-weight: 800;
-            color: #2563EB !important;
+            color: var(--brand-blue) !important;
+            -webkit-text-fill-color: var(--brand-blue) !important;
             background: none !important;
-            -webkit-text-fill-color: #2563EB !important;
-            text-shadow: none !important;
             letter-spacing: -0.3px;
         }
 
@@ -109,8 +106,6 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
-            box-sizing: border-box;
-            overflow: hidden;
             position: relative;
             z-index: 10;
         }
@@ -122,22 +117,9 @@
             border-radius: 18px;
             text-align: left;
             background: var(--bg-card) !important;
-            border: 1px solid var(--border);
+            border: 1px solid var(--border) !important;
             box-shadow: var(--shadow);
             position: relative;
-            animation: cardFade 0.25s ease-out forwards;
-        }
-
-        @keyframes cardFade {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .floating-emoji {
-            font-size: 1.8rem;
-            line-height: 1;
-            text-shadow: none !important;
-            filter: none !important;
         }
 
         .download-card h1 {
@@ -155,15 +137,14 @@
             color: var(--text-sub);
         }
 
-        /* T&C બોક્સ (Solid Matte) */
+        /* T&C Box */
         .tc-box {
             background: var(--tc-bg);
             border: 1px solid var(--border);
             padding: 18px 22px;
             border-radius: 12px;
             margin-bottom: 18px;
-            overflow: hidden;
-            transition: border-color 0.3s ease, background-color 0.3s ease;
+            transition: border-color 0.2s ease;
         }
 
         .tc-box h3 {
@@ -177,26 +158,10 @@
             gap: 8px;
             padding: 4px 8px;
             border-radius: 6px;
-            transition: background 0.3s ease, color 0.3s ease;
-        }
-
-        @keyframes cleanSettingBlink {
-            0%, 50%, 100% {
-                background-color: transparent;
-                color: var(--text-main);
-            }
-            25%, 75% {
-                background-color: rgba(var(--accent-rgb), 0.18);
-                color: var(--accent);
-            }
-        }
-
-        .tc-highlight-active {
-            animation: cleanSettingBlink 1.2s ease-in-out;
         }
 
         .tc-box.box-highlight-active {
-            border-color: var(--accent);
+            border-color: var(--brand-blue);
         }
 
         .tc-box ul {
@@ -215,13 +180,8 @@
             gap: 8px;
         }
 
-        .tc-box li strong {
-            color: var(--text-main);
-        }
-
-        .tc-box li:last-child {
-            margin-bottom: 0;
-        }
+        .tc-box li strong { color: var(--text-main); }
+        .tc-box li:last-child { margin-bottom: 0; }
 
         .tc-checkbox-group {
             display: flex;
@@ -236,7 +196,7 @@
             width: 17px;
             height: 17px;
             cursor: pointer;
-            accent-color: var(--accent);
+            accent-color: var(--brand-blue);
         }
 
         .tc-checkbox-group label {
@@ -245,21 +205,19 @@
             color: var(--text-main);
         }
 
-        /* જૂના બ્રાઉન ટેક્સ્ટને હટાવીને સોલિડ મેટ બ્લૂ */
+        /* T&C Link: 100% Matte Blue */
         .tc-clickable-link {
             color: #2563EB !important;
-            background: none !important;
             -webkit-text-fill-color: #2563EB !important;
+            background: none !important;
             cursor: pointer;
             text-decoration: underline;
             text-underline-offset: 3px;
             font-weight: 600;
-            text-shadow: none !important;
         }
-
         .tc-clickable-link:hover {
-            color: var(--accent-hover) !important;
-            -webkit-text-fill-color: var(--accent-hover) !important;
+            color: #1D4ED8 !important;
+            -webkit-text-fill-color: #1D4ED8 !important;
         }
 
         .btn-group {
@@ -268,55 +226,60 @@
             align-items: center;
         }
 
-        /* 💥 SOILD MATTE LOGO BLUE BUTTON (KILL ALL BROWN/GOLD) 💥 */
-        .cta-button {
-            background: #2563EB !important;
-            background-image: none !important;
-            color: #FFFFFF !important;
-            border: 1px solid rgba(255, 255, 255, 0.15) !important;
-            padding: 11px 22px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            text-decoration: none;
-            box-shadow: none !important;
-            text-shadow: none !important;
-            transition: background 0.2s ease;
-        }
-
-        .cta-button:hover:not(.btn-disabled) {
-            background: #1D4ED8 !important;
-        }
-
-        .cta-button.btn-disabled {
-            background: #1F2430 !important;
+        /* 💥 SOILD MATTE LOGO BLUE BUTTON (NO BROWN / NO GOLD) 💥 */
+        #trigger-download-btn {
+            background-color: #1E2330 !important;
             background-image: none !important;
             color: #64748B !important;
             border: 1px solid var(--border) !important;
-            opacity: 0.65 !important;
+            padding: 12px 24px !important;
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            font-size: 0.9rem !important;
             cursor: not-allowed !important;
-            filter: none !important;
+            text-decoration: none !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 8px !important;
+            flex: 1 !important;
             box-shadow: none !important;
-            transform: none !important;
+            text-shadow: none !important;
+            filter: none !important;
+            opacity: 0.7 !important;
+            transition: all 0.2s ease !important;
+        }
+
+        #trigger-download-btn.btn-active {
+            background-color: #2563EB !important;
+            background-image: none !important;
+            color: #FFFFFF !important;
+            border-color: #2563EB !important;
+            cursor: pointer !important;
+            opacity: 1 !important;
+        }
+
+        #trigger-download-btn.btn-active:hover {
+            background-color: #1D4ED8 !important;
         }
 
         .btn-secondary {
             background: var(--tc-bg);
             color: var(--text-main);
             border: 1px solid var(--border);
-            padding: 11px 18px;
+            padding: 12px 18px;
             border-radius: 8px;
             font-weight: 600;
             font-size: 0.9rem;
             cursor: pointer;
             text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
             transition: background 0.2s ease, border-color 0.2s ease;
         }
 
-        .btn-secondary:hover {
-            background: var(--border);
-        }
+        .btn-secondary:hover { background: var(--border); }
 
         /* Modal */
         .popup-overlay {
@@ -331,10 +294,7 @@
             z-index: 10000;
             padding: 20px;
         }
-
-        .popup-overlay.active {
-            display: flex;
-        }
+        .popup-overlay.active { display: flex; }
 
         .popup-card {
             background: var(--bg-card);
@@ -345,36 +305,14 @@
             width: 100%;
             text-align: center;
             box-shadow: var(--shadow);
-            animation: cardFade 0.2s ease-out forwards;
         }
-
-        .popup-icon-container {
-            font-size: 2.4rem;
-            margin-bottom: 12px;
-            text-shadow: none !important;
-        }
-
-        .popup-card h3 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text-main);
-            margin-bottom: 8px;
-        }
-
-        .popup-card p {
-            font-size: 0.88rem;
-            line-height: 1.5;
-            color: var(--text-sub);
-            margin-bottom: 20px;
-        }
+        .popup-card h3 { font-size: 1.25rem; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
+        .popup-card p { font-size: 0.88rem; line-height: 1.5; color: var(--text-sub); margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
-    <!-- Particle Canvas - JS Crash ન થાય તે માટે રાખેલું છે પણ CSS થી 100% અદ્રશ્ય છે -->
-    <canvas id="particleCanvas" style="display: none !important; visibility: hidden !important;"></canvas>
-
-    <!-- Top Left Clickable Logo -->
+    <!-- Top Left Logo -->
     <a href="/" class="app-logo-container">
         <img src="{{ url_for('static', filename='favicon.png') }}" alt="Air Cursor Logo" class="app-logo-img">
         <span class="app-logo-text">AIR CURSOR</span>
@@ -382,7 +320,7 @@
 
     <div class="download-page-wrap">
         <div class="download-card">
-            <div class="floating-emoji" style="margin-bottom: 10px;">⬇️</div>
+            <div style="font-size: 1.8rem; margin-bottom: 10px;">⬇️</div>
             <h1>Ready for Download</h1>
             <p class="subtitle">Thank you for choosing Air Cursor. Please read our Terms & Conditions below before starting the installer download.</p>
 
@@ -396,7 +334,7 @@
                 </ul>
             </div>
 
-            <!-- T&C Agreement Checkbox -->
+            <!-- T&C Checkbox -->
             <div class="tc-checkbox-group">
                 <input type="checkbox" id="tcAgree">
                 <label for="tcAgree">
@@ -405,79 +343,68 @@
             </div>
 
             <div class="btn-group">
-                <a href="#" id="trigger-download-btn" class="cta-button btn-disabled" style="text-align: center; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; flex: 1;">
+                <a href="#" id="trigger-download-btn" class="cta-button">
                     <span>📥</span> Download Installer
                 </a>
-                <a href="/reset-session" class="btn-secondary" style="display: inline-flex; align-items: center; gap: 6px;">
+                <a href="/reset-session" class="btn-secondary">
                     <span>🏠</span> Back to Home
                 </a>
             </div>
         </div>
     </div>
 
-    <!-- Custom Popup -->
+    <!-- Popup -->
     <div id="custom-popup" class="popup-overlay">
         <div class="popup-card">
-            <div id="popup-icon" class="popup-icon-container">📥</div>
+            <div style="font-size: 2.4rem; margin-bottom: 12px;">🎉</div>
             <h3 id="popup-title">Download Initialized!</h3>
             <p id="popup-message">Your PDF receipt and Air Cursor package are downloading successfully.</p>
-            <button id="popup-close-btn" class="cta-button" style="width: 100%;">OK</button>
+            <button id="popup-close-btn" class="btn-secondary" style="width: 100%; justify-content: center; background: #2563EB; color: #fff;">OK</button>
         </div>
     </div>
 
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <!-- NO SCRIPT.JS HERE: Removes delta arrow & Welcome watermark permanently -->
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const tcAgree = document.getElementById('tcAgree');
             const downloadBtn = document.getElementById('trigger-download-btn'); 
             const popupOverlay = document.getElementById('custom-popup');
-            const popupIcon = document.getElementById('popup-icon');
-            const popupTitle = document.getElementById('popup-title');
-            const popupMessage = document.getElementById('popup-message');
             const popupCloseBtn = document.getElementById('popup-close-btn');
-
             const tcLinkTrigger = document.getElementById('tcLinkTrigger');
-            const tcHeader = document.getElementById('tcHeader');
             const tcBox = document.getElementById('tcBox');
 
+            // Click T&C link to highlight box
             if (tcLinkTrigger) {
                 tcLinkTrigger.addEventListener('click', (e) => {
                     e.preventDefault();
-                    e.stopPropagation();
-
-                    tcHeader.classList.remove('tc-highlight-active');
-                    tcBox.classList.remove('box-highlight-active');
-                    void tcHeader.offsetWidth;
-
-                    tcHeader.classList.add('tc-highlight-active');
                     tcBox.classList.add('box-highlight-active');
-
-                    setTimeout(() => {
-                        tcHeader.classList.remove('tc-highlight-active');
-                        tcBox.classList.remove('box-highlight-active');
-                    }, 1200);
+                    setTimeout(() => tcBox.classList.remove('box-highlight-active'), 1000);
                 });
             }
 
+            // Checkbox logic: strictly toggles between dark slate and brand blue
             tcAgree.addEventListener('change', () => {
                 if (tcAgree.checked) {
-                    downloadBtn.classList.remove('btn-disabled');
+                    downloadBtn.classList.add('btn-active');
+                    downloadBtn.style.setProperty('background-color', '#2563EB', 'important');
+                    downloadBtn.style.setProperty('color', '#FFFFFF', 'important');
+                    downloadBtn.style.setProperty('cursor', 'pointer', 'important');
                 } else {
-                    downloadBtn.classList.add('btn-disabled');
+                    downloadBtn.classList.remove('btn-active');
+                    downloadBtn.style.setProperty('background-color', '#1E2330', 'important');
+                    downloadBtn.style.setProperty('color', '#64748B', 'important');
+                    downloadBtn.style.setProperty('cursor', 'not-allowed', 'important');
                 }
             });
 
+            // Trigger download on click
             if (downloadBtn) {
                 downloadBtn.addEventListener('click', (e) => {
                     e.preventDefault(); 
                     if (!tcAgree.checked) return;
 
-                    if (popupOverlay) {
-                        popupIcon.innerHTML = "🎉";
-                        popupTitle.innerText = "Download Initialized!";
-                        popupMessage.innerText = "Your PDF receipt and Air Cursor installer are downloading successfully.";
-                        popupOverlay.classList.add('active');
-                    }
+                    if (popupOverlay) popupOverlay.classList.add('active');
 
                     setTimeout(() => {
                         window.location.href = "/download-pdf";

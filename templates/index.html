@@ -8,23 +8,29 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     
     <style>
-        /* 💥 CLEAN MATTE LOGO BLUE THEME (ZERO CREAM / ZERO NEON) 💥 */
+        /* 💥 APPLE IOS LIQUID GLASS & MATTE LOGO BLUE THEME 💥 */
         :root {
-            --bg-base: #0B0D13;
-            --glass-bg: rgba(19, 23, 34, 0.88);
-            --glass-border: rgba(37, 99, 235, 0.35);
+            --bg-base: #07090E;
+            --liquid-glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%), rgba(15, 20, 32, 0.65);
+            --liquid-glass-card: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%), rgba(20, 27, 45, 0.55);
+            --liquid-border: rgba(255, 255, 255, 0.12);
+            --liquid-border-hover: rgba(37, 99, 235, 0.6);
+            --liquid-sheen: inset 0 1px 1px 0 rgba(255, 255, 255, 0.22), 0 18px 38px rgba(0, 0, 0, 0.45);
             --text-main: #F3F4F6;
-            --text-sub: #9CA3AF;
-            --accent: #2563EB;          /* Exact Matte Logo Blue */
+            --text-sub: #94A3B8;
+            --accent: #2563EB;
             --accent-hover: #1D4ED8;
         }
 
         [data-theme="light"], body.light-mode {
-            --bg-base: #F4F5F7 !important;
-            --glass-bg: rgba(255, 255, 255, 0.94) !important;
-            --glass-border: rgba(37, 99, 235, 0.25) !important;
-            --text-main: #111827 !important;
-            --text-sub: #4B5563 !important;
+            --bg-base: #F1F5F9 !important;
+            --liquid-glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.65) 100%) !important;
+            --liquid-glass-card: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%) !important;
+            --liquid-border: rgba(255, 255, 255, 0.8) !important;
+            --liquid-border-hover: rgba(37, 99, 235, 0.5) !important;
+            --liquid-sheen: inset 0 1px 2px 0 rgba(255, 255, 255, 0.9), 0 10px 30px rgba(0, 0, 0, 0.06) !important;
+            --text-main: #0F172A !important;
+            --text-sub: #475569 !important;
             --accent: #2563EB !important;
             --accent-hover: #1D4ED8 !important;
         }
@@ -33,21 +39,23 @@
             background-color: var(--bg-base) !important;
             color: var(--text-main) !important;
             font-family: system-ui, -apple-system, sans-serif !important;
-            padding-top: 100px;
+            padding-top: 110px;
+            margin: 0;
             transition: background-color 0.3s ease, color 0.3s ease !important;
         }
 
-        /* 💥 FIXED HEADER BAR (LOGO LEFT, NAV CENTER, TOGGLE RIGHT) 💥 */
+        /* 💥 ૧. HEADER: LOGO, NAVBAR, TOGGLE IN EXACT ONE LINE 💥 */
         .header-bar-fixed {
             position: fixed !important;
-            top: 0 !important;
+            top: 22px !important;
             left: 0 !important;
             width: 100% !important;
-            height: 80px !important;
+            height: 48px !important;
             display: flex !important;
-            align-items: center !important;
+            align-items: center !important;      /* Perfect vertical center */
             justify-content: space-between !important;
-            padding: 0 25px !important;
+            padding: 0 32px !important;
+            box-sizing: border-box !important;
             z-index: 99999 !important;
             pointer-events: none !important;
         }
@@ -56,132 +64,147 @@
             pointer-events: auto !important;
         }
 
-        /* LOGO BUTTON */
+        /* IOS LIQUID GLASS PILL BASE FOR HEADER ITEMS */
+        .app-logo-container,
+        .nav-pill,
+        .theme-toggle-container {
+            height: 48px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            background: var(--liquid-glass-bg) !important;
+            backdrop-filter: blur(26px) saturate(190%) !important;
+            -webkit-backdrop-filter: blur(26px) saturate(190%) !important;
+            border: 1px solid var(--liquid-border) !important;
+            box-shadow: var(--liquid-sheen) !important;
+            border-radius: 999px !important;
+            box-sizing: border-box !important;
+            transition: border-color 0.3s ease, transform 0.2s ease !important;
+        }
+
+        /* Left: Logo */
         .app-logo-container {
             position: static !important;
             transform: none !important;
-            display: flex !important;
-            align-items: center !important;
-            gap: 12px !important;
-            padding: 10px 20px !important;
-            background: var(--glass-bg) !important;
-            border: 1px solid var(--glass-border) !important;
-            border-radius: 99px !important;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35) !important;
+            gap: 10px !important;
+            padding: 0 20px !important;
             text-decoration: none !important;
         }
-
         .app-logo-img {
-            width: 24px !important;
-            height: 24px !important;
+            width: 22px !important;
+            height: 22px !important;
             filter: none !important;
-            box-shadow: none !important;
         }
-
-        .app-logo-text,
-        a.app-logo-container span,
-        .app-logo-container .app-logo-text {
-            background: none !important;
-            background-image: none !important;
-            -webkit-background-clip: initial !important;
-            background-clip: initial !important;
-            -webkit-text-fill-color: #2563EB !important;
+        .app-logo-text {
             color: #2563EB !important;
-            font-weight: 900 !important;
-            letter-spacing: 1.5px !important;
-            font-size: 1.05rem !important;
+            -webkit-text-fill-color: #2563EB !important;
+            font-weight: 800 !important;
+            letter-spacing: 1.2px !important;
+            font-size: 0.95rem !important;
             text-shadow: none !important;
         }
 
-        /* 💥 NAVBAR: KILL ALL CREAM / GOLD ON TEXT & BORDER 💥 */
+        /* Center: Navbar */
         .top-nav {
             position: absolute !important;
             left: 50% !important;
             transform: translateX(-50%) !important;
             margin: 0 !important;
-            width: auto !important;
+            height: 48px !important;
+            display: flex !important;
+            align-items: center !important;
         }
-
         .nav-pill {
-            background: var(--glass-bg) !important;
-            border: 1px solid rgba(37, 99, 235, 0.35) !important;
-            border-radius: 99px !important;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35) !important;
-            padding: 4px 10px !important;
-            outline: none !important;
+            padding: 0 8px !important;
         }
-
-        /* NORMAL STATE */
-        .nav-links a,
-        .nav-pill nav a,
-        .top-nav a {
-            color: #9CA3AF !important;
-            -webkit-text-fill-color: #9CA3AF !important;
-            background: transparent !important;
-            background-image: none !important;
-            -webkit-background-clip: initial !important;
-            background-clip: initial !important;
-            text-shadow: none !important;
-            font-weight: 600 !important;
-            font-size: 0.92rem !important;
+        .nav-links {
+            display: flex !important;
+            align-items: center !important;
+            gap: 4px !important;
+        }
+        .nav-links a {
+            color: var(--text-sub) !important;
+            -webkit-text-fill-color: var(--text-sub) !important;
             text-decoration: none !important;
+            font-weight: 600 !important;
+            font-size: 0.9rem !important;
             padding: 8px 16px !important;
-            border-radius: 99px !important;
+            border-radius: 999px !important;
             transition: all 0.2s ease !important;
         }
-
-        /* ACTIVE & HOVER STATE: 100% MATTE LOGO BLUE */
         .nav-links a:hover,
-        .nav-links a.active,
-        .nav-links a:focus,
-        .nav-links a.current,
-        .nav-links a[aria-current="page"],
-        .nav-pill nav a:hover,
-        .nav-pill nav a.active,
-        .top-nav a:hover,
-        .top-nav a.active {
+        .nav-links a.active {
             color: #2563EB !important;
             -webkit-text-fill-color: #2563EB !important;
             background: rgba(37, 99, 235, 0.12) !important;
-            background-image: none !important;
-            -webkit-background-clip: initial !important;
-            background-clip: initial !important;
-            text-shadow: none !important;
         }
 
-        /* THEME TOGGLE FIXED RIGHT */
+        /* Right: Toggle */
         .theme-toggle-container {
             position: static !important;
             transform: none !important;
-            padding: 6px !important;
+            padding: 0 6px !important;
+        }
+        .toggle-scaler {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
         }
 
-        /* IOS LIQUID GLASS BOXES WITH RUNNING BORDER ANIMATION */
-        .glass-effect, .card, .content-section, .popup-card, .glass-modal {
-            background: var(--glass-bg) !important;
-            backdrop-filter: blur(16px) !important;
-            -webkit-backdrop-filter: blur(16px) !important;
-            border: 1px solid var(--glass-border) !important;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
-            border-radius: 16px !important;
+        /* 💥 ૨. CONTENT SECTIONS: IPHONE LIQUID GLASS EFFECT 💥 */
+        .content-section {
+            background: var(--liquid-glass-bg) !important;
+            backdrop-filter: blur(28px) saturate(180%) !important;
+            -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+            border: 1px solid var(--liquid-border) !important;
+            box-shadow: var(--liquid-sheen) !important;
+            border-radius: 24px !important;
             position: relative !important;
             overflow: hidden !important;
-            transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease !important;
+            transition: border-color 0.3s ease, transform 0.3s ease !important;
+            margin: 40px auto !important;
+            max-width: 980px !important;
+            padding: 42px 36px !important;
+            text-align: center !important;
         }
 
-        .glass-effect::after, .card::after, .content-section::after {
+        /* Inner Sub-cards (Liquid Glass Layer) */
+        .grid-cards {
+            display: grid !important;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)) !important;
+            gap: 20px !important;
+            margin-top: 32px !important;
+        }
+
+        .grid-cards .card {
+            background: var(--liquid-glass-card) !important;
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
+            border: 1px solid var(--liquid-border) !important;
+            box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.14), 0 12px 28px rgba(0, 0, 0, 0.3) !important;
+            border-radius: 18px !important;
+            padding: 26px 22px !important;
+            text-align: left !important;
+            position: relative !important;
+            overflow: hidden !important;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+
+        /* Running Border Loop on Card Hover */
+        .grid-cards .card::after,
+        .content-section::after {
             content: '';
             position: absolute;
             inset: 0;
-            border-radius: 16px;
+            border-radius: inherit;
             border: 2px solid transparent;
             pointer-events: none;
-            transition: border-color 0.4s ease;
+            transition: border-color 0.3s ease;
         }
 
-        .glass-effect:hover, .card:hover, .content-section:hover {
-            border-color: var(--accent) !important;
-            transform: translateY(-4px);
+        .grid-cards .card:hover {
+            transform: translateY(-5px) !important;
+            border-color: var(--liquid-border-hover) !important;
         }
 
         @keyframes borderRun {
@@ -192,57 +215,109 @@
             100% { clip-path: inset(0 100% 100% 0); }
         }
 
-        .glass-effect:hover::after, .card:hover::after, .content-section:hover::after {
+        .grid-cards .card:hover::after {
             border-color: var(--accent);
             animation: borderRun 2s linear infinite;
         }
 
-        h2 { font-weight: 800 !important; color: var(--text-main) !important; text-transform: uppercase; letter-spacing: -0.5px; }
-        h3 { font-weight: 700 !important; color: var(--text-main) !important; }
-        p, label { color: var(--text-sub) !important; }
-
-        /* SOLID MATTE BLUE BUTTON */
-        .cta-button {
-            position: relative !important;
-            overflow: hidden !important;
-            background: #2563EB !important;
-            color: #FFFFFF !important;
-            border: 1px solid rgba(255, 255, 255, 0.15) !important;
-            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25) !important;
-            text-transform: uppercase !important;
+        /* Typography */
+        h2 {
             font-weight: 800 !important;
-            letter-spacing: 1px !important;
-            border-radius: 99px !important;
-            padding: 14px 32px !important;
-            cursor: pointer !important;
-            transition: background 0.2s ease, transform 0.2s ease !important;
-        }
-        .cta-button:hover { 
-            background: #1D4ED8 !important;
-            transform: translateY(-2px) !important; 
-        }
-
-        .glass-input {
-            background: var(--bg-base) !important;
             color: var(--text-main) !important;
-            border: 1px solid var(--glass-border) !important;
-            border-radius: 10px !important;
-            padding: 14px 18px !important;
-            width: 100% !important;
-            margin-bottom: 18px !important;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+            font-size: 1.85rem !important;
+            margin-top: 12px !important;
         }
-        .glass-input:focus { border-color: var(--accent) !important; outline: none !important; }
+        h3 {
+            font-weight: 700 !important;
+            color: var(--text-main) !important;
+            font-size: 1.15rem !important;
+            margin: 10px 0 8px 0 !important;
+        }
+        p {
+            color: var(--text-sub) !important;
+            line-height: 1.6 !important;
+            font-size: 0.95rem !important;
+        }
 
+        .floating-emoji {
+            font-size: 2rem !important;
+            margin-bottom: 8px !important;
+            filter: none !important;
+            text-shadow: none !important;
+        }
+
+        /* Feature Badges */
         .feature-badges span {
             color: var(--accent) !important;
-            border: 1px solid var(--glass-border) !important;
-            background: var(--glass-bg) !important;
+            border: 1px solid var(--liquid-border) !important;
+            background: rgba(37, 99, 235, 0.08) !important;
+            backdrop-filter: blur(12px) !important;
             font-weight: 700 !important;
-            padding: 6px 14px !important;
-            border-radius: 8px !important;
+            padding: 8px 16px !important;
+            border-radius: 999px !important;
+            font-size: 0.88rem !important;
         }
 
-        .download-form { border: none !important; background: transparent !important; box-shadow: none !important; padding: 0 !important; }
+        /* Solid Matte Blue Download Button */
+        .cta-button {
+            background: #2563EB !important;
+            color: #FFFFFF !important;
+            border: 1px solid rgba(255, 255, 255, 0.18) !important;
+            box-shadow: 0 10px 24px rgba(37, 99, 235, 0.3) !important;
+            text-transform: uppercase !important;
+            font-weight: 800 !important;
+            letter-spacing: 0.8px !important;
+            border-radius: 999px !important;
+            padding: 14px 34px !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+        }
+        .cta-button:hover {
+            background: #1D4ED8 !important;
+            transform: translateY(-2px);
+        }
+
+        /* Glass Input */
+        .glass-input {
+            background: rgba(11, 15, 25, 0.6) !important;
+            color: var(--text-main) !important;
+            border: 1px solid var(--liquid-border) !important;
+            border-radius: 12px !important;
+            padding: 14px 18px !important;
+            width: 100% !important;
+            margin-bottom: 16px !important;
+            box-sizing: border-box !important;
+        }
+        .glass-input:focus {
+            border-color: var(--accent) !important;
+            outline: none !important;
+        }
+
+        .download-form {
+            border: none !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            max-width: 440px !important;
+            margin: 24px auto 0 auto !important;
+        }
+
+        /* Hero */
+        .hero-section {
+            min-height: 48vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .scroll-instruction .main-text {
+            color: var(--text-sub);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -250,17 +325,17 @@
     <!-- Particle Background Canvas -->
     <canvas id="particleCanvas"></canvas>
 
-    <!-- FIXED HEADER BAR WRAPPER -->
+    <!-- 💥 FIXED HEADER BAR (LOGO LEFT, NAV CENTER, TOGGLE RIGHT IN 1 LINE) 💥 -->
     <div class="header-bar-fixed">
         <!-- ૧. એપ લોગો (Top Left) -->
-        <a href="#" class="app-logo-container glass-effect" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">
+        <a href="#" class="app-logo-container" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">
             <img src="{{ url_for('static', filename='favicon.png') }}" alt="Air Cursor Logo" class="app-logo-img">
             <span class="app-logo-text">AIR CURSOR</span>
         </a>
 
         <!-- ૨. ફ્લોટિંગ નેવબાર (Top Center) -->
         <header class="top-nav">
-            <div class="nav-pill glass-effect">
+            <div class="nav-pill">
                 <nav class="nav-links">
                     <a href="#intro">Intro</a>
                     <a href="#functions">Functions</a>
@@ -271,7 +346,7 @@
         </header>
 
         <!-- ૩. ડે / નાઇટ એનિમેટેડ થીમ ટોગલ (Top Right) -->
-        <div class="theme-toggle-container glass-effect">
+        <div class="theme-toggle-container">
             <div class="toggle-scaler">
                 <button class="dn-toggle is-night" id="themeToggle" aria-label="Toggle Theme">
                     <div class="dn-sky"></div>
@@ -334,11 +409,11 @@
     </section>
 
     <!-- Intro સેક્શન -->
-    <section id="intro" class="content-section glass-effect">
-        <div class="floating-emoji header-emoji">✨</div>
+    <section id="intro" class="content-section">
+        <div class="floating-emoji">✨</div>
         <h2>Control Your Screen Effortlessly Without Touching</h2>
         <p>Experience the next generation of touchless navigation. Control your screen effortlessly with smooth, intuitive optical gesture recognition.</p>
-        <div class="feature-badges" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
+        <div class="feature-badges" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 24px;">
             <span>⚡ Zero Hardware Setup</span>
             <span>🧠 AI Gesture Engine</span>
             <span>🚀 Ultra Responsive</span>
@@ -346,22 +421,22 @@
     </section>
 
     <!-- Functions સેક્શન -->
-    <section id="functions" class="content-section glass-effect">
-        <div class="floating-emoji header-emoji">⚙️</div>
+    <section id="functions" class="content-section">
+        <div class="floating-emoji">⚙️</div>
         <h2>Functions</h2>
         <p>Designed for absolute precision, fluid interactivity, and effortless workflow.</p>
         <div class="grid-cards">
-            <div class="card glass-effect">
+            <div class="card">
                 <div class="floating-emoji">🖐️</div>
                 <h3>Smooth Cursor Motion</h3>
                 <p>Real-time optical hand tracking moves your cursor precisely without physical contact.</p>
             </div>
-            <div class="card glass-effect">
+            <div class="card">
                 <div class="floating-emoji">⚡</div>
                 <h3>Air Clicks & Gestures</h3>
                 <p>Pinch, tap, or swipe mid-air to trigger clicks, drag operations, and desktop navigation.</p>
             </div>
-            <div class="card glass-effect">
+            <div class="card">
                 <div class="floating-emoji">🔒</div>
                 <h3>100% Privacy-First</h3>
                 <p>All camera frames are processed purely locally on your machine. No feed or data is ever recorded.</p>
@@ -370,22 +445,22 @@
     </section>
 
     <!-- Characteristics સેક્શન -->
-    <section id="characteristics" class="content-section glass-effect">
-        <div class="floating-emoji header-emoji">🌟</div>
+    <section id="characteristics" class="content-section">
+        <div class="floating-emoji">🌟</div>
         <h2>Characteristics</h2>
         <p>Built for modern workflows with cutting-edge touchless responsiveness.</p>
         <div class="grid-cards">
-            <div class="card glass-effect">
+            <div class="card">
                 <div class="floating-emoji">🚀</div>
                 <h3>Ultra Low Latency</h3>
                 <p>High frame-rate algorithms ensure instantaneous response with zero input lag.</p>
             </div>
-            <div class="card glass-effect">
+            <div class="card">
                 <div class="floating-emoji">🔌</div>
                 <h3>Plug & Play</h3>
                 <p>Works right out of the box with your standard built-in or external USB webcam.</p>
             </div>
-            <div class="card glass-effect">
+            <div class="card">
                 <div class="floating-emoji">🌐</div>
                 <h3>Universal Compatibility</h3>
                 <p>Engineered to operate seamlessly on Windows 10/11 and modern PC environments.</p>
@@ -394,17 +469,17 @@
     </section>
 
     <!-- Download સેક્શન -->
-    <section id="download" class="content-section glass-effect">
-        <div class="floating-emoji header-emoji">📥</div>
+    <section id="download" class="content-section">
+        <div class="floating-emoji">📥</div>
         <h2>Get Started Today</h2>
         <p>Download Air Cursor and transform how you interact with your desktop instantly.</p>
         <form action="/register" method="POST" id="downloadForm" class="download-form" novalidate>
             <input type="text" name="name" class="glass-input" placeholder="Your Name (eg: Rahul)" autocomplete="name">
             <input type="email" name="email" class="glass-input" placeholder="Email Address (eg: rahul123@gmail.com)" autocomplete="email">
             
-            <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin: -5px 0 15px 0;">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin: -5px 0 18px 0;">
                 <input type="checkbox" name="remember" id="remember" value="true" style="cursor: pointer; accent-color: var(--accent); width: 16px; height: 16px;">
-                <label for="remember" style="font-size: 0.95rem; opacity: 0.85; cursor: pointer;">Remember me</label>
+                <label for="remember" style="font-size: 0.95rem; opacity: 0.85; cursor: pointer; color: var(--text-main);">Remember me</label>
             </div>
 
             <button type="submit" class="cta-button">Download for Free</button>
@@ -412,7 +487,7 @@
     </section>
 
     <!-- ફુટર -->
-    <footer class="site-footer">
+    <footer class="site-footer" style="text-align: center; padding: 35px 20px; color: var(--text-sub);">
         <p>© 2026 Air Cursor Technologies. Crafted By Developer Mode.</p>
     </footer>
 

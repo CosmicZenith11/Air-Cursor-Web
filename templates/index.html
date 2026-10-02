@@ -8,21 +8,22 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     
     <style>
-        /* 💥 THEME VARIABLES: SUPPORTS BOTH DARK & LIGHT MODE TOGGLE 💥 */
-        :root, :root[data-theme="dark"], body.dark-mode {
-            --bg-base: #0B0D13 !important;
-            --glass-bg: rgba(19, 23, 34, 0.85) !important;
-            --glass-border: rgba(37, 99, 235, 0.3) !important;
-            --text-main: #F3F4F6 !important;
-            --text-sub: #9CA3AF !important;
-            --accent: #2563EB !important;
-            --accent-hover: #1D4ED8 !important;
+        /* 💥 DEFAULT DARK THEME VARIABLES 💥 */
+        :root {
+            --bg-base: #0B0D13;
+            --glass-bg: rgba(19, 23, 34, 0.85);
+            --glass-border: rgba(37, 99, 235, 0.3);
+            --text-main: #F3F4F6;
+            --text-sub: #9CA3AF;
+            --accent: #2563EB;
+            --accent-hover: #1D4ED8;
         }
 
-        :root[data-theme="light"], body.light-mode {
+        /* 💥 LIGHT THEME OVERRIDES (ACTIVATED ON TOGGLE) 💥 */
+        [data-theme="light"], body.light-mode {
             --bg-base: #F4F5F7 !important;
-            --glass-bg: rgba(255, 255, 255, 0.9) !important;
-            --glass-border: rgba(37, 99, 235, 0.2) !important;
+            --glass-bg: rgba(255, 255, 255, 0.92) !important;
+            --glass-border: rgba(37, 99, 235, 0.25) !important;
             --text-main: #111827 !important;
             --text-sub: #4B5563 !important;
             --accent: #2563EB !important;
@@ -37,7 +38,7 @@
             transition: background-color 0.3s ease, color 0.3s ease !important;
         }
 
-        /* HEADER CONTAINER BAR */
+        /* HEADER CONTAINER BAR (LOGO LEFT, NAV CENTER, TOGGLE RIGHT) */
         .header-bar-fixed {
             position: fixed !important;
             top: 0 !important;
@@ -88,7 +89,7 @@
             backdrop-filter: blur(16px) !important;
             -webkit-backdrop-filter: blur(16px) !important;
             border: 1px solid var(--glass-border) !important;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
             border-radius: 16px !important;
             position: relative !important;
             overflow: hidden !important;

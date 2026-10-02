@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     
     <style>
-        /* 💥 COMPLETE RESET: KILL ALL BROWN/GOLD & INJECT LIQUID GLASS 💥 */
         :root, body, html {
             --bg-base: #0B0D13 !important;
             --glass-bg: rgba(19, 23, 34, 0.75) !important;
@@ -17,7 +16,6 @@
             --text-sub: #9CA3AF !important;
             --accent: #2563EB !important;
             --accent-hover: #1D4ED8 !important;
-            --accent-gold: #2563EB !important;
         }
 
         body {
@@ -26,7 +24,35 @@
             font-family: system-ui, -apple-system, sans-serif !important;
         }
 
-        /* 💥 IOS 27 STYLE LIQUID GLASS BOXES WITH RUNNING BORDER ANIMATION 💥 */
+        /* 💥 PROPER POSITIONING FIX FOR HEADER ELEMENTS 💥 */
+        .app-logo-container {
+            position: fixed !important;
+            top: 20px !important;
+            left: 20px !important;
+            z-index: 1000 !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 10px !important;
+            padding: 10px 18px !important;
+        }
+
+        .top-nav {
+            position: fixed !important;
+            top: 20px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            z-index: 1000 !important;
+        }
+
+        .theme-toggle-container {
+            position: fixed !important;
+            top: 20px !important;
+            right: 20px !important;
+            z-index: 1000 !important;
+            padding: 6px !important;
+        }
+
+        /* LIQUID GLASS BOXES WITH RUNNING BORDER ANIMATION */
         .glass-effect, .card, .content-section, .popup-card, .glass-modal {
             background: var(--glass-bg) !important;
             backdrop-filter: blur(16px) !important;
@@ -39,7 +65,6 @@
             transition: transform 0.3s ease, border-color 0.3s ease !important;
         }
 
-        /* Running Border Line Effect on Hover (Image-1 Fix) */
         .glass-effect::after, .card::after, .content-section::after {
             content: '';
             position: absolute;
@@ -68,12 +93,10 @@
             animation: borderRun 2s linear infinite;
         }
 
-        /* Typography */
         h2 { font-weight: 800 !important; color: var(--text-main) !important; text-transform: uppercase; letter-spacing: -0.5px; }
         h3 { font-weight: 700 !important; color: var(--text-main) !important; }
         p, label { color: var(--text-sub) !important; }
 
-        /* 💥 LIQUID GLASS BUTTON WITH LOGO COLOR FILL & RIPPLE CLICK EFFECT 💥 */
         .cta-button {
             position: relative !important;
             overflow: hidden !important;
@@ -82,44 +105,16 @@
             border: 1px solid rgba(255, 255, 255, 0.2) !important;
             box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
             backdrop-filter: blur(10px) !important;
-            -webkit-backdrop-filter: blur(10px) !important;
             text-transform: uppercase !important;
             font-weight: 800 !important;
             letter-spacing: 1px !important;
             border-radius: 99px !important;
             padding: 14px 32px !important;
             cursor: pointer !important;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            transition: all 0.3s ease !important;
         }
+        .cta-button:hover { transform: translateY(-2px) !important; }
 
-        .cta-button:hover {
-            transform: translateY(-2px) !important;
-            box-shadow: 0 15px 30px rgba(37, 99, 235, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
-        }
-
-        /* Ripple / Liquid Splash on Click */
-        .cta-button::after {
-            content: '';
-            position: absolute;
-            top: 50%; left: 50%;
-            width: 5px; height: 5px;
-            background: rgba(255, 255, 255, 0.6);
-            opacity: 0;
-            border-radius: 100%;
-            transform: scale(1, 1) translate(-50%, -50%);
-            transform-origin: 50% 50%;
-        }
-
-        .cta-button:active::after {
-            animation: liquidRipple 0.6s ease-out;
-        }
-
-        @keyframes liquidRipple {
-            0% { transform: scale(0, 0) translate(-50%, -50%); opacity: 0.8; }
-            100% { transform: scale(40, 40) translate(-50%, -50%); opacity: 0; }
-        }
-
-        /* Inputs & Controls */
         .glass-input {
             background: rgba(11, 13, 19, 0.8) !important;
             color: var(--text-main) !important;
@@ -127,7 +122,6 @@
             border-radius: 10px !important;
             padding: 14px 18px !important;
             width: 100% !important;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.4) !important;
             margin-bottom: 18px !important;
         }
         .glass-input:focus { border-color: var(--accent) !important; outline: none !important; }
@@ -143,7 +137,6 @@
 
         .nav-links a { color: var(--text-main) !important; font-weight: 600 !important; }
         .nav-links a:hover { color: var(--accent) !important; }
-        
         .download-form { border: none !important; background: transparent !important; box-shadow: none !important; padding: 0 !important; }
     </style>
 </head>
@@ -152,7 +145,7 @@
     <canvas id="particleCanvas"></canvas>
 
     <a href="#" class="app-logo-container glass-effect" style="text-decoration: none;" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">
-        <img src="{{ url_for('static', filename='favicon.png') }}" alt="Air Cursor Logo" class="app-logo-img">
+        <img src="{{ url_for('static', filename='favicon.png') }}" alt="Air Cursor Logo" class="app-logo-img" style="width:24px; height:24px;">
         <span class="app-logo-text" style="color: var(--accent) !important; font-weight: 900;">AIR CURSOR</span>
     </a>
 
@@ -211,7 +204,7 @@
         <p>Designed for absolute precision, fluid interactivity, and effortless workflow.</p>
         <div class="grid-cards">
             <div class="card glass-effect">
-                <div class="floating-emoji">🖐️</div>
+                <div class="floating-emoji">🖐️️</div>
                 <h3>Smooth Cursor Motion</h3>
                 <p>Real-time optical hand tracking moves your cursor precisely without physical contact.</p>
             </div>

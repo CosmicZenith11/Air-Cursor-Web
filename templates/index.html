@@ -8,10 +8,10 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     
     <style>
-        /* 💥 MATTE SLATE THEME & PROPER HEADER SPACING 💥 */
+        /* 💥 FORCE PERFECT HEADER PLACEMENT & MATTE SLATE THEME 💥 */
         :root, body, html {
             --bg-base: #0B0D13 !important;
-            --glass-bg: rgba(19, 23, 34, 0.8) !important;
+            --glass-bg: rgba(19, 23, 34, 0.85) !important;
             --glass-border: rgba(37, 99, 235, 0.3) !important;
             --text-main: #F3F4F6 !important;
             --text-sub: #9CA3AF !important;
@@ -24,14 +24,16 @@
             background-color: var(--bg-base) !important;
             color: var(--text-main) !important;
             font-family: system-ui, -apple-system, sans-serif !important;
-            padding-top: 90px; /* Prevents header overlap with content */
+            padding-top: 90px;
         }
 
-        /* 💥 EXACT HEADER PLACEMENT (LOGO LEFT, NAV CENTER, TOGGLE RIGHT) 💥 */
+        /* 💥 EXACT HEADER ALIGNMENT (LOGO LEFT, NAV CENTER, TOGGLE RIGHT) 💥 */
         .app-logo-container {
             position: fixed !important;
             top: 20px !important;
             left: 20px !important;
+            right: auto !important;
+            transform: none !important;
             z-index: 1000 !important;
             display: flex !important;
             align-items: center !important;
@@ -43,6 +45,7 @@
             position: fixed !important;
             top: 20px !important;
             left: 50% !important;
+            right: auto !important;
             transform: translateX(-50%) !important;
             z-index: 1000 !important;
             width: auto !important;
@@ -52,6 +55,8 @@
             position: fixed !important;
             top: 20px !important;
             right: 20px !important;
+            left: auto !important;
+            transform: none !important;
             z-index: 1000 !important;
             padding: 6px !important;
         }

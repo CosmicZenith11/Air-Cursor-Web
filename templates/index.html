@@ -17,14 +17,14 @@
 
     <style>
         /* =========================================================
-           💥 1. DESIGN TOKENS (UNIFIED CORNER RADII & COLORS) 💥
+           💥 1. DESIGN TOKENS (UNIFIED CORNER RADII & PALETTE) 💥
            ========================================================= */
         :root {
-            /* Radius Scale (Fixed to 4 standard values) */
-            --radius-sm: 8px;      /* Badges, tags, small inputs */
+            /* Radius Scale: Exactly 4 standardized tokens (Issue 1) */
+            --radius-sm: 8px;      /* Badges, tags, small icons */
             --radius-md: 14px;     /* Feature cards, inputs */
-            --radius-lg: 24px;     /* Content sections, modals */
-            --radius-pill: 9999px; /* Buttons, nav pills, badges */
+            --radius-lg: 24px;     /* Main section cards, modals */
+            --radius-pill: 9999px; /* Buttons, nav pills */
 
             /* Dark Palette (Default) */
             --bg-base: #07090E;
@@ -37,7 +37,6 @@
             --text-sub: #94A3B8;
             --accent: #2563EB;
             --accent-hover: #1D4ED8;
-            --accent-glow: rgba(37, 99, 235, 0.35);
             --input-bg: rgba(15, 23, 42, 0.7);
             --input-text: #F8FAFC;
             --input-placeholder: #64748B;
@@ -56,7 +55,6 @@
             --text-sub: #94A3B8 !important;
             --accent: #2563EB !important;
             --accent-hover: #1D4ED8 !important;
-            --accent-glow: rgba(37, 99, 235, 0.35) !important;
             --input-bg: rgba(15, 23, 42, 0.7) !important;
             --input-text: #F8FAFC !important;
             --input-placeholder: #64748B !important;
@@ -75,7 +73,6 @@
             --text-sub: #475569 !important;
             --accent: #2563EB !important;
             --accent-hover: #1D4ED8 !important;
-            --accent-glow: rgba(37, 99, 235, 0.2) !important;
             --input-bg: rgba(255, 255, 255, 0.95) !important;
             --input-text: #0F172A !important;
             --input-placeholder: #94A3B8 !important;
@@ -101,13 +98,13 @@
             color: var(--text-main) !important;
             font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
             margin: 0 !important;
-            padding-top: 90px !important;
+            padding-top: 86px !important;
             transition: background-color 0.25s ease, color 0.25s ease !important;
             position: relative;
         }
 
         /* =========================================================
-           💥 2. FIXED HEADER BAR 💥
+           💥 2. FIXED HEADER (ISSUES 7, 12, 13) 💥
            ========================================================= */
         .header-bar-fixed {
             position: fixed !important;
@@ -176,36 +173,29 @@
             justify-content: center !important;
         }
         .nav-pill {
-            padding: 0 6px !important;
+            padding: 0 8px !important;
         }
         .nav-links {
             display: flex !important;
             align-items: center !important;
-            gap: 4px !important;
+            gap: 12px !important; /* Increased from 4px (Issue 13) */
         }
-
-        /* Nav Interactive Affordance */
         .nav-links a {
             color: var(--text-sub) !important;
             -webkit-text-fill-color: var(--text-sub) !important;
             text-decoration: none !important;
             font-weight: 600 !important;
-            font-size: 0.9rem !important;
+            font-size: 0.92rem !important;
             padding: 8px 16px !important;
             border-radius: var(--radius-pill) !important;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
-            cursor: pointer !important;
+            transition: all 0.2s ease !important;
         }
         .nav-links a:hover,
         .nav-links a:focus-visible {
             color: #FFFFFF !important;
             -webkit-text-fill-color: #FFFFFF !important;
             background: rgba(37, 99, 235, 0.3) !important;
-            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25) !important;
-        }
-        .nav-links a:focus-visible {
-            outline: 2px solid var(--accent);
-            outline-offset: 2px;
+            outline: none;
         }
 
         .theme-toggle-container {
@@ -226,10 +216,10 @@
         }
 
         /* =========================================================
-           💥 3. HERO SECTION (H1, CTA & CONTROLLED SPACING) 💥
+           💥 3. HERO SECTION (ISSUES 3, 4, 5, 6, 8) 💥
            ========================================================= */
         .hero-section {
-            min-height: 46vh !important;
+            min-height: 48vh !important;
             display: flex !important;
             flex-direction: column !important;
             align-items: center !important;
@@ -244,10 +234,10 @@
 
         .hero-header {
             max-width: 720px;
-            margin: 0 auto 18px auto;
+            margin: 0 auto 16px auto;
         }
 
-        /* Accessible Primary H1 */
+        /* Accessible Primary H1 (Issue 3) */
         .hero-title {
             font-size: 2.85rem !important;
             font-weight: 900 !important;
@@ -255,9 +245,7 @@
             color: var(--text-main) !important;
             margin: 0 0 10px 0 !important;
             line-height: 1.1 !important;
-            text-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
         }
-
         .hero-title span {
             color: #2563EB;
         }
@@ -271,14 +259,14 @@
         }
 
         .hero-actions {
-            margin-top: 18px;
+            margin-top: 20px;
             display: flex;
             gap: 14px;
             justify-content: center;
             align-items: center;
         }
 
-        /* Script.js Compatibility Fallback */
+        /* Script.js Compatibility hook */
         .scroll-instruction,
         .main-text {
             display: none !important;
@@ -292,7 +280,7 @@
         }
 
         /* =========================================================
-           💥 4. IPHONE LIQUID GLASS CONTENT CARDS 💥
+           💥 4. CONTENT SECTIONS (ISSUES 2, 10, 11, 14, 15) 💥
            ========================================================= */
         .content-section,
         #intro,
@@ -308,15 +296,16 @@
             position: relative !important;
             z-index: 10 !important;
             overflow: hidden !important;
-            margin: 32px auto !important;
+            margin: 36px auto !important;
             max-width: 960px !important;
             width: 92% !important;
-            padding: 42px 34px !important;
+            padding: 44px 34px !important;
             text-align: center !important;
             box-sizing: border-box !important;
+            clear: both !important;
         }
 
-        /* Balanced 3-Column Grid Layout */
+        /* Standard 3-Column Grid */
         .faculty-cards-layout {
             display: grid !important;
             grid-template-columns: repeat(3, 1fr) !important;
@@ -380,7 +369,7 @@
             animation: borderRun 2s linear infinite;
         }
 
-        /* Typography */
+        /* Typography (Issue 2 Fix: No All-Caps) */
         h2 {
             font-weight: 800 !important;
             color: var(--text-main) !important;
@@ -406,9 +395,6 @@
             margin: 0 !important;
         }
 
-        /* =========================================================
-           💥 5. VECTOR SVG TECH ICONS (NO GENERIC EMOJIS) 💥
-           ========================================================= */
         .tech-badge-icon {
             display: inline-flex;
             align-items: center;
@@ -459,7 +445,7 @@
             gap: 6px;
         }
 
-        /* Primary Action Buttons */
+        /* Action Buttons */
         .cta-button {
             background: #2563EB !important;
             color: #FFFFFF !important;
@@ -486,38 +472,9 @@
             box-shadow: 0 12px 28px rgba(37, 99, 235, 0.45) !important;
         }
 
-        .cta-button:focus-visible {
-            outline: 2px solid var(--accent);
-            outline-offset: 3px;
-        }
-
-        /* Form Inputs */
-        .glass-input {
-            background: var(--input-bg) !important;
-            color: var(--input-text) !important;
-            border: 1px solid var(--input-border) !important;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05) !important;
-            border-radius: var(--radius-md) !important;
-            padding: 14px 18px !important;
-            width: 100% !important;
-            font-size: 0.95rem !important;
-            margin-bottom: 14px !important;
-            box-sizing: border-box !important;
-            outline: none !important;
-            pointer-events: auto !important;
-            position: relative !important;
-            z-index: 50 !important;
-            transition: border-color 0.2s ease, background 0.2s ease !important;
-        }
-        .glass-input::placeholder {
-            color: var(--input-placeholder) !important;
-            opacity: 1 !important;
-        }
-        .glass-input:focus {
-            border-color: var(--accent) !important;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25) !important;
-        }
-
+        /* =========================================================
+           💥 5. FORM STYLING (ISSUES 9, 16, 17) 💥
+           ========================================================= */
         .download-form {
             border: none !important;
             background: transparent !important;
@@ -529,19 +486,57 @@
             z-index: 30 !important;
         }
 
-        /* Checkbox Alignment */
-        .checkbox-alignment-wrap {
-            display: inline-flex !important;
+        /* Persistent Accessible Form Field Labels (Issue 16) */
+        .form-group {
+            text-align: left !important;
+            margin-bottom: 16px !important;
+            width: 100% !important;
+        }
+
+        .form-label {
+            display: block !important;
+            font-size: 0.88rem !important;
+            font-weight: 600 !important;
+            color: var(--text-main) !important;
+            margin-bottom: 6px !important;
+        }
+
+        .glass-input {
+            background: var(--input-bg) !important;
+            color: var(--input-text) !important;
+            border: 1px solid var(--input-border) !important;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+            border-radius: var(--radius-md) !important;
+            padding: 13px 18px !important;
+            width: 100% !important;
+            font-size: 0.95rem !important;
+            box-sizing: border-box !important;
+            outline: none !important;
+            transition: border-color 0.2s ease, background 0.2s ease !important;
+        }
+        .glass-input::placeholder {
+            color: var(--input-placeholder) !important;
+            opacity: 1 !important;
+        }
+        .glass-input:focus {
+            border-color: var(--accent) !important;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25) !important;
+        }
+
+        /* Left-Aligned Form Checkbox Unit (Issues 9 & 17) */
+        .form-checkbox-group {
+            display: flex !important;
             align-items: center !important;
-            justify-content: center !important;
+            justify-content: flex-start !important;
             gap: 10px !important;
             width: 100% !important;
-            margin: 4px 0 20px 0 !important;
+            margin: 8px 0 22px 0 !important;
+            text-align: left !important;
             cursor: pointer !important;
             user-select: none !important;
         }
 
-        .checkbox-alignment-wrap input[type="checkbox"] {
+        .form-checkbox-group input[type="checkbox"] {
             width: 18px !important;
             height: 18px !important;
             margin: 0 !important;
@@ -549,8 +544,8 @@
             cursor: pointer !important;
         }
 
-        .checkbox-alignment-wrap label {
-            font-size: 0.92rem !important;
+        .form-checkbox-group label {
+            font-size: 0.9rem !important;
             color: var(--text-main) !important;
             cursor: pointer !important;
             line-height: 1 !important;
@@ -607,10 +602,10 @@
 </head>
 <body>
 
-    <!-- Canvas Engine -->
+    <!-- Particle Background Canvas -->
     <canvas id="particleCanvas"></canvas>
 
-    <!-- FIXED HEADER -->
+    <!-- FIXED TOP HEADER (ISSUES 7, 12, 13) -->
     <div class="header-bar-fixed">
         <a href="#" class="app-logo-container" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">
             <img src="{{ url_for('static', filename='favicon.png') }}" alt="Air Cursor Logo" class="app-logo-img">
@@ -679,7 +674,7 @@
         </div>
     </div>
 
-    <!-- HERO SECTION (H1, CTA & CONTROLLED SPACING) -->
+    <!-- HERO SECTION (ISSUES 3, 4, 5, 6, 8) -->
     <section class="hero-section">
         <header class="hero-header">
             <h1 class="hero-title">Air <span>Cursor</span></h1>
@@ -687,7 +682,7 @@
         </header>
 
         <div class="hero-actions">
-            <a href="#download" class="cta-button hero-cta-btn">Download for Free</a>
+            <a href="#download" class="cta-button">Download for Free</a>
         </div>
 
         <!-- Script.js compatibility hook -->
@@ -696,7 +691,7 @@
         </div>
     </section>
 
-    <!-- INTRO SECTION (REMOVING ALL-CAPS RUN & USING SENTENCE CASE) -->
+    <!-- INTRO SECTION (ISSUES 2 & 15: SENTENCE CASE, GENEROUS SPACING) -->
     <section id="intro" class="content-section">
         <div class="section-header-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -722,7 +717,7 @@
         </div>
     </section>
 
-    <!-- FUNCTIONS SECTION (3-COLUMN BALANCED GRID & CLEAN SVG ICONS) -->
+    <!-- FUNCTIONS SECTION (ISSUES 10, 11, 14: PROPER STACKING, BALANCED GRID) -->
     <section id="functions" class="content-section">
         <div class="section-header-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -770,7 +765,7 @@
         </div>
     </section>
 
-    <!-- CHARACTERISTICS SECTION (3-COLUMN BALANCED GRID & CLEAN SVG ICONS) -->
+    <!-- CHARACTERISTICS SECTION (ISSUE 14: SEAMLESS VISUAL RHYTHM) -->
     <section id="characteristics" class="content-section">
         <div class="section-header-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -820,7 +815,7 @@
         </div>
     </section>
 
-    <!-- DOWNLOAD FORM SECTION (ALIGNED CHECKBOX & CLEAR ACTION) -->
+    <!-- DOWNLOAD SECTION (ISSUES 9, 16, 17: LABELS & LEFT-ALIGNED CHECKBOX) -->
     <section id="download" class="content-section">
         <div class="section-header-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -833,13 +828,22 @@
         <p>Experience touchless desktop navigation. Register below to download the Air Cursor client.</p>
         
         <form action="/register" method="POST" id="downloadForm" class="download-form">
-            <input type="text" name="name" id="name" class="glass-input" placeholder="Your Name (eg: Rahul)" autocomplete="name" required>
-            <input type="email" name="email" id="email" class="glass-input" placeholder="Email Address (eg: rahul123@gmail.com)" autocomplete="email" required>
+            <!-- Persistent Label: Name (Issue 16) -->
+            <div class="form-group">
+                <label for="name" class="form-label">Full Name</label>
+                <input type="text" name="name" id="name" class="glass-input" placeholder="e.g. Rahul Patel" autocomplete="name" required>
+            </div>
+
+            <!-- Persistent Label: Email (Issue 16) -->
+            <div class="form-group">
+                <label for="email" class="form-label">Email Address</label>
+                <input type="email" name="email" id="email" class="glass-input" placeholder="e.g. rahul@example.com" autocomplete="email" required>
+            </div>
             
-            <!-- Centered & Vertically Aligned Checkbox Unit -->
-            <div class="checkbox-alignment-wrap">
+            <!-- Left-aligned & Clear Checkbox Unit (Issues 9 & 17) -->
+            <div class="form-checkbox-group">
                 <input type="checkbox" name="remember" id="remember" value="true">
-                <label for="remember">Remember me</label>
+                <label for="remember">Remember my details on this device</label>
             </div>
 
             <button type="submit" id="downloadSubmitBtn" class="cta-button" style="width: 100%;">Download for Free</button>
@@ -869,7 +873,7 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
             </div>
             <h3>Are you sure?</h3>
-            <p>You haven't checked <strong>'Remember me'</strong>. Your session won't be saved for <strong>30 days</strong>.</p>
+            <p>You haven't checked <strong>'Remember my details'</strong>. Your session won't be saved for <strong>30 days</strong>.</p>
             <div style="display: flex; gap: 12px; justify-content: center; margin-top: 20px;">
                 <button type="button" id="reminderBackBtn" class="btn-secondary">Back</button>
                 <button type="button" id="reminderOkBtn" class="cta-button" style="width: auto; padding: 10px 24px;">Proceed</button>
@@ -888,10 +892,10 @@
         </div>
     </div>
 
-    <!-- PARTICLE CANVAS ENGINE SCRIPT -->
+    <!-- PARTICLE CANVAS SCRIPT HOOK -->
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 
-    <!-- BIDIRECTIONAL THEME TOGGLE & NATIVE FORM VERIFICATION -->
+    <!-- BIDIRECTIONAL THEME TOGGLE & VALIDATION -->
     <script>
         (function() {
             function applyTheme(theme) {
@@ -942,7 +946,7 @@
                         const email = document.getElementById('email').value.trim();
                         if (!name || !email) {
                             e.preventDefault();
-                            alert("Please enter both Name and Email!");
+                            alert("Please enter both Full Name and Email Address!");
                             return false;
                         }
                         return true;

@@ -3,174 +3,352 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Security Check · Air Cursor</title>
+    <title>Air Cursor - Security Verification</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+        /* 💥 AIR CURSOR MATTE LOGO THEME VARIABLES 💥 */
+        :root {
+            --bg-matte: #07090E;
+            --card-matte: #0D1322;
+            --box-matte: #080D18;
+            --border-matte: rgba(37, 99, 235, 0.28);
+            --border-hover: rgba(37, 99, 235, 0.6);
+            --blue-matte: #2563EB;
+            --blue-hover: #1D4ED8;
+            --cyan-matte: #38BDF8;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --error-matte: #EF4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            user-select: none;
+        }
+
         body {
-            background-color: #0c0d11;
-            color: #E6E4E0;
+            background-color: var(--bg-matte);
+            background-image: radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.1) 0%, rgba(7, 9, 14, 1) 85%);
             min-height: 100vh;
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
             padding: 20px;
+            color: var(--text-main);
         }
-        .captcha-card {
-            background: #16171d;
-            border: 1px solid rgba(197, 168, 128, 0.35);
-            border-radius: 28px;
-            padding: 40px 35px;
-            max-width: 450px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 30px rgba(197,168,128,0.15);
-            animation: fadeIn 0.3s ease-out;
-        }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .shield-icon { font-size: 3.2rem; margin-bottom: 12px; display: block; }
-        h1 { font-size: 1.45rem; color: #C5A880; font-weight: 800; margin-bottom: 8px; }
-        p { font-size: 0.9rem; color: rgba(230, 228, 224, 0.7); line-height: 1.5; margin-bottom: 25px; }
 
+        /* 💥 MATTE DARK CARD 💥 */
+        .matte-security-card {
+            background: var(--card-matte);
+            border: 1px solid var(--border-matte);
+            border-radius: 26px;
+            width: 100%;
+            max-width: 440px;
+            padding: 38px 32px;
+            box-shadow: 0 24px 50px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* LOGO BADGE */
+        .logo-badge-wrap {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 64px;
+            height: 64px;
+            border-radius: 18px;
+            background: rgba(37, 99, 235, 0.12);
+            border: 1px solid rgba(37, 99, 235, 0.35);
+            margin-bottom: 20px;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
+        }
+
+        .logo-badge-img {
+            width: 34px;
+            height: 34px;
+            object-fit: contain;
+        }
+
+        h1 {
+            font-size: 1.45rem;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.3px;
+            margin-bottom: 8px;
+        }
+
+        h1 span {
+            color: var(--cyan-matte);
+        }
+
+        p.subtitle {
+            font-size: 0.88rem;
+            line-height: 1.5;
+            color: var(--text-muted);
+            margin-bottom: 26px;
+            padding: 0 10px;
+        }
+
+        /* 💥 CAPTCHA DISPLAY BOX (MATTE ELECTRIC CYAN) 💥 */
         .captcha-display-box {
+            background: var(--box-matte);
+            border: 1px dashed var(--border-matte);
+            border-radius: 14px;
+            padding: 14px 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 15px;
-            background: #090a0d;
-            border: 1px dashed rgba(197, 168, 128, 0.4);
-            border-radius: 16px;
-            padding: 16px;
+            position: relative;
+            margin-bottom: 20px;
+            min-height: 62px;
+        }
+
+        .captcha-code-text {
+            font-size: 1.9rem;
+            font-weight: 800;
+            letter-spacing: 9px;
+            color: var(--cyan-matte);
+            text-shadow: 0 0 16px rgba(56, 189, 248, 0.3);
+            text-decoration: line-through;
+            text-decoration-thickness: 2.5px;
+            text-decoration-color: rgba(37, 99, 235, 0.8);
+            font-family: 'Courier New', Courier, monospace;
+            padding-left: 9px;
+        }
+
+        .refresh-btn {
+            position: absolute;
+            right: 14px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .refresh-btn:hover {
+            color: var(--cyan-matte);
+            background: rgba(37, 99, 235, 0.15);
+            transform: rotate(90deg);
+        }
+
+        .refresh-btn svg {
+            width: 19px;
+            height: 19px;
+        }
+
+        /* 💥 MATTE INPUT BOX 💥 */
+        .matte-input-wrap {
             margin-bottom: 20px;
         }
-        .captcha-text {
-            font-size: 2rem;
-            font-weight: 900;
-            letter-spacing: 8px;
-            color: #00e5ff;
-            text-decoration: line-through;
-            user-select: none;
-            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
-            font-family: monospace;
-        }
-        .btn-reload {
-            background: none;
-            border: none;
-            color: #C5A880;
-            cursor: pointer;
-            font-size: 1.3rem;
-            transition: transform 0.3s ease;
-        }
-        .btn-reload:hover { transform: rotate(180deg); }
 
-        .captcha-input {
+        .matte-input {
             width: 100%;
-            padding: 14px;
-            border-radius: 12px;
-            background: #090a0d;
-            border: 1px solid #333;
-            color: #fff;
-            font-size: 1.2rem;
-            text-align: center;
-            text-transform: uppercase;
+            background: var(--box-matte);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            color: var(--text-main);
+            padding: 14px 18px;
+            border-radius: 14px;
+            font-size: 1.05rem;
             font-weight: 700;
-            letter-spacing: 4px;
-            margin-bottom: 18px;
+            text-align: center;
+            letter-spacing: 5px;
+            text-transform: uppercase;
             outline: none;
+            transition: all 0.25s ease;
+            box-sizing: border-box;
         }
-        .captcha-input:focus { border-color: #C5A880; box-shadow: 0 0 10px rgba(197,168,128,0.25); }
 
-        .btn-submit {
-            width: 100%;
-            padding: 12px 25px;
-            background: linear-gradient(135deg, #C5A880 0%, #E6E4E0 100%);
-            color: #0c0d11;
-            border: none;
-            border-radius: 99px;
-            font-weight: 800;
-            font-size: 0.95rem;
-            cursor: pointer;
-            box-shadow: 0 8px 20px rgba(197, 168, 128, 0.25);
-            transition: transform 0.2s ease;
-        }
-        .btn-submit:hover { transform: translateY(-2px); }
-
-        .error-msg {
-            display: none;
-            color: #ff4757;
-            font-size: 0.85rem;
-            margin-top: 12px;
+        .matte-input::placeholder {
+            color: rgba(148, 163, 184, 0.45);
+            letter-spacing: 3px;
+            font-size: 0.9rem;
             font-weight: 600;
+        }
+
+        .matte-input:focus {
+            border-color: var(--blue-matte);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+            background: #0B1120;
+        }
+
+        /* 💥 MATTE ELECTRIC BLUE BUTTON 💥 */
+        .matte-submit-btn {
+            width: 100%;
+            background: var(--blue-matte);
+            color: #FFFFFF;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 14px 24px;
+            border-radius: 999px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            box-shadow: 0 8px 22px rgba(37, 99, 235, 0.35);
+        }
+
+        .matte-submit-btn:hover {
+            background: var(--blue-hover);
+            transform: translateY(-1.5px);
+            box-shadow: 0 10px 26px rgba(37, 99, 235, 0.45);
+        }
+
+        .matte-submit-btn:active {
+            transform: translateY(0);
+        }
+
+        /* ERROR MESSAGE */
+        .error-msg {
+            color: var(--error-matte);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 14px;
+            display: none;
+        }
+
+        /* SHAKE ANIMATION ON WRONG INPUT */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-7px); }
+            40%, 80% { transform: translateX(7px); }
+        }
+
+        .shake-effect {
+            animation: shake 0.35s ease;
+            border-color: var(--error-matte) !important;
         }
     </style>
 </head>
 <body>
-    <div class="captcha-card">
-        <span class="shield-icon">🛡️</span>
-        <h1>Air Cursor Security Gate</h1>
-        <p>Please enter the security verification code displayed below to access the platform.</p>
 
-        <div class="captcha-display-box">
-            <span class="captcha-text" id="captchaDisplay">{{ captcha_code }}</span>
-            <button class="btn-reload" onclick="reloadCaptcha()" title="Refresh Captcha">🔄</button>
+    <div class="matte-security-card">
+        <!-- AIR CURSOR LOGO BADGE -->
+        <div class="logo-badge-wrap">
+            <img src="{{ url_for('static', filename='favicon.png') }}" alt="Air Cursor Logo" class="logo-badge-img">
         </div>
 
-        <input type="text" id="captchaInput" class="captcha-input" maxlength="5" placeholder="ENTER CODE" autocomplete="off" autofocus>
-        
-        <button class="btn-submit" onclick="submitCaptcha()">Verify & Enter</button>
-        <div id="errorMsg" class="error-msg">Incorrect Code. Try again.</div>
+        <h1>Air Cursor <span>Security Gate</span></h1>
+        <p class="subtitle">Please enter the security verification code displayed below to access the platform.</p>
+
+        <!-- CAPTCHA CODE CONTAINER -->
+        <div class="captcha-display-box">
+            <span class="captcha-code-text" id="captchaText">{{ captcha_code }}</span>
+            <button type="button" class="refresh-btn" id="refreshBtn" title="Get New Code" aria-label="Refresh Code">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-1.19"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- FORM INPUT -->
+        <form id="captchaForm" onsubmit="handleVerification(event)">
+            <div class="matte-input-wrap">
+                <input 
+                    type="text" 
+                    id="captchaInput" 
+                    class="matte-input" 
+                    placeholder="ENTER CODE" 
+                    maxlength="6" 
+                    autocomplete="off" 
+                    autofocus 
+                    required
+                >
+            </div>
+
+            <button type="submit" id="verifyBtn" class="matte-submit-btn">
+                <span>Verify & Enter</span>
+            </button>
+        </form>
+
+        <p id="errorMsg" class="error-msg">Incorrect Code! Please try again.</p>
     </div>
 
     <script>
-        function reloadCaptcha() {
-            fetch('/api/captcha/new')
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById('captchaDisplay').innerText = data.captcha;
-                document.getElementById('captchaInput').value = '';
-                document.getElementById('errorMsg').style.display = 'none';
-            });
-        }
+        const captchaInput = document.getElementById('captchaInput');
+        const captchaText = document.getElementById('captchaText');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const errorMsg = document.getElementById('errorMsg');
+        const verifyBtn = document.getElementById('verifyBtn');
 
-        function submitCaptcha() {
-            const inputVal = document.getElementById('captchaInput').value.trim();
-            if (inputVal.length !== 5) {
-                const err = document.getElementById('errorMsg');
-                err.innerText = 'Please enter all 5 characters.';
-                err.style.display = 'block';
-                return;
-            }
-
-            fetch('/verify-captcha', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ captcha: inputVal })
-            })
-            .then(res => res.json().then(data => ({ status: res.status, body: data })))
-            .then(result => {
-                if (result.status === 200) {
-                    window.location.reload();
-                } else {
-                    const err = document.getElementById('errorMsg');
-                    err.innerText = result.body.message || 'Incorrect Code.';
-                    err.style.display = 'block';
-                    if (result.body.new_captcha) {
-                        document.getElementById('captchaDisplay').innerText = result.body.new_captcha;
-                    }
-                    document.getElementById('captchaInput').value = '';
+        // Refresh Captcha
+        async function fetchNewCaptcha() {
+            try {
+                const res = await fetch('/api/captcha/new');
+                const data = await res.json();
+                if (data.status === 'success') {
+                    captchaText.textContent = data.captcha;
+                    captchaInput.value = '';
+                    errorMsg.style.display = 'none';
+                    captchaInput.classList.remove('shake-effect');
+                    captchaInput.focus();
                 }
-            })
-            .catch(() => {
-                const err = document.getElementById('errorMsg');
-                err.innerText = 'Network error. Please try again.';
-                err.style.display = 'block';
-            });
+            } catch (err) {
+                console.error("Refresh error:", err);
+            }
         }
 
-        document.getElementById('captchaInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') submitCaptcha();
-        });
+        refreshBtn.addEventListener('click', fetchNewCaptcha);
+
+        // Verification Handler
+        async function handleVerification(e) {
+            e.preventDefault();
+            const val = captchaInput.value.trim().toUpperCase();
+            if (!val) return;
+
+            verifyBtn.disabled = true;
+            verifyBtn.innerHTML = "<span>Verifying...</span>";
+
+            try {
+                const res = await fetch('/verify-captcha', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ captcha: val })
+                });
+
+                const data = await res.json();
+
+                if (res.ok && data.status === 'success') {
+                    // Success: Redirect to Main Landing Page
+                    window.location.href = '/';
+                } else {
+                    // Failure: Show Error and Shake Input
+                    errorMsg.textContent = data.message || "Incorrect Code! Please try again.";
+                    errorMsg.style.display = 'block';
+                    captchaInput.classList.add('shake-effect');
+                    if (data.new_captcha) {
+                        captchaText.textContent = data.new_captcha;
+                    }
+                    captchaInput.value = '';
+                    setTimeout(() => {
+                        captchaInput.classList.remove('shake-effect');
+                    }, 400);
+                    captchaInput.focus();
+                }
+            } catch (err) {
+                errorMsg.textContent = "Server connection error. Please try again.";
+                errorMsg.style.display = 'block';
+            } finally {
+                verifyBtn.disabled = false;
+                verifyBtn.innerHTML = "<span>Verify & Enter</span>";
+            }
+        }
     </script>
 </body>
 </html>

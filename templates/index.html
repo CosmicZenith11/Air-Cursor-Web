@@ -12,21 +12,31 @@
         (function() {
             var saved = localStorage.getItem('air_cursor_theme') || localStorage.getItem('theme') || 'dark';
             document.documentElement.setAttribute('data-theme', saved);
-            if (saved === 'light') {
-                document.documentElement.classList.add('light-mode');
-            } else {
-                document.documentElement.classList.remove('light-mode');
-            }
         })();
     </script>
 
     <style>
-        /* 💥 1. CSS VARIABLES FOR DARK & LIGHT 💥 */
-        :root,
+        /* 💥 1. CLEAN THEME VARIABLES (ZERO SPECIFICITY CONFLICT) 💥 */
+        :root {
+            --bg-base: #07090E;
+            --liquid-glass-bg: rgba(15, 23, 42, 0.5);
+            --liquid-glass-card: rgba(20, 30, 55, 0.4);
+            --liquid-border: rgba(255, 255, 255, 0.14);
+            --liquid-border-hover: rgba(37, 99, 235, 0.7);
+            --liquid-sheen: inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.25), 0 20px 40px rgba(0, 0, 0, 0.6);
+            --text-main: #F8FAFC;
+            --text-sub: #94A3B8;
+            --accent: #2563EB;
+            --accent-hover: #1D4ED8;
+            --input-bg: rgba(15, 23, 42, 0.65);
+            --input-text: #F8FAFC;
+            --input-placeholder: #64748B;
+            --input-border: rgba(255, 255, 255, 0.15);
+        }
+
+        /* DARK THEME */
         html[data-theme="dark"],
-        body[data-theme="dark"],
-        html.dark-mode,
-        body.dark-mode {
+        body[data-theme="dark"] {
             --bg-base: #07090E !important;
             --liquid-glass-bg: rgba(15, 23, 42, 0.5) !important;
             --liquid-glass-card: rgba(20, 30, 55, 0.4) !important;
@@ -43,13 +53,12 @@
             --input-border: rgba(255, 255, 255, 0.15) !important;
         }
 
-        html[data-theme="light"]:not(.dark-mode),
-        body[data-theme="light"]:not(.dark-mode),
-        html.light-mode:not(.dark-mode),
-        body.light-mode:not(.dark-mode) {
+        /* LIGHT THEME */
+        html[data-theme="light"],
+        body[data-theme="light"] {
             --bg-base: #F8FAFC !important;
-            --liquid-glass-bg: rgba(255, 255, 255, 0.7) !important;
-            --liquid-glass-card: rgba(255, 255, 255, 0.85) !important;
+            --liquid-glass-bg: rgba(255, 255, 255, 0.75) !important;
+            --liquid-glass-card: rgba(255, 255, 255, 0.88) !important;
             --liquid-border: rgba(37, 99, 235, 0.22) !important;
             --liquid-border-hover: rgba(37, 99, 235, 0.6) !important;
             --liquid-sheen: inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.9), 0 10px 30px rgba(0, 0, 0, 0.08) !important;
@@ -197,7 +206,7 @@
             outline: none;
         }
 
-        /* 💥 SCROLL DOWN TO EXPLORE LINE REMOVED 💥 */
+        /* 💥 SCROLL DOWN TO EXPLORE VISUALLY REMOVED 💥 */
         .scroll-instruction,
         .main-text {
             display: none !important;
@@ -243,7 +252,7 @@
             box-sizing: border-box !important;
         }
 
-        /* 💥 ૨ BOXES UPAR + ૧ BOX NICHE CENTER MA (EQUAL WIDTH) 💥 */
+        /* 💥 ૨ BOXES UPAR + ૧ BOX NICHE CENTER MA 💥 */
         .faculty-cards-layout {
             display: flex !important;
             flex-wrap: wrap !important;
@@ -491,7 +500,7 @@
                     <div class="dn-palm left">
                         <svg viewBox="0 0 40 46" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M22 46 C21 34 16 24 20 14" stroke="#5c3818" stroke-width="2.8" stroke-linecap="round"/>
-                            <path d="M20 14 C12 8 4 11 0 17 C6 13 13 14 20 14 Z" fill="#1b4332"/>
+                            <path d="M20 14 C12 8 4 11 0 17 C6 13 14 14 20 14 Z" fill="#1b4332"/>
                             <path d="M20 14 C14 4 6 5 2 8 C8 7 15 9 20 14 Z" fill="#2d6a4f"/>
                             <path d="M20 14 C22 3 30 3 35 7 C28 8 23 10 20 14 Z" fill="#40916c"/>
                             <path d="M20 14 C26 7 35 11 39 17 C33 13 26 14 20 14 Z" fill="#1b4332"/>
@@ -520,14 +529,14 @@
         </div>
     </div>
 
-    <!-- HERO SECTION (DOM SAFE FOR SCRIPT.JS, TEXT VISUALLY HIDDEN) -->
+    <!-- HERO SECTION -->
     <section class="hero-section">
         <div class="scroll-instruction">
             <p class="main-text"></p>
         </div>
     </section>
 
-    <!-- INTRO SECTION -->
+    <!-- INTRO SECTION (100% ENGLISH) -->
     <section id="intro" class="content-section">
         <div class="floating-emoji">✨</div>
         <h2>Control Your Screen Effortlessly Without Touching</h2>
@@ -539,62 +548,62 @@
         </div>
     </section>
 
-    <!-- 💥 FUNCTIONS SECTION (PURE ENGLISH & CLEAR SUMMARY) 💥 -->
+    <!-- 💥 FUNCTIONS SECTION (PURE SHORT ENGLISH SUMMARIES) 💥 -->
     <section id="functions" class="content-section">
         <div class="floating-emoji">⚙️</div>
         <h2>Functions</h2>
-        <p>Engineered for sub-pixel cursor accuracy, low system overhead, and intuitive desktop navigation.</p>
+        <p>Core navigation capabilities engineered for smooth, touch-free interaction.</p>
         
         <div class="faculty-cards-layout">
             <!-- Box 1 (Top Left) -->
             <div class="faculty-card">
                 <div class="floating-emoji">🖐️</div>
                 <h3>Optical Cursor Tracking</h3>
-                <p>Tracks 21 3D hand landmarks in real time via webcam to convert your index fingertip movement directly into smooth on-screen cursor motion.</p>
+                <p>Move your on-screen mouse cursor smoothly and precisely simply by pointing your index finger at your webcam.</p>
             </div>
 
             <!-- Box 2 (Top Right) -->
             <div class="faculty-card">
                 <div class="floating-emoji">⚡</div>
-                <h3>Touchless Action Gestures</h3>
-                <p>Performs instant air gestures—pinch to left-click, double tap to right-click, grab to drag windows, and scroll pages mid-air without touching hardware.</p>
+                <h3>Touchless Air Gestures</h3>
+                <p>Pinch fingers to click, double tap to open files, hold to drag windows, and scroll pages mid-air without touching physical hardware.</p>
             </div>
 
             <!-- Box 3 (Bottom Center) -->
             <div class="faculty-card">
                 <div class="floating-emoji">🔒</div>
-                <h3>100% On-Device Privacy</h3>
-                <p>All camera frames are processed strictly in local client memory. No video streams, photos, or biometric data are ever saved or uploaded to any server.</p>
+                <h3>100% Local Privacy</h3>
+                <p>All camera frames are processed directly inside your computer's RAM. No video streams, photos, or biometric data are ever saved or uploaded.</p>
             </div>
         </div>
     </section>
 
-    <!-- 💥 CHARACTERISTICS SECTION (PURE ENGLISH & CLEAR SUMMARY) 💥 -->
+    <!-- 💥 CHARACTERISTICS SECTION (PURE SHORT ENGLISH SUMMARIES) 💥 -->
     <section id="characteristics" class="content-section">
         <div class="floating-emoji">🌟</div>
         <h2>Characteristics</h2>
-        <p>Architected for minimal CPU load, broad hardware accessibility, and production responsiveness.</p>
+        <p>System architecture designed for speed, low resources, and universal compatibility.</p>
         
         <div class="faculty-cards-layout">
             <!-- Box 1 (Top Left) -->
             <div class="faculty-card">
                 <div class="floating-emoji">🚀</div>
                 <h3>Ultra-Low Latency</h3>
-                <p>Runs an optimized computer vision pipeline delivering 60+ FPS with under 15ms optical latency for instantaneous, jitter-free cursor tracking.</p>
+                <p>High frame-rate 60+ FPS processing with under 15ms optical latency delivers immediate, jitter-free cursor tracking.</p>
             </div>
 
             <!-- Box 2 (Top Right) -->
             <div class="faculty-card">
                 <div class="floating-emoji">🔌</div>
                 <h3>Plug & Play Compatibility</h3>
-                <p>Works right out of the box with any standard built-in or USB webcam—no expensive depth sensors, infrared cameras, or extra hardware needed.</p>
+                <p>Works out of the box with any standard built-in or USB webcam—no expensive depth sensors, VR gear, or special accessories required.</p>
             </div>
 
             <!-- Box 3 (Bottom Center) -->
             <div class="faculty-card">
                 <div class="floating-emoji">🌐</div>
                 <h3>Lightweight Windows Build</h3>
-                <p>Engineered specifically for Windows 10 & 11 with multi-threaded Python routines, consuming less than 5% CPU for seamless background operation.</p>
+                <p>Tailored for Windows 10 and 11 desktops with multi-threaded Python routines, consuming under 5% CPU for seamless background execution.</p>
             </div>
         </div>
     </section>
@@ -623,7 +632,7 @@
         <p>© 2026 Air Cursor Technologies. Crafted By Developer Mode.</p>
     </footer>
 
-    <!-- POPUPS & MODALS REQUIRED BY SCRIPT.JS -->
+    <!-- POPUPS REQUIRED BY SCRIPT.JS -->
     <div id="custom-popup" class="popup-overlay" style="display: none;">
         <div class="popup-card">
             <div id="popup-icon" class="popup-icon-container floating-emoji">💥</div>
@@ -654,74 +663,73 @@
         </div>
     </div>
 
-    <!-- 💥 CRITICAL: LOAD PARTICLE CANVAS ENGINE (SCRIPT.JS) 💥 -->
+    <!-- PARTICLE CANVAS ENGINE -->
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 
-    <!-- 💥 BIDIRECTIONAL SMART THEME SYNCHRONIZER 💥 -->
+    <!-- 💥 100% BIDIRECTIONAL THEME TOGGLE ENGINE 💥 -->
     <script>
         (function() {
-            function syncThemeDOM(theme) {
+            function applyTheme(theme) {
                 const isDark = (theme === 'dark');
-                document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+                const themeName = isDark ? 'dark' : 'light';
+
+                document.documentElement.setAttribute('data-theme', themeName);
                 if (document.body) {
-                    document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
+                    document.body.setAttribute('data-theme', themeName);
+                }
+
+                localStorage.setItem('air_cursor_theme', themeName);
+                localStorage.setItem('theme', themeName);
+
+                const btn = document.getElementById('themeToggle');
+                if (btn) {
                     if (isDark) {
-                        document.body.classList.remove('light-mode');
-                        document.documentElement.classList.remove('light-mode');
-                        document.body.classList.add('dark-mode');
+                        btn.classList.add('is-night');
                     } else {
-                        document.body.classList.remove('dark-mode');
-                        document.documentElement.classList.remove('dark-mode');
-                        document.body.classList.add('light-mode');
+                        btn.classList.remove('is-night');
                     }
                 }
-                localStorage.setItem('air_cursor_theme', isDark ? 'dark' : 'light');
-                localStorage.setItem('theme', isDark ? 'dark' : 'light');
             }
 
+            // Sync on load
+            const initial = localStorage.getItem('air_cursor_theme') || localStorage.getItem('theme') || 'dark';
+            applyTheme(initial);
+
             document.addEventListener('DOMContentLoaded', () => {
-                const savedTheme = localStorage.getItem('air_cursor_theme') || localStorage.getItem('theme') || 'dark';
-                syncThemeDOM(savedTheme);
+                applyTheme(initial);
 
-                const themeBtn = document.getElementById('themeToggle');
-                if (themeBtn) {
-                    if (savedTheme === 'light') {
-                        themeBtn.classList.remove('is-night');
-                    } else {
-                        themeBtn.classList.add('is-night');
-                    }
+                const toggleBtn = document.getElementById('themeToggle');
+                if (toggleBtn) {
+                    // CAPTURE PHASE LISTENER (WIPES ANY SCRIPT.JS CONFLICT)
+                    toggleBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (e.stopImmediatePropagation) e.stopImmediatePropagation();
 
-                    let lastClick = 0;
-                    themeBtn.addEventListener('click', function() {
-                        const now = Date.now();
-                        if (now - lastClick < 200) return;
-                        lastClick = now;
-
-                        const hadNight = themeBtn.classList.contains('is-night');
-
-                        setTimeout(() => {
-                            const hasNight = themeBtn.classList.contains('is-night');
-                            let isDark;
-                            if (hasNight !== hadNight) {
-                                isDark = hasNight;
-                            } else {
-                                isDark = !hadNight;
-                                if (isDark) {
-                                    themeBtn.classList.add('is-night');
-                                } else {
-                                    themeBtn.classList.remove('is-night');
-                                }
-                            }
-                            syncThemeDOM(isDark ? 'dark' : 'light');
-                        }, 25);
-                    });
+                        const current = document.documentElement.getAttribute('data-theme') || 'dark';
+                        const next = (current === 'dark') ? 'light' : 'dark';
+                        applyTheme(next);
+                    }, true);
                 }
 
-                // Reminder Modal Fallback
+                // Native Form Verification
+                const form = document.getElementById('downloadForm');
+                if (form) {
+                    form.onsubmit = function(e) {
+                        const name = document.getElementById('name').value.trim();
+                        const email = document.getElementById('email').value.trim();
+                        if (!name || !email) {
+                            e.preventDefault();
+                            alert("Please enter both Name and Email!");
+                            return false;
+                        }
+                        return true;
+                    };
+                }
+
                 const reminderOkBtn = document.getElementById('reminderOkBtn');
                 const reminderBackBtn = document.getElementById('reminderBackBtn');
                 const reminderModal = document.getElementById('reminderModal');
-                const form = document.getElementById('downloadForm');
 
                 if (reminderOkBtn && form) {
                     reminderOkBtn.addEventListener('click', function() {

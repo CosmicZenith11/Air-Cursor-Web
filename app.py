@@ -11,10 +11,7 @@ from email.mime.multipart import MIMEMultipart
 from email.utils import formatdate, make_msgid
 from datetime import datetime, timedelta
 from bson.objectid import ObjectId
-from flask import Flask, render_template, request, redirect, url_for, session, make_response, abort, jsonify, send_file
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
-from reportlab.lib import colors
+from flask import Flask, render_template, request, redirect, url_for, session, make_response, abort, jsonify
 from pymongo import MongoClient
 from werkzeug.exceptions import HTTPException, default_exceptions
 
@@ -33,6 +30,12 @@ SMTP_EMAIL = os.environ.get('SMTP_EMAIL', 'aircursor.verify@gmail.com')
 SMTP_APP_PASSWORD = os.environ.get('SMTP_APP_PASSWORD', 'btajqpkrvkflsqvl')
 
 DEFAULT_AVATAR = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0%25' stop-color='%232563EB'/><stop offset='50%25' stop-color='%231D4ED8'/><stop offset='100%25' stop-color='%230B0D13'/></linearGradient><linearGradient id='a' x1='0' y1='0' x2='0' y2='1'><stop offset='0%25' stop-color='%23ffffff'/><stop offset='100%25' stop-color='%23e2edfc'/></linearGradient></defs><circle cx='50' cy='50' r='50' fill='url(%23g)'/><circle cx='50' cy='37' r='15' fill='url(%23a)'/><path d='M 23.5 80 C 23.5 63 35 56 50 56 C 65 56 76.5 63 76.5 80 Z' fill='url(%23a)'/></svg>"
+
+# 💥 તમારી GITHUB RELEASE ની ૨૩૩ MB વાળી ZIP લિંક 💥
+GITHUB_RELEASE_ZIP_URL = os.environ.get(
+    'AIR_CURSOR_ZIP_URL',
+    'https://github.com/CosmicZenith11/Air-Cursor-Web/releases/download/v1.0/Air.Cursor.zip'
+)
 
 # =========================================================
 # 💥 ૨. MONGODB ATLAS CLOUD CONNECTION 💥
@@ -250,7 +253,6 @@ def register():
     if not name or not email or '@' not in email:
         abort(400, description="Valid Full Name and Email are mandatory.")
 
-    # User registration session state
     session['user_registered'] = True
     session['user_name'] = name
     session['user_email'] = email
@@ -419,7 +421,6 @@ def api_admin_avatar_remove():
         return jsonify({"status": "success", "default_avatar": DEFAULT_AVATAR})
     return jsonify({"status": "error"}), 400
 
-# 💥 MATTE BLUE SECURITY OTP TEMPLATE (NO GOLD/NEON) 💥
 @app.route('/admin/request-profile-otp', methods=['POST'])
 def request_profile_otp():
     if session.get('user_role') != 'main_admin':
@@ -507,7 +508,6 @@ def execute_profile_update():
     log_activity("Main Admin", new_email, "Updated Root Profile Credentials", "ALLOWED")
     return redirect(url_for('main_admin_dashboard'))
 
-# 💥 MATTE BLUE PASSCODE RECOVERY TEMPLATE (NO GOLD/BROWN) 💥
 @app.route('/admin/forgot-passcode', methods=['POST'])
 def forgot_passcode():
     main_name, main_email, active_passcode, _ = get_main_admin()
@@ -868,7 +868,7 @@ def logout():
     return redirect(url_for('home'))
 
 # =========================================================
-# 💥 ૭. ERROR HANDLERS & SAFE DOWNLOADS 💥
+# 💥 ૭. ERROR HANDLERS & 233MB ZIP DOWNLOAD ROUTES 💥
 # =========================================================
 @app.errorhandler(HTTPException)
 def handle_http_exception(e):
@@ -884,82 +884,28 @@ def simulate_error(code):
         abort(code)
     return render_template('error.html', code=code, title="Custom Status", message="Non-standard status code."), 400
 
-# 💥 FIX: DOWNLOAD PAGE KEEPS WORKING AFTER PDF DOWNLOAD 💥
 @app.route('/download')
 def download_page():
     if not session.get('user_registered'):
         return redirect(url_for('home', action='download_click'))
     return render_template('download.html')
 
-# 💥 FIX: DO NOT CLEAR USER_REGISTERED SESSION HERE 💥
 @app.route('/reset-session')
 def reset_session():
-    # Only clear if user role was guest and they explicitly wanted to reset,
-    # but keep registration active so user can re-visit download page anytime.
     return redirect(url_for('home'))
 
-# 💥 FIX: MATTE BLUE RECEIPT PDF (ZERO NEON / SAFE STREAM) 💥
-@app.route('/download-pdf')
-def download_pdf():
+# 💥 ૧. નવી .ZIP ફાઇલ ડાઉનલોડ રૂટ (GitHub Releases ૨૩૩MB Direct Link) 💥
+@app.route('/download-zip')
+def download_zip():
     if not session.get('user_registered'):
         return redirect(url_for('home', action='download_click'))
-    
-    try:
-        buffer = io.BytesIO()
-        p = canvas.Canvas(buffer, pagesize=letter)
-        width, height = letter
+    # સીધી GitHub Releases ની ૨૩૩ MB વાળી લિંક પર રીડાયરેક્ટ થશે
+    return redirect(GITHUB_RELEASE_ZIP_URL)
 
-        # Matte Slate Header
-        p.setFillColor(colors.HexColor("#0B0D13"))
-        p.rect(0, height - 130, width, 130, fill=1, stroke=0)
-
-        logo_path = os.path.join(app.root_path, 'static', 'favicon.png')
-        text_x = 45
-        if os.path.exists(logo_path):
-            p.drawImage(logo_path, 40, height - 100, width=65, height=65, preserveAspectRatio=True, mask='auto')
-            text_x = 120
-
-        # Exact Matte Logo Blue (Zero Neon / Zero Cyan)
-        p.setFillColor(colors.HexColor("#2563EB"))
-        p.setFont("Helvetica-Bold", 26)
-        p.drawString(text_x, height - 60, "AIR CURSOR")
-
-        p.setFillColor(colors.HexColor("#9CA3AF"))
-        p.setFont("Helvetica", 13)
-        p.drawString(text_x, height - 85, "Touchless Desktop Navigation")
-
-        # Body Text
-        p.setFillColor(colors.HexColor("#111827"))
-        p.setFont("Helvetica-Bold", 18)
-        p.drawString(45, height - 180, "Installation Receipt & License Summary")
-
-        user_name = session.get('user_name', 'Valued User')
-        user_email = session.get('user_email', 'Registered User')
-        
-        p.setFont("Helvetica", 11)
-        p.setFillColor(colors.HexColor("#4B5563"))
-        p.drawString(45, height - 215, f"Licensed To: {user_name} ({user_email})")
-        p.drawString(45, height - 235, "Platform: Windows 10 / 11 Desktop (x64 Architecture)")
-        p.drawString(45, height - 255, "Security Check: Verified Hardware & Local Frame Processing")
-        p.drawString(45, height - 275, "Package: Air Cursor Desktop Core Engine")
-
-        p.setFillColor(colors.HexColor("#2563EB"))
-        p.setFont("Helvetica-Bold", 12)
-        p.drawString(45, height - 320, "Thank you for choosing Air Cursor.")
-
-        p.showPage()
-        p.save()
-        buffer.seek(0)
-
-        return send_file(
-            buffer,
-            as_attachment=True,
-            download_name="AirCursor_Receipt.pdf",
-            mimetype='application/pdf'
-        )
-    except Exception as e:
-        print(f"❌ PDF Download Error: {e}")
-        return redirect(url_for('download_page'))
+# 💥 ૨. જૂની PDF લિંક પરથી પણ સીધી ZIP ફાઇલ જ ડાઉનલોડ થાય (સેફ્ટી) 💥
+@app.route('/download-pdf')
+def download_pdf():
+    return redirect(url_for('download_zip'))
 
 if __name__ == '__main__':
     app.run(debug=True)

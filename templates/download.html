@@ -12,11 +12,6 @@
         (function() {
             var saved = localStorage.getItem('air_cursor_theme') || localStorage.getItem('theme') || 'dark';
             document.documentElement.setAttribute('data-theme', saved);
-            if (saved === 'light') {
-                document.documentElement.classList.add('light-mode');
-            } else {
-                document.documentElement.classList.remove('light-mode');
-            }
         })();
     </script>
 
@@ -35,28 +30,9 @@
             --shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
         }
 
-        /* LIGHT THEME */
-        html[data-theme="light"],
-        body[data-theme="light"],
-        html.light-mode,
-        body.light-mode {
-            --bg-body: #F8FAFC !important;
-            --liquid-glass-bg: rgba(255, 255, 255, 0.7) !important;
-            --liquid-glass-card: rgba(255, 255, 255, 0.85) !important;
-            --border: rgba(37, 99, 235, 0.22) !important;
-            --text-main: #0F172A !important;
-            --text-sub: #475569 !important;
-            --brand-blue: #2563EB !important;
-            --brand-blue-hover: #1D4ED8 !important;
-            --tc-bg: rgba(241, 245, 249, 0.85) !important;
-            --shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
-        }
-
         /* DARK THEME */
         html[data-theme="dark"],
-        body[data-theme="dark"],
-        html.dark-mode,
-        body.dark-mode {
+        body[data-theme="dark"] {
             --bg-body: #07090E !important;
             --liquid-glass-bg: rgba(15, 23, 42, 0.5) !important;
             --liquid-glass-card: rgba(20, 30, 55, 0.45) !important;
@@ -67,6 +43,21 @@
             --brand-blue-hover: #1D4ED8 !important;
             --tc-bg: rgba(11, 15, 25, 0.6) !important;
             --shadow: 0 20px 40px rgba(0, 0, 0, 0.6) !important;
+        }
+
+        /* LIGHT THEME */
+        html[data-theme="light"],
+        body[data-theme="light"] {
+            --bg-body: #F8FAFC !important;
+            --liquid-glass-bg: rgba(255, 255, 255, 0.75) !important;
+            --liquid-glass-card: rgba(255, 255, 255, 0.88) !important;
+            --border: rgba(37, 99, 235, 0.22) !important;
+            --text-main: #0F172A !important;
+            --text-sub: #475569 !important;
+            --brand-blue: #2563EB !important;
+            --brand-blue-hover: #1D4ED8 !important;
+            --tc-bg: rgba(241, 245, 249, 0.85) !important;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
         }
 
         canvas, #particleCanvas, .particles-js-canvas-el {
@@ -335,7 +326,7 @@
             background: rgba(37, 99, 235, 0.1);
         }
 
-        /* Popup */
+        /* 💥 POPUP: PURE ZIP INSTALLER CONFIRMATION 💥 */
         .popup-overlay {
             display: none;
             position: fixed;
@@ -395,7 +386,7 @@
                     <div class="dn-palm left">
                         <svg viewBox="0 0 40 46" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M22 46 C21 34 16 24 20 14" stroke="#5c3818" stroke-width="2.8" stroke-linecap="round"/>
-                            <path d="M20 14 C12 8 4 11 0 17 C6 13 13 14 20 14 Z" fill="#1b4332"/>
+                            <path d="M20 14 C12 8 4 11 0 17 C6 13 14 14 20 14 Z" fill="#1b4332"/>
                             <path d="M20 14 C14 4 6 5 2 8 C8 7 15 9 20 14 Z" fill="#2d6a4f"/>
                             <path d="M20 14 C22 3 30 3 35 7 C28 8 23 10 20 14 Z" fill="#40916c"/>
                             <path d="M20 14 C26 7 35 11 39 17 C33 13 26 14 20 14 Z" fill="#1b4332"/>
@@ -458,17 +449,17 @@
         </div>
     </div>
 
-    <!-- Popup -->
+    <!-- 💥 POPUP: PURE ZIP INSTALLER CONFIRMATION 💥 -->
     <div id="custom-popup" class="popup-overlay">
         <div class="popup-card">
             <div style="font-size: 2.4rem; margin-bottom: 12px;">🎉</div>
             <h3 id="popup-title">Download Initialized!</h3>
-            <p id="popup-message">Your PDF receipt and Air Cursor package are downloading successfully.</p>
+            <p id="popup-message">Your Air Cursor installer package (.zip) is downloading successfully.</p>
             <button id="popup-close-btn" class="btn-secondary" style="width: 100%; justify-content: center; background: #2563EB; color: #fff;">OK</button>
         </div>
     </div>
 
-    <!-- 💥 FOOLPROOF THEME ENGINE & DOWNLOAD HANDLER 💥 -->
+    <!-- 💥 ZIP DOWNLOAD & THEME SCRIPT 💥 -->
     <script>
         (function() {
             function applyTheme(theme) {
@@ -478,15 +469,6 @@
                 document.documentElement.setAttribute('data-theme', themeName);
                 if (document.body) {
                     document.body.setAttribute('data-theme', themeName);
-                    if (isDark) {
-                        document.body.classList.remove('light-mode');
-                        document.documentElement.classList.remove('light-mode');
-                        document.body.classList.add('dark-mode');
-                    } else {
-                        document.body.classList.remove('dark-mode');
-                        document.documentElement.classList.remove('dark-mode');
-                        document.body.classList.add('light-mode');
-                    }
                 }
 
                 localStorage.setItem('air_cursor_theme', themeName);
@@ -508,19 +490,17 @@
 
                 const toggleBtn = document.getElementById('themeToggle');
                 if (toggleBtn) {
-                    // CAPTURE PHASE LISTENER: Wipes conflict and guarantees clean toggle
                     toggleBtn.addEventListener('click', function(e) {
                         e.preventDefault();
                         e.stopPropagation();
                         if (e.stopImmediatePropagation) e.stopImmediatePropagation();
 
-                        const current = localStorage.getItem('air_cursor_theme') || document.documentElement.getAttribute('data-theme') || 'dark';
+                        const current = document.documentElement.getAttribute('data-theme') || 'dark';
                         const next = (current === 'dark') ? 'light' : 'dark';
                         applyTheme(next);
                     }, true);
                 }
 
-                // T&C & Download Logic
                 const tcAgree = document.getElementById('tcAgree');
                 const downloadBtn = document.getElementById('trigger-download-btn'); 
                 const popupOverlay = document.getElementById('custom-popup');
@@ -546,6 +526,7 @@
                     });
                 }
 
+                // 💥 100% PURE ZIP FILE DOWNLOAD TRIGGER 💥
                 if (downloadBtn) {
                     downloadBtn.addEventListener('click', (e) => {
                         e.preventDefault(); 
@@ -555,8 +536,7 @@
 
                         setTimeout(() => {
                             const dl = document.createElement('a');
-                            dl.href = "/download-pdf";
-                            dl.setAttribute('download', 'AirCursor_Receipt.pdf');
+                            dl.href = "/download-zip";  // <-- હવે સીધી .ZIP જ ડાઉનલોડ થશે
                             document.body.appendChild(dl);
                             dl.click();
                             document.body.removeChild(dl);

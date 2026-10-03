@@ -16,63 +16,73 @@
     </script>
 
     <style>
-        /* 💥 1. CLEAN THEME VARIABLES (ZERO SPECIFICITY CONFLICT) 💥 */
+        /* =========================================================
+           💥 1. DESIGN TOKENS (UNIFIED CORNER RADII & COLORS) 💥
+           ========================================================= */
         :root {
+            /* Radius Scale (Fixed to 4 standard values) */
+            --radius-sm: 8px;      /* Badges, tags, small inputs */
+            --radius-md: 14px;     /* Feature cards, inputs */
+            --radius-lg: 24px;     /* Content sections, modals */
+            --radius-pill: 9999px; /* Buttons, nav pills, badges */
+
+            /* Dark Palette (Default) */
             --bg-base: #07090E;
-            --liquid-glass-bg: rgba(15, 23, 42, 0.5);
-            --liquid-glass-card: rgba(20, 30, 55, 0.4);
-            --liquid-border: rgba(255, 255, 255, 0.14);
+            --liquid-glass-bg: rgba(15, 23, 42, 0.55);
+            --liquid-glass-card: rgba(20, 30, 55, 0.45);
+            --liquid-border: rgba(255, 255, 255, 0.12);
             --liquid-border-hover: rgba(37, 99, 235, 0.7);
-            --liquid-sheen: inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.25), 0 20px 40px rgba(0, 0, 0, 0.6);
+            --liquid-sheen: inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.2), 0 20px 40px rgba(0, 0, 0, 0.6);
             --text-main: #F8FAFC;
             --text-sub: #94A3B8;
             --accent: #2563EB;
             --accent-hover: #1D4ED8;
-            --input-bg: rgba(15, 23, 42, 0.65);
+            --accent-glow: rgba(37, 99, 235, 0.35);
+            --input-bg: rgba(15, 23, 42, 0.7);
             --input-text: #F8FAFC;
             --input-placeholder: #64748B;
             --input-border: rgba(255, 255, 255, 0.15);
         }
 
-        /* DARK THEME */
         html[data-theme="dark"],
         body[data-theme="dark"] {
             --bg-base: #07090E !important;
-            --liquid-glass-bg: rgba(15, 23, 42, 0.5) !important;
-            --liquid-glass-card: rgba(20, 30, 55, 0.4) !important;
-            --liquid-border: rgba(255, 255, 255, 0.14) !important;
+            --liquid-glass-bg: rgba(15, 23, 42, 0.55) !important;
+            --liquid-glass-card: rgba(20, 30, 55, 0.45) !important;
+            --liquid-border: rgba(255, 255, 255, 0.12) !important;
             --liquid-border-hover: rgba(37, 99, 235, 0.7) !important;
-            --liquid-sheen: inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.25), 0 20px 40px rgba(0, 0, 0, 0.6) !important;
+            --liquid-sheen: inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.2), 0 20px 40px rgba(0, 0, 0, 0.6) !important;
             --text-main: #F8FAFC !important;
             --text-sub: #94A3B8 !important;
             --accent: #2563EB !important;
             --accent-hover: #1D4ED8 !important;
-            --input-bg: rgba(15, 23, 42, 0.65) !important;
+            --accent-glow: rgba(37, 99, 235, 0.35) !important;
+            --input-bg: rgba(15, 23, 42, 0.7) !important;
             --input-text: #F8FAFC !important;
             --input-placeholder: #64748B !important;
             --input-border: rgba(255, 255, 255, 0.15) !important;
         }
 
-        /* LIGHT THEME */
         html[data-theme="light"],
         body[data-theme="light"] {
             --bg-base: #F8FAFC !important;
             --liquid-glass-bg: rgba(255, 255, 255, 0.75) !important;
             --liquid-glass-card: rgba(255, 255, 255, 0.88) !important;
-            --liquid-border: rgba(37, 99, 235, 0.22) !important;
+            --liquid-border: rgba(37, 99, 235, 0.2) !important;
             --liquid-border-hover: rgba(37, 99, 235, 0.6) !important;
             --liquid-sheen: inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.9), 0 10px 30px rgba(0, 0, 0, 0.08) !important;
             --text-main: #0F172A !important;
             --text-sub: #475569 !important;
             --accent: #2563EB !important;
             --accent-hover: #1D4ED8 !important;
+            --accent-glow: rgba(37, 99, 235, 0.2) !important;
             --input-bg: rgba(255, 255, 255, 0.95) !important;
             --input-text: #0F172A !important;
             --input-placeholder: #94A3B8 !important;
             --input-border: rgba(37, 99, 235, 0.3) !important;
         }
 
-        /* 💥 PARTICLE CANVAS VISIBILITY 💥 */
+        /* Particle Canvas Visibility */
         #particleCanvas {
             position: fixed !important;
             top: 0 !important;
@@ -91,22 +101,24 @@
             color: var(--text-main) !important;
             font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
             margin: 0 !important;
-            padding-top: 110px !important;
+            padding-top: 90px !important;
             transition: background-color 0.25s ease, color 0.25s ease !important;
             position: relative;
         }
 
-        /* 💥 HEADER ROW (48PX HEIGHT IN 1 LINE) 💥 */
+        /* =========================================================
+           💥 2. FIXED HEADER BAR 💥
+           ========================================================= */
         .header-bar-fixed {
             position: fixed !important;
-            top: 20px !important;
+            top: 16px !important;
             left: 0 !important;
             width: 100vw !important;
             height: 48px !important;
             display: flex !important;
             align-items: center !important;
             justify-content: space-between !important;
-            padding: 0 30px !important;
+            padding: 0 28px !important;
             box-sizing: border-box !important;
             z-index: 99999 !important;
             pointer-events: none !important;
@@ -130,13 +142,13 @@
             -webkit-backdrop-filter: blur(24px) saturate(200%) !important;
             border: 1px solid var(--liquid-border) !important;
             box-shadow: var(--liquid-sheen) !important;
-            border-radius: 999px !important;
+            border-radius: var(--radius-pill) !important;
             box-sizing: border-box !important;
             margin: 0 !important;
         }
 
         .app-logo-container {
-            padding: 0 20px !important;
+            padding: 0 18px !important;
             gap: 10px !important;
             text-decoration: none !important;
             cursor: pointer !important;
@@ -164,13 +176,15 @@
             justify-content: center !important;
         }
         .nav-pill {
-            padding: 0 8px !important;
+            padding: 0 6px !important;
         }
         .nav-links {
             display: flex !important;
             align-items: center !important;
             gap: 4px !important;
         }
+
+        /* Nav Interactive Affordance */
         .nav-links a {
             color: var(--text-sub) !important;
             -webkit-text-fill-color: var(--text-sub) !important;
@@ -178,14 +192,20 @@
             font-weight: 600 !important;
             font-size: 0.9rem !important;
             padding: 8px 16px !important;
-            border-radius: 999px !important;
-            transition: all 0.2s ease !important;
+            border-radius: var(--radius-pill) !important;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            cursor: pointer !important;
         }
         .nav-links a:hover,
-        .nav-links a.active {
-            color: #2563EB !important;
-            -webkit-text-fill-color: #2563EB !important;
-            background: rgba(37, 99, 235, 0.15) !important;
+        .nav-links a:focus-visible {
+            color: #FFFFFF !important;
+            -webkit-text-fill-color: #FFFFFF !important;
+            background: rgba(37, 99, 235, 0.3) !important;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25) !important;
+        }
+        .nav-links a:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
         }
 
         .theme-toggle-container {
@@ -197,7 +217,6 @@
             align-items: center !important;
             justify-content: center !important;
         }
-
         #themeToggle {
             cursor: pointer !important;
             pointer-events: auto !important;
@@ -206,7 +225,60 @@
             outline: none;
         }
 
-        /* 💥 SCROLL DOWN TO EXPLORE VISUALLY REMOVED 💥 */
+        /* =========================================================
+           💥 3. HERO SECTION (H1, CTA & CONTROLLED SPACING) 💥
+           ========================================================= */
+        .hero-section {
+            min-height: 46vh !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            position: relative !important;
+            z-index: 5 !important;
+            background: transparent !important;
+            padding: 30px 20px 10px 20px !important;
+            text-align: center !important;
+            box-sizing: border-box !important;
+        }
+
+        .hero-header {
+            max-width: 720px;
+            margin: 0 auto 18px auto;
+        }
+
+        /* Accessible Primary H1 */
+        .hero-title {
+            font-size: 2.85rem !important;
+            font-weight: 900 !important;
+            letter-spacing: -0.04em !important;
+            color: var(--text-main) !important;
+            margin: 0 0 10px 0 !important;
+            line-height: 1.1 !important;
+            text-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .hero-title span {
+            color: #2563EB;
+        }
+
+        .hero-subtitle {
+            font-size: 1.05rem !important;
+            color: var(--text-sub) !important;
+            max-width: 580px;
+            margin: 0 auto !important;
+            line-height: 1.5 !important;
+        }
+
+        .hero-actions {
+            margin-top: 18px;
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Script.js Compatibility Fallback */
         .scroll-instruction,
         .main-text {
             display: none !important;
@@ -219,17 +291,9 @@
             pointer-events: none !important;
         }
 
-        .hero-section {
-            min-height: 85vh !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            position: relative !important;
-            z-index: 5 !important;
-            background: transparent !important;
-        }
-
-        /* 💥 IPHONE LIQUID GLASS CONTENT SECTIONS 💥 */
+        /* =========================================================
+           💥 4. IPHONE LIQUID GLASS CONTENT CARDS 💥
+           ========================================================= */
         .content-section,
         #intro,
         #functions,
@@ -240,42 +304,44 @@
             -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
             border: 1px solid var(--liquid-border) !important;
             box-shadow: var(--liquid-sheen) !important;
-            border-radius: 26px !important;
+            border-radius: var(--radius-lg) !important;
             position: relative !important;
             z-index: 10 !important;
             overflow: hidden !important;
-            margin: 40px auto !important;
+            margin: 32px auto !important;
             max-width: 960px !important;
             width: 92% !important;
-            padding: 45px 35px !important;
+            padding: 42px 34px !important;
             text-align: center !important;
             box-sizing: border-box !important;
         }
 
-        /* 💥 ૨ BOXES UPAR + ૧ BOX NICHE CENTER MA 💥 */
+        /* Balanced 3-Column Grid Layout */
         .faculty-cards-layout {
-            display: flex !important;
-            flex-wrap: wrap !important;
-            justify-content: center !important;
-            align-items: stretch !important;
-            gap: 24px !important;
-            margin: 34px auto 0 auto !important;
-            max-width: 820px !important;
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 20px !important;
+            max-width: 920px !important;
             width: 100% !important;
+            margin: 30px auto 0 auto !important;
             box-sizing: border-box !important;
         }
 
+        @media (max-width: 860px) {
+            .faculty-cards-layout {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
         .faculty-card {
-            width: 380px !important;
-            max-width: 100% !important;
-            flex: 0 0 380px !important;
+            width: 100% !important;
             background: var(--liquid-glass-card) !important;
             backdrop-filter: blur(20px) !important;
             -webkit-backdrop-filter: blur(20px) !important;
             border: 1px solid var(--liquid-border) !important;
             box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.18), 0 12px 28px rgba(0, 0, 0, 0.35) !important;
-            border-radius: 18px !important;
-            padding: 26px 22px !important;
+            border-radius: var(--radius-md) !important;
+            padding: 26px 20px !important;
             text-align: left !important;
             display: flex !important;
             flex-direction: column !important;
@@ -314,29 +380,69 @@
             animation: borderRun 2s linear infinite;
         }
 
+        /* Typography */
         h2 {
             font-weight: 800 !important;
             color: var(--text-main) !important;
-            text-transform: uppercase;
-            letter-spacing: -0.5px;
+            text-transform: none !important;
+            letter-spacing: -0.02em !important;
             font-size: 1.85rem !important;
-            margin-top: 10px !important;
+            margin: 12px 0 8px 0 !important;
+            line-height: 1.25 !important;
         }
+
         h3 {
             font-weight: 700 !important;
             color: var(--text-main) !important;
             font-size: 1.15rem !important;
-            margin: 10px 0 8px 0 !important;
+            margin: 12px 0 8px 0 !important;
+            line-height: 1.3 !important;
         }
+
         p {
             color: var(--text-sub) !important;
             line-height: 1.6 !important;
             font-size: 0.93rem !important;
+            margin: 0 !important;
         }
 
-        .floating-emoji {
-            font-size: 2rem !important;
-            margin-bottom: 8px !important;
+        /* =========================================================
+           💥 5. VECTOR SVG TECH ICONS (NO GENERIC EMOJIS) 💥
+           ========================================================= */
+        .tech-badge-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-sm);
+            background: rgba(37, 99, 235, 0.14);
+            border: 1px solid rgba(37, 99, 235, 0.32);
+            color: #38BDF8;
+            margin-bottom: 6px;
+        }
+
+        .tech-badge-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .section-header-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 52px;
+            height: 52px;
+            border-radius: var(--radius-sm);
+            background: rgba(37, 99, 235, 0.16);
+            border: 1px solid rgba(37, 99, 235, 0.38);
+            color: #38BDF8;
+            margin: 0 auto 6px auto;
+        }
+
+        .section-header-icon svg {
+            width: 26px;
+            height: 26px;
         }
 
         .feature-badges span {
@@ -346,41 +452,56 @@
             backdrop-filter: blur(12px) !important;
             font-weight: 700 !important;
             padding: 8px 16px !important;
-            border-radius: 999px !important;
+            border-radius: var(--radius-pill) !important;
             font-size: 0.88rem !important;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
+        /* Primary Action Buttons */
         .cta-button {
             background: #2563EB !important;
             color: #FFFFFF !important;
-            border: 1px solid rgba(255, 255, 255, 0.18) !important;
-            box-shadow: 0 10px 24px rgba(37, 99, 235, 0.3) !important;
-            text-transform: uppercase !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            box-shadow: 0 10px 24px rgba(37, 99, 235, 0.35) !important;
             font-weight: 800 !important;
-            letter-spacing: 0.8px !important;
-            border-radius: 999px !important;
-            padding: 14px 34px !important;
+            letter-spacing: 0.5px !important;
+            border-radius: var(--radius-pill) !important;
+            padding: 13px 32px !important;
             cursor: pointer !important;
             pointer-events: auto !important;
-            position: relative !important;
-            z-index: 50 !important;
-            transition: all 0.2s ease !important;
-        }
-        .cta-button:hover {
-            background: #1D4ED8 !important;
-            transform: translateY(-2px);
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-decoration: none !important;
+            font-size: 0.95rem !important;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
         }
 
+        .cta-button:hover,
+        .cta-button:focus-visible {
+            background: #1D4ED8 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(37, 99, 235, 0.45) !important;
+        }
+
+        .cta-button:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 3px;
+        }
+
+        /* Form Inputs */
         .glass-input {
             background: var(--input-bg) !important;
             color: var(--input-text) !important;
             border: 1px solid var(--input-border) !important;
             box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05) !important;
-            border-radius: 12px !important;
+            border-radius: var(--radius-md) !important;
             padding: 14px 18px !important;
             width: 100% !important;
             font-size: 0.95rem !important;
-            margin-bottom: 16px !important;
+            margin-bottom: 14px !important;
             box-sizing: border-box !important;
             outline: none !important;
             pointer-events: auto !important;
@@ -394,7 +515,7 @@
         }
         .glass-input:focus {
             border-color: var(--accent) !important;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2) !important;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25) !important;
         }
 
         .download-form {
@@ -408,6 +529,35 @@
             z-index: 30 !important;
         }
 
+        /* Checkbox Alignment */
+        .checkbox-alignment-wrap {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 10px !important;
+            width: 100% !important;
+            margin: 4px 0 20px 0 !important;
+            cursor: pointer !important;
+            user-select: none !important;
+        }
+
+        .checkbox-alignment-wrap input[type="checkbox"] {
+            width: 18px !important;
+            height: 18px !important;
+            margin: 0 !important;
+            accent-color: var(--accent) !important;
+            cursor: pointer !important;
+        }
+
+        .checkbox-alignment-wrap label {
+            font-size: 0.92rem !important;
+            color: var(--text-main) !important;
+            cursor: pointer !important;
+            line-height: 1 !important;
+            font-weight: 500 !important;
+        }
+
+        /* Modals and Overlays */
         .modal-overlay,
         .popup-overlay {
             display: none;
@@ -434,7 +584,7 @@
             -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
             border: 1px solid var(--liquid-border) !important;
             box-shadow: var(--liquid-sheen) !important;
-            border-radius: 22px !important;
+            border-radius: var(--radius-lg) !important;
             padding: 32px 28px !important;
             max-width: 430px !important;
             width: 100% !important;
@@ -447,7 +597,7 @@
             color: var(--text-main) !important;
             border: 1px solid var(--liquid-border) !important;
             padding: 12px 24px !important;
-            border-radius: 999px !important;
+            border-radius: var(--radius-pill) !important;
             font-weight: 600 !important;
             font-size: 0.9rem !important;
             cursor: pointer !important;
@@ -457,7 +607,7 @@
 </head>
 <body>
 
-    <!-- 💥 PARTICLE CANVAS ENGINE 💥 -->
+    <!-- Canvas Engine -->
     <canvas id="particleCanvas"></canvas>
 
     <!-- FIXED HEADER -->
@@ -467,20 +617,20 @@
             <span class="app-logo-text">AIR CURSOR</span>
         </a>
 
-        <header class="top-nav">
+        <header class="top-nav" aria-label="Main Navigation">
             <div class="nav-pill">
                 <nav class="nav-links">
                     <a href="#intro">Intro</a>
                     <a href="#functions">Functions</a>
                     <a href="#characteristics">Characteristics</a>
-                    <a href="/download">Download</a>
+                    <a href="#download">Download</a>
                 </nav>
             </div>
         </header>
 
         <div class="theme-toggle-container">
             <div class="toggle-scaler">
-                <button class="dn-toggle is-night" id="themeToggle" aria-label="Toggle Theme">
+                <button class="dn-toggle is-night" id="themeToggle" aria-label="Toggle Night/Day Theme">
                     <div class="dn-sky"></div>
                     <div class="dn-stars">
                         <div class="dn-star s1"></div>
@@ -529,88 +679,156 @@
         </div>
     </div>
 
-    <!-- HERO SECTION -->
+    <!-- HERO SECTION (H1, CTA & CONTROLLED SPACING) -->
     <section class="hero-section">
-        <div class="scroll-instruction">
+        <header class="hero-header">
+            <h1 class="hero-title">Air <span>Cursor</span></h1>
+            <p class="hero-subtitle">Touchless Desktop Navigation Powered by Real-Time Optical AI</p>
+        </header>
+
+        <div class="hero-actions">
+            <a href="#download" class="cta-button hero-cta-btn">Download for Free</a>
+        </div>
+
+        <!-- Script.js compatibility hook -->
+        <div class="scroll-instruction" aria-hidden="true">
             <p class="main-text"></p>
         </div>
     </section>
 
-    <!-- INTRO SECTION (100% ENGLISH) -->
+    <!-- INTRO SECTION (REMOVING ALL-CAPS RUN & USING SENTENCE CASE) -->
     <section id="intro" class="content-section">
-        <div class="floating-emoji">✨</div>
-        <h2>Control Your Screen Effortlessly Without Touching</h2>
+        <div class="section-header-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+        </div>
+        <h2>Control your screen effortlessly without touching</h2>
         <p>A next-generation touchless navigation engine powered by real-time Computer Vision. Translates optical finger coordinates into zero-friction desktop controls.</p>
+        
         <div class="feature-badges" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 24px;">
-            <span>⚡ Zero Extra Hardware</span>
-            <span>🧠 MediaPipe AI Engine</span>
-            <span>🚀 60+ FPS Real-Time</span>
+            <span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                Zero Extra Hardware
+            </span>
+            <span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                MediaPipe AI Engine
+            </span>
+            <span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/></svg>
+                60+ FPS Real-Time
+            </span>
         </div>
     </section>
 
-    <!-- 💥 FUNCTIONS SECTION (PURE SHORT ENGLISH SUMMARIES) 💥 -->
+    <!-- FUNCTIONS SECTION (3-COLUMN BALANCED GRID & CLEAN SVG ICONS) -->
     <section id="functions" class="content-section">
-        <div class="floating-emoji">⚙️</div>
+        <div class="section-header-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+        </div>
         <h2>Functions</h2>
-        <p>Core navigation capabilities engineered for smooth, touch-free interaction.</p>
+        <p>Core navigation capabilities engineered for smooth, touch-free desktop control.</p>
         
         <div class="faculty-cards-layout">
-            <!-- Box 1 (Top Left) -->
+            <!-- Box 1 -->
             <div class="faculty-card">
-                <div class="floating-emoji">🖐️</div>
+                <div class="tech-badge-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
+                    </svg>
+                </div>
                 <h3>Optical Cursor Tracking</h3>
                 <p>Move your on-screen mouse cursor smoothly and precisely simply by pointing your index finger at your webcam.</p>
             </div>
 
-            <!-- Box 2 (Top Right) -->
+            <!-- Box 2 -->
             <div class="faculty-card">
-                <div class="floating-emoji">⚡</div>
+                <div class="tech-badge-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                    </svg>
+                </div>
                 <h3>Touchless Air Gestures</h3>
                 <p>Pinch fingers to click, double tap to open files, hold to drag windows, and scroll pages mid-air without touching physical hardware.</p>
             </div>
 
-            <!-- Box 3 (Bottom Center) -->
+            <!-- Box 3 -->
             <div class="faculty-card">
-                <div class="floating-emoji">🔒</div>
+                <div class="tech-badge-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                </div>
                 <h3>100% Local Privacy</h3>
                 <p>All camera frames are processed directly inside your computer's RAM. No video streams, photos, or biometric data are ever saved or uploaded.</p>
             </div>
         </div>
     </section>
 
-    <!-- 💥 CHARACTERISTICS SECTION (PURE SHORT ENGLISH SUMMARIES) 💥 -->
+    <!-- CHARACTERISTICS SECTION (3-COLUMN BALANCED GRID & CLEAN SVG ICONS) -->
     <section id="characteristics" class="content-section">
-        <div class="floating-emoji">🌟</div>
+        <div class="section-header-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+        </div>
         <h2>Characteristics</h2>
         <p>System architecture designed for speed, low resources, and universal compatibility.</p>
         
         <div class="faculty-cards-layout">
-            <!-- Box 1 (Top Left) -->
+            <!-- Box 1 -->
             <div class="faculty-card">
-                <div class="floating-emoji">🚀</div>
+                <div class="tech-badge-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/>
+                        <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/>
+                    </svg>
+                </div>
                 <h3>Ultra-Low Latency</h3>
                 <p>High frame-rate 60+ FPS processing with under 15ms optical latency delivers immediate, jitter-free cursor tracking.</p>
             </div>
 
-            <!-- Box 2 (Top Right) -->
+            <!-- Box 2 -->
             <div class="faculty-card">
-                <div class="floating-emoji">🔌</div>
+                <div class="tech-badge-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2v8"/>
+                        <path d="M4.93 10.93a10 10 0 1 0 14.14 0"/>
+                    </svg>
+                </div>
                 <h3>Plug & Play Compatibility</h3>
                 <p>Works out of the box with any standard built-in or USB webcam—no expensive depth sensors, VR gear, or special accessories required.</p>
             </div>
 
-            <!-- Box 3 (Bottom Center) -->
+            <!-- Box 3 -->
             <div class="faculty-card">
-                <div class="floating-emoji">🌐</div>
+                <div class="tech-badge-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                        <line x1="8" y1="21" x2="16" y2="21"/>
+                        <line x1="12" y1="17" x2="12" y2="21"/>
+                    </svg>
+                </div>
                 <h3>Lightweight Windows Build</h3>
                 <p>Tailored for Windows 10 and 11 desktops with multi-threaded Python routines, consuming under 5% CPU for seamless background execution.</p>
             </div>
         </div>
     </section>
 
-    <!-- DOWNLOAD FORM SECTION -->
+    <!-- DOWNLOAD FORM SECTION (ALIGNED CHECKBOX & CLEAR ACTION) -->
     <section id="download" class="content-section">
-        <div class="floating-emoji">📥</div>
+        <div class="section-header-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+        </div>
         <h2>Get Started Today</h2>
         <p>Experience touchless desktop navigation. Register below to download the Air Cursor client.</p>
         
@@ -618,12 +836,13 @@
             <input type="text" name="name" id="name" class="glass-input" placeholder="Your Name (eg: Rahul)" autocomplete="name" required>
             <input type="email" name="email" id="email" class="glass-input" placeholder="Email Address (eg: rahul123@gmail.com)" autocomplete="email" required>
             
-            <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin: -5px 0 18px 0;">
-                <input type="checkbox" name="remember" id="remember" value="true" style="cursor: pointer; accent-color: var(--accent); width: 16px; height: 16px;">
-                <label for="remember" style="font-size: 0.95rem; opacity: 0.85; cursor: pointer; color: var(--text-main);">Remember me</label>
+            <!-- Centered & Vertically Aligned Checkbox Unit -->
+            <div class="checkbox-alignment-wrap">
+                <input type="checkbox" name="remember" id="remember" value="true">
+                <label for="remember">Remember me</label>
             </div>
 
-            <button type="submit" id="downloadSubmitBtn" class="cta-button">Download for Free</button>
+            <button type="submit" id="downloadSubmitBtn" class="cta-button" style="width: 100%;">Download for Free</button>
         </form>
     </section>
 
@@ -635,16 +854,20 @@
     <!-- POPUPS REQUIRED BY SCRIPT.JS -->
     <div id="custom-popup" class="popup-overlay" style="display: none;">
         <div class="popup-card">
-            <div id="popup-icon" class="popup-icon-container floating-emoji">💥</div>
+            <div class="section-header-icon" aria-hidden="true" style="margin-bottom: 12px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
             <h3 id="popup-title">Action Required!</h3>
             <p id="popup-message">Please fill out both name and email fields!</p>
-            <button type="button" id="popup-close-btn" class="cta-button" style="width: 100%;">OK</button>
+            <button type="button" id="popup-close-btn" class="cta-button" style="width: 100%; margin-top: 14px;">OK</button>
         </div>
     </div>
 
     <div id="reminderModal" class="modal-overlay" style="display: none;">
         <div class="glass-modal">
-            <div class="modal-icon floating-emoji">💡</div>
+            <div class="section-header-icon" aria-hidden="true" style="margin-bottom: 12px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            </div>
             <h3>Are you sure?</h3>
             <p>You haven't checked <strong>'Remember me'</strong>. Your session won't be saved for <strong>30 days</strong>.</p>
             <div style="display: flex; gap: 12px; justify-content: center; margin-top: 20px;">
@@ -656,17 +879,19 @@
 
     <div id="expiredModal" class="modal-overlay" style="display: none;">
         <div class="glass-modal">
-            <div class="modal-icon floating-emoji">💥</div>
+            <div class="section-header-icon" aria-hidden="true" style="margin-bottom: 12px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
             <h3>Session Expired!</h3>
             <p>Your session has expired. Please re-register.</p>
             <button type="button" id="expiredOkBtn" class="cta-button" style="width: 100%; margin-top: 15px;">OK</button>
         </div>
     </div>
 
-    <!-- PARTICLE CANVAS ENGINE -->
+    <!-- PARTICLE CANVAS ENGINE SCRIPT -->
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 
-    <!-- 💥 100% BIDIRECTIONAL THEME TOGGLE ENGINE 💥 -->
+    <!-- BIDIRECTIONAL THEME TOGGLE & NATIVE FORM VERIFICATION -->
     <script>
         (function() {
             function applyTheme(theme) {
@@ -691,7 +916,6 @@
                 }
             }
 
-            // Sync on load
             const initial = localStorage.getItem('air_cursor_theme') || localStorage.getItem('theme') || 'dark';
             applyTheme(initial);
 
@@ -700,7 +924,6 @@
 
                 const toggleBtn = document.getElementById('themeToggle');
                 if (toggleBtn) {
-                    // CAPTURE PHASE LISTENER (WIPES ANY SCRIPT.JS CONFLICT)
                     toggleBtn.addEventListener('click', function(e) {
                         e.preventDefault();
                         e.stopPropagation();
@@ -712,7 +935,6 @@
                     }, true);
                 }
 
-                // Native Form Verification
                 const form = document.getElementById('downloadForm');
                 if (form) {
                     form.onsubmit = function(e) {

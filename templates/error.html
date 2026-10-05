@@ -73,7 +73,7 @@
             --up-glow-rgb: 56, 189, 248;
             --up-glow-strength: 0.14;
             --up-code-glow: 0 0 38px rgba(37, 99, 235, 0.65), 0 0 85px rgba(56, 189, 248, 0.25);
-            --up-tube: rgba(37, 99, 235, 0.4);
+            --up-tube: rgba(37, 99, 235, 0.45);
             --up-near: rgba(56, 189, 248, 0.6);
             --up-led-on: #38bdf8;
         }
@@ -87,7 +87,7 @@
             --up-light-rgb: 220, 38, 38;
             --up-glow-rgb: 248, 113, 113;
             --up-code-glow: 0 0 38px rgba(220, 38, 38, 0.65), 0 0 85px rgba(248, 113, 113, 0.25);
-            --up-tube: rgba(220, 38, 38, 0.4);
+            --up-tube: rgba(220, 38, 38, 0.45);
             --up-near: rgba(248, 113, 113, 0.6);
             --up-led-on: #f87171;
         }
@@ -101,7 +101,7 @@
             --up-light-rgb: 217, 119, 6;
             --up-glow-rgb: 251, 191, 36;
             --up-code-glow: 0 0 38px rgba(217, 119, 6, 0.65), 0 0 85px rgba(251, 191, 36, 0.25);
-            --up-tube: rgba(217, 119, 6, 0.4);
+            --up-tube: rgba(217, 119, 6, 0.45);
             --up-near: rgba(251, 191, 36, 0.6);
             --up-led-on: #fbbf24;
         }
@@ -115,7 +115,7 @@
             --up-light-rgb: 124, 58, 237;
             --up-glow-rgb: 167, 139, 250;
             --up-code-glow: 0 0 38px rgba(124, 58, 237, 0.65), 0 0 85px rgba(167, 139, 250, 0.25);
-            --up-tube: rgba(124, 58, 237, 0.4);
+            --up-tube: rgba(124, 58, 237, 0.45);
             --up-near: rgba(167, 139, 250, 0.6);
             --up-led-on: #a78bfa;
         }
@@ -264,7 +264,7 @@
             text-wrap: pretty;
         }
 
-        /* Center Take Me Home Button */
+        /* Centered Take Me Home Button */
         .up-actions {
             display: flex;
             align-items: center;
@@ -533,13 +533,14 @@
 </head>
 <body data-error="{{ code|default('404') }}">
 
-    <div class="unplugged-root" id="unpluggedRoot" data-power="on" data-error="{{ code|default('404') }}">
+    <!-- 💥 ALWAYS INITIALIZED AS UNPLUGGED (data-power="off") 💥 -->
+    <div class="unplugged-root" id="unpluggedRoot" data-power="off" data-error="{{ code|default('404') }}">
         <!-- Top Status Line -->
         <p class="up-status" aria-hidden="true">
             <span class="up-status-dot"></span>
-            <span id="upStatusText">Power restored</span>
+            <span id="upStatusText">Signal lost</span>
         </p>
-        <p class="up-sr" role="status" id="upLiveSr">Power restored</p>
+        <p class="up-sr" role="status" id="upLiveSr">Signal lost</p>
 
         <!-- The Screen Content -->
         <div class="up-screen">
@@ -590,7 +591,7 @@
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M9 2v5M15 2v5M6 7h12v4a6 6 0 0 1-12 0zM12 17v5"/>
                     </svg>
-                    <span id="upFallbackText">Unplug it</span>
+                    <span id="upFallbackText">Plug it back in</span>
                 </button>
             </div>
 
@@ -609,7 +610,7 @@
                 </svg>
 
                 <!-- Draggable Plug Button -->
-                <button type="button" class="up-plug" id="upPlug" role="switch" aria-checked="true" aria-label="Power cable">
+                <button type="button" class="up-plug" id="upPlug" role="switch" aria-checked="false" aria-label="Power cable">
                     <svg viewBox="0 0 82 32" id="plugSvg" aria-hidden="true" focusable="false">
                         <defs>
                             <linearGradient id="up-plug-body" x1="0" y1="0" x2="0" y2="1">
@@ -639,7 +640,7 @@
     </div>
 
     <!-- ============================================================================
-         ANTI-BUCKLING NATURAL GRAVITY CURVE ENGINE
+         ANTI-BUCKLING NATURAL GRAVITY CURVE ENGINE (STARTS UNPLUGGED)
          ============================================================================ -->
     <script>
         (function() {
@@ -662,7 +663,8 @@
             const CABLE_W = 7;
             const RAYS = [-168, -140, -112, -86, 94, 118, 146, 176];
 
-            let isPlugged = true;
+            // 💥 ALWAYS STARTS UNPLUGGED ON REFRESH 💥
+            let isPlugged = false;
             let isDragging = false;
             let isNear = false;
             let currentGeo = null;
@@ -744,29 +746,24 @@
                 return [x, y];
             }
 
-            /* 💥 100% RELIABLE ZERO-BUCKLING CABLE CURVE 💥 */
+            /* Natural Zero-Buckling Cable Geometry */
             function calculateCablePath(g, tail) {
                 const f = (v) => Math.round(v * 10) / 10;
                 const rail = g.deskLeft - g.r - 0.5;
                 const top = g.deskY - g.r;
                 const bend = 2 * g.r;
 
-                // Start from offstage down the desk edge
                 let d = `M${f(rail)} ${f(g.h + 40)}V${f(top + bend)}Q${f(rail)} ${f(top)} ${f(rail + bend)} ${f(top)}`;
 
-                // Dynamic takeoff point along the desk surface
                 const takeoffX = Math.max(rail + bend, Math.min(tail.x - 45 * g.k, tail.x * 0.62));
                 d += `L${f(takeoffX)} ${f(top)}`;
 
-                // Smooth catenary gravity droop between desk liftoff and plug tail
                 const dx = tail.x - takeoffX;
                 const span = Math.max(10, dx);
 
-                // Natural gravity droop: increases with height above desk, zero when flat
                 const lift = Math.max(0, top - tail.y);
                 const droop = Math.min(42 * g.k, (lift * 0.38) + (span * 0.08));
 
-                // Control points stay strictly BELOW or AT the trajectory to eliminate upward peaking
                 const cp1X = takeoffX + span * 0.45;
                 const cp1Y = Math.min(g.deskY + 2, top + droop * 0.3);
 
@@ -1026,8 +1023,16 @@
 
                 renderSceneAndSocket();
 
-                nx = isPlugged ? currentGeo.seat.x : currentGeo.rest.x;
-                ny = isPlugged ? currentGeo.seat.y : currentGeo.rest.y;
+                // 💥 GUARANTEED UNPLUGGED POSITION ON EVERY LOAD/REFRESH 💥
+                isPlugged = false;
+                root.setAttribute('data-power', 'off');
+                plug.setAttribute('aria-checked', 'false');
+                statusText.textContent = 'Signal lost';
+                liveSr.textContent = 'Signal lost';
+                fallbackText.textContent = 'Plug it back in';
+
+                nx = currentGeo.rest.x;
+                ny = currentGeo.rest.y;
                 rot = 0;
                 targetRot = 0;
 

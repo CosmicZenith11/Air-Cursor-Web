@@ -5,32 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- 💥 GITHUB STYLE TAB TITLE (MIDDLE DOT + APP NAME) 💥 -->
-    <title>{% if code == 404 or code == '404' %}Page not found{% elif code == 500 or code == '500' %}Server error{% elif code == 403 or code == '403' %}Access restricted{% else %}{{ title }}{% endif %} · Air Cursor</title>
+    <title>{% if code == 404 or code == '404' %}Page not found{% elif code == 500 or code == '500' %}Server error{% elif code == 403 or code == '403' %}Access restricted{% else %}{{ title|default('System Offline') }}{% endif %} · Air Cursor</title>
     
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
-    
+
     <style>
-        /* 💥 AIR CURSOR MATTE LOGO COLOR PALETTE 💥 */
+        /* 💥 AIR CURSOR MATTE TOKENS & UNPLUGGED THEME 💥 */
         :root {
-            --bg-unplugged: #06080D;
-            --bg-plugged: #090E1A;
-            --card-matte: rgba(13, 19, 34, 0.75);
-            --wire-color: #1E293B;
+            --bg-off: #05070C;
+            --bg-on: #070B16;
+            --card-matte: rgba(12, 18, 32, 0.75);
+            --border-matte: rgba(37, 99, 235, 0.22);
+            --accent-blue: #2563EB;
+            --accent-glow: #38BDF8;
+            --wire-color: #1A2333;
             --plug-body: #1E293B;
-            --plug-pins: #94A3B8;
-            --socket-bg: #090D16;
+            --plug-pin: #94A3B8;
+            --socket-bg: #0A0F1D;
             --text-main: #F8FAFC;
-            --text-dim: #64748B;
-            --accent-glow: #2563EB;
-            --spark-color: #38BDF8;
-            --border-matte: rgba(37, 99, 235, 0.24);
+            --text-muted: #64748B;
         }
 
         /* Error specific matte accents */
-        body[data-error="404"] { --accent-glow: #2563EB; --spark-color: #38BDF8; }
-        body[data-error="500"] { --accent-glow: #DC2626; --spark-color: #F87171; }
-        body[data-error="403"] { --accent-glow: #D97706; --spark-color: #FBBF24; }
-        body[data-error="400"] { --accent-glow: #7C3AED; --spark-color: #A78BFA; }
+        body[data-error="404"] { --accent-blue: #2563EB; --accent-glow: #38BDF8; }
+        body[data-error="500"] { --accent-blue: #DC2626; --accent-glow: #F87171; }
+        body[data-error="403"] { --accent-blue: #D97706; --accent-glow: #FBBF24; }
+        body[data-error="400"] { --accent-blue: #7C3AED; --accent-glow: #C084FC; }
 
         * {
             box-sizing: border-box;
@@ -43,85 +43,84 @@
         body {
             height: 100vh;
             width: 100vw;
+            overflow: hidden;
+            background-color: var(--bg-off);
+            color: var(--text-muted);
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            background-color: var(--bg-unplugged);
-            color: var(--text-dim);
-            overflow: hidden;
+            justify-content: center;
             position: relative;
-            transition: background-color 0.6s ease, color 0.6s ease;
+            transition: background-color 0.65s cubic-bezier(0.16, 1, 0.3, 1), color 0.5s ease;
         }
 
-        /* Ambient flicker overlay when unplugged */
-        .ambient-flicker {
+        /* Dark Screen Ambient Flicker when Unplugged */
+        .flicker-overlay {
             position: absolute;
             inset: 0;
             pointer-events: none;
-            background: radial-gradient(circle at 50% 45%, rgba(37, 99, 235, 0.05) 0%, transparent 75%);
-            animation: lightBuzz 3.2s infinite alternate;
+            background: radial-gradient(circle at 50% 40%, rgba(37, 99, 235, 0.04) 0%, transparent 75%);
+            animation: monitorHum 3.6s infinite alternate;
         }
 
-        @keyframes lightBuzz {
-            0%, 18%, 21%, 23%, 25%, 53%, 56%, 100% { opacity: 0.2; }
-            19%, 24%, 54% { opacity: 0.03; }
+        @keyframes monitorHum {
+            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 0.18; }
+            20%, 24%, 55% { opacity: 0.04; }
         }
 
-        /* Power flash on connection */
-        .flash-overlay {
+        /* Instant Lightning Spark Flash */
+        .spark-flash {
             position: absolute;
             inset: 0;
             background: #FFFFFF;
             opacity: 0;
             pointer-events: none;
-            z-index: 999;
+            z-index: 100;
         }
-        .flash-overlay.trigger-flash {
-            animation: sparkFlash 0.38s ease-out forwards;
+        .spark-flash.flash-active {
+            animation: electricFlash 0.35s ease-out forwards;
         }
-        @keyframes sparkFlash {
-            0% { opacity: 0.75; }
+        @keyframes electricFlash {
+            0% { opacity: 0.85; }
             100% { opacity: 0; }
         }
 
-        /* Active powered state */
+        /* Powered ON state */
         body.is-plugged {
-            background-color: var(--bg-plugged);
+            background-color: var(--bg-on);
             color: var(--text-main);
         }
 
-        body.is-plugged .ambient-flicker {
+        body.is-plugged .flicker-overlay {
             animation: none;
-            background: radial-gradient(circle at 50% 45%, rgba(37, 99, 235, 0.16) 0%, transparent 75%);
+            background: radial-gradient(circle at 50% 40%, rgba(37, 99, 235, 0.18) 0%, transparent 75%);
             opacity: 1;
             transition: opacity 0.8s ease;
         }
 
-        /* 💥 MATTE ERROR CARD 💥 */
+        /* 💥 CENTER CARD CONTENT 💥 */
         .error-card {
+            text-align: center;
+            max-width: 540px;
+            width: 90%;
+            padding: 42px 36px;
             background: var(--card-matte);
             backdrop-filter: blur(28px) saturate(190%);
             -webkit-backdrop-filter: blur(28px) saturate(190%);
             border: 1px solid var(--border-matte);
-            border-radius: 28px;
-            padding: 44px 38px;
-            max-width: 520px;
-            width: 90%;
-            text-align: center;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            border-radius: 26px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.08);
             z-index: 10;
-            margin-bottom: 120px;
+            margin-bottom: 130px;
             transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         body.is-plugged .error-card {
-            border-color: rgba(37, 99, 235, 0.5);
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 35px rgba(37, 99, 235, 0.25);
+            border-color: rgba(37, 99, 235, 0.55);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75), 0 0 35px rgba(37, 99, 235, 0.28);
         }
 
-        /* Status Pill */
-        .status-badge {
+        .status-chip {
             display: inline-flex;
             align-items: center;
             gap: 8px;
@@ -137,7 +136,7 @@
             transition: all 0.4s ease;
         }
 
-        .status-dot {
+        .status-bulb {
             width: 8px;
             height: 8px;
             border-radius: 50%;
@@ -145,38 +144,38 @@
             transition: all 0.4s ease;
         }
 
-        body.is-plugged .status-badge {
+        body.is-plugged .status-chip {
             background: rgba(37, 99, 235, 0.15);
-            border-color: var(--accent-glow);
+            border-color: var(--accent-blue);
             color: #FFFFFF;
             box-shadow: 0 0 16px rgba(37, 99, 235, 0.3);
         }
 
-        body.is-plugged .status-dot {
-            background: var(--spark-color);
-            box-shadow: 0 0 10px var(--spark-color);
+        body.is-plugged .status-bulb {
+            background: var(--accent-glow);
+            box-shadow: 0 0 10px var(--accent-glow);
         }
 
-        .error-code {
-            font-size: 4.8rem;
+        .error-code-huge {
+            font-size: 5rem;
             font-weight: 900;
             line-height: 1;
-            color: #1E293B;
             letter-spacing: -2px;
-            margin-bottom: 10px;
+            color: #172033;
+            margin-bottom: 8px;
             transition: all 0.5s ease;
         }
 
-        body.is-plugged .error-code {
+        body.is-plugged .error-code-huge {
             color: #FFFFFF;
-            text-shadow: 0 0 30px var(--accent-glow);
+            text-shadow: 0 0 32px var(--accent-blue);
         }
 
         h1 {
             font-size: 1.55rem;
             font-weight: 800;
-            margin-bottom: 12px;
-            color: #334155;
+            color: #2D3748;
+            margin-bottom: 10px;
             letter-spacing: -0.4px;
             transition: color 0.5s ease;
         }
@@ -185,20 +184,20 @@
             color: #FFFFFF;
         }
 
-        p {
-            font-size: 0.95rem;
+        p.error-detail {
+            font-size: 0.94rem;
             line-height: 1.6;
-            color: #475569;
-            margin-bottom: 28px;
+            color: #4A5568;
+            margin-bottom: 26px;
             transition: color 0.5s ease;
         }
 
-        body.is-plugged p {
+        body.is-plugged p.error-detail {
             color: #94A3B8;
         }
 
-        /* 💥 MATTE ELECTRIC BLUE BUTTON 💥 */
-        .action-group {
+        /* Action Buttons */
+        .action-row {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -209,24 +208,24 @@
             transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        body.is-plugged .action-group {
+        body.is-plugged .action-row {
             opacity: 1;
             pointer-events: auto;
             transform: translateY(0);
         }
 
         .btn-home {
+            background: var(--accent-blue);
+            color: #FFFFFF;
+            padding: 13px 30px;
+            border-radius: 999px;
+            font-size: 0.94rem;
+            font-weight: 700;
+            text-decoration: none;
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 13px 30px;
-            background: var(--accent-glow);
-            color: #FFFFFF;
-            font-weight: 700;
-            text-decoration: none;
-            border-radius: 999px;
-            font-size: 0.94rem;
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 10px 24px rgba(37, 99, 235, 0.4);
             transition: all 0.25s ease;
         }
@@ -254,7 +253,7 @@
         }
 
         /* =========================================================
-           💥 SVG PHYSICS CABLE & SOCKET ARENA 💥
+           💥 STAGE ARENA: SVG CABLE & PHYSICAL PLUG 💥
            ========================================================= */
         .stage-arena {
             position: absolute;
@@ -275,22 +274,22 @@
             pointer-events: none;
         }
 
-        .wire-path {
+        .cable-line {
             fill: none;
-            stroke: #162032;
+            stroke: var(--wire-color);
             stroke-width: 8px;
             stroke-linecap: round;
-            filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.8));
+            filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.85));
             transition: stroke 0.4s ease;
         }
 
-        body.is-plugged .wire-path {
-            stroke: #25334D;
-            filter: drop-shadow(0 6px 12px rgba(37, 99, 235, 0.2));
+        body.is-plugged .cable-line {
+            stroke: #22304A;
+            filter: drop-shadow(0 6px 12px rgba(37, 99, 235, 0.22));
         }
 
-        /* Wall Socket */
-        .socket-target {
+        /* Wall Socket Target */
+        .wall-socket {
             position: absolute;
             bottom: 60px;
             right: calc(50vw - 210px);
@@ -309,12 +308,12 @@
             transition: all 0.3s ease;
         }
 
-        body.is-plugged .socket-target {
-            border-color: var(--accent-glow);
-            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.9), 0 0 24px var(--accent-glow);
+        body.is-plugged .wall-socket {
+            border-color: var(--accent-blue);
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.9), 0 0 24px var(--accent-blue);
         }
 
-        .socket-hole {
+        .socket-pin-slot {
             width: 8px;
             height: 22px;
             background: #020617;
@@ -323,7 +322,7 @@
         }
 
         /* Draggable Cable Plug */
-        .plug-handle {
+        .cable-plug {
             position: absolute;
             width: 68px;
             height: 48px;
@@ -336,31 +335,39 @@
             cursor: grab;
             pointer-events: auto;
             touch-action: none;
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.15);
-            transition: transform 0.05s ease-out;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.65), inset 0 1px 1px rgba(255, 255, 255, 0.15);
             z-index: 30;
+            transition: transform 0.05s ease-out;
         }
 
-        .plug-handle:active {
+        .cable-plug:active {
             cursor: grabbing;
         }
 
-        .plug-pins {
+        .plug-prongs {
             display: flex;
             flex-direction: column;
             gap: 12px;
             margin-right: -15px;
         }
 
-        .plug-pin {
+        .prong {
             width: 15px;
             height: 6.5px;
-            background: var(--plug-pins);
+            background: var(--plug-pin);
             border-radius: 2px;
             box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.4);
         }
 
-        .hint-text {
+        /* Spark Burst Canvas */
+        #sparkCanvas {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 40;
+        }
+
+        .footer-hint {
             position: absolute;
             bottom: 22px;
             font-size: 0.82rem;
@@ -373,23 +380,23 @@
             transition: opacity 0.4s ease;
         }
 
-        body.is-plugged .hint-text {
+        body.is-plugged .footer-hint {
             opacity: 0;
         }
     </style>
 </head>
 <body data-error="{{ code|default(404) }}">
 
-    <div class="ambient-flicker"></div>
-    <div class="flash-overlay" id="flashOverlay"></div>
+    <div class="flicker-overlay"></div>
+    <div class="spark-flash" id="sparkFlash"></div>
 
     <main class="error-card">
-        <div class="status-badge" id="statusBadge">
-            <span class="status-dot"></span>
-            <span id="statusLabel">CIRCUIT DISCONNECTED</span>
+        <div class="status-chip" id="statusChip">
+            <span class="status-bulb"></span>
+            <span id="statusText">CIRCUIT DISCONNECTED</span>
         </div>
 
-        <div class="error-code">{{ code }}</div>
+        <div class="error-code-huge">{{ code|default(404) }}</div>
         
         <h1>
             {% if code == 404 or code == '404' %}
@@ -401,11 +408,11 @@
             {% elif code == 400 or code == '400' %}
                 400 · Bad Current Request
             {% else %}
-                {{ title }}
+                {{ title|default("System Powered Down") }}
             {% endif %}
         </h1>
 
-        <p>
+        <p class="error-detail">
             {% if message %}
                 {{ message }}
             {% elif code == 404 or code == '404' %}
@@ -419,7 +426,7 @@
             {% endif %}
         </p>
 
-        <div class="action-group">
+        <div class="action-row">
             <a href="/" class="btn-home">
                 <span>⚡ Return to Home</span>
             </a>
@@ -429,28 +436,30 @@
         </div>
     </main>
 
-    <!-- Cable Physics & Socket Arena -->
+    <!-- Interactive Cable Physics & Socket Arena -->
     <div class="stage-arena" id="arena">
         <svg id="cableSvg">
-            <path id="cablePath" class="wire-path" d="" />
+            <path id="cablePath" class="cable-line" d="" />
         </svg>
 
-        <!-- Wall Socket Target -->
-        <div class="socket-target" id="socketTarget" role="button" tabindex="0" aria-label="Wall Socket">
-            <div class="socket-hole"></div>
-            <div class="socket-hole"></div>
+        <canvas id="sparkCanvas"></canvas>
+
+        <!-- Wall Socket -->
+        <div class="wall-socket" id="wallSocket" role="button" tabindex="0" aria-label="Wall Socket">
+            <div class="socket-pin-slot"></div>
+            <div class="socket-pin-slot"></div>
         </div>
 
-        <!-- Draggable Cable Plug -->
-        <div class="plug-handle" id="plugHandle" role="button" tabindex="0" aria-label="Power Cable Plug">
-            <div class="plug-pins">
-                <div class="plug-pin"></div>
-                <div class="plug-pin"></div>
+        <!-- Draggable Plug -->
+        <div class="cable-plug" id="cablePlug" role="button" tabindex="0" aria-label="Power Cable Plug">
+            <div class="plug-prongs">
+                <div class="prong"></div>
+                <div class="prong"></div>
             </div>
         </div>
     </div>
 
-    <div class="hint-text">
+    <div class="footer-hint">
         <span>🔌 Drag the plug or press Space/Enter to connect the power circuit</span>
     </div>
 
@@ -459,11 +468,13 @@
             const body = document.body;
             const arena = document.getElementById('arena');
             const cablePath = document.getElementById('cablePath');
-            const plug = document.getElementById('plugHandle');
-            const socket = document.getElementById('socketTarget');
-            const flash = document.getElementById('flashOverlay');
-            const statusLabel = document.getElementById('statusLabel');
+            const plug = document.getElementById('cablePlug');
+            const socket = document.getElementById('wallSocket');
+            const flash = document.getElementById('sparkFlash');
+            const statusText = document.getElementById('statusText');
             const unplugBtn = document.getElementById('unplugBtn');
+            const sparkCanvas = document.getElementById('sparkCanvas');
+            const ctx = sparkCanvas.getContext('2d');
 
             let isPlugged = false;
             let isDragging = false;
@@ -471,6 +482,14 @@
             let startPoint = { x: 0, y: 0 };
             let plugPos = { x: 0, y: 0 };
             let socketCenter = { x: 0, y: 0 };
+            let particles = [];
+
+            function resizeCanvas() {
+                sparkCanvas.width = window.innerWidth;
+                sparkCanvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
 
             function updateGeometry() {
                 const rect = arena.getBoundingClientRect();
@@ -494,12 +513,12 @@
                             y: rect.height * 0.58
                         };
                     }
-                    renderPlugAndCable();
+                    renderCable();
                 }
             }
 
-            // Real Bézier Curve Sag Physics
-            function renderPlugAndCable() {
+            // Real Bézier Curve Sag & Gravity Physics
+            function renderCable() {
                 plug.style.left = `${plugPos.x}px`;
                 plug.style.top = `${plugPos.y}px`;
 
@@ -508,7 +527,7 @@
 
                 const dx = pX - startPoint.x;
                 const distance = Math.max(10, dx);
-                const sagFactor = isPlugged ? 35 : 90;
+                const sagFactor = isPlugged ? 36 : 92;
                 const sagY = Math.max(pY, startPoint.y) + (sagFactor * Math.min(1.4, distance / 340));
 
                 const cp1X = startPoint.x + dx * 0.35;
@@ -520,22 +539,73 @@
                 cablePath.setAttribute('d', pathData);
             }
 
-            // Power ON with Electric Spark
+            // Spark Burst Generator
+            function triggerSparks(originX, originY) {
+                particles = [];
+                const colors = ['#38BDF8', '#60A5FA', '#FFFFFF', '#93C5FD'];
+                for (let i = 0; i < 28; i++) {
+                    const angle = (Math.PI * 2 * Math.random());
+                    const speed = 2 + Math.random() * 6;
+                    particles.push({
+                        x: originX,
+                        y: originY,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed - 1.5,
+                        life: 1,
+                        decay: 0.03 + Math.random() * 0.04,
+                        size: 2 + Math.random() * 2.5,
+                        color: colors[Math.floor(Math.random() * colors.length)]
+                    });
+                }
+                animateSparks();
+            }
+
+            function animateSparks() {
+                ctx.clearRect(0, 0, sparkCanvas.width, sparkCanvas.height);
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    const p = particles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.18; // gravity
+                    p.life -= p.decay;
+
+                    if (p.life <= 0) {
+                        particles.splice(i, 1);
+                        continue;
+                    }
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+                    ctx.fillStyle = p.color;
+                    ctx.shadowColor = p.color;
+                    ctx.shadowBlur = 8;
+                    ctx.fill();
+                }
+
+                if (particles.length > 0) {
+                    requestAnimationFrame(animateSparks);
+                }
+            }
+
+            // Power ON with Spark Flash
             function connectCircuit() {
                 if (isPlugged) return;
                 isPlugged = true;
                 body.classList.add('is-plugged');
-                statusLabel.textContent = "CIRCUIT ENERGIZED · 240V";
+                statusText.textContent = "CIRCUIT ENERGIZED · 240V";
 
-                flash.classList.remove('trigger-flash');
+                flash.classList.remove('flash-active');
                 void flash.offsetWidth;
-                flash.classList.add('trigger-flash');
+                flash.classList.add('flash-active');
+
+                const sRect = socket.getBoundingClientRect();
+                triggerSparks(sRect.left + sRect.width / 2, sRect.top + sRect.height / 2);
 
                 plugPos = {
                     x: socketCenter.x - 45,
                     y: socketCenter.y - 24
                 };
-                renderPlugAndCable();
+                renderCable();
             }
 
             // Disconnect Circuit
@@ -543,11 +613,11 @@
                 if (!isPlugged) return;
                 isPlugged = false;
                 body.classList.remove('is-plugged');
-                statusLabel.textContent = "CIRCUIT DISCONNECTED";
+                statusText.textContent = "CIRCUIT DISCONNECTED";
                 updateGeometry();
             }
 
-            // Drag Handlers (Pointer Event: Mouse & Touch)
+            // Pointer Events (Mouse + Touch Native Drag)
             function onPointerDown(e) {
                 isDragging = true;
                 plug.setPointerCapture(e.pointerId);
@@ -575,7 +645,7 @@
                     disconnectCircuit();
                 }
 
-                renderPlugAndCable();
+                renderCable();
             }
 
             function onPointerUp(e) {
@@ -599,7 +669,7 @@
             plug.addEventListener('pointerup', onPointerUp);
             plug.addEventListener('pointercancel', onPointerUp);
 
-            // Click & Keyboard Switch
+            // Click & Space/Enter Switch Fallback
             plug.addEventListener('click', function() {
                 if (!isPlugged) connectCircuit();
                 else disconnectCircuit();
@@ -615,9 +685,11 @@
 
             window.addEventListener('keydown', function(e) {
                 if (e.code === 'Space' || e.code === 'Enter') {
-                    e.preventDefault();
-                    if (!isPlugged) connectCircuit();
-                    else disconnectCircuit();
+                    if (document.activeElement.tagName !== 'INPUT') {
+                        e.preventDefault();
+                        if (!isPlugged) connectCircuit();
+                        else disconnectCircuit();
+                    }
                 }
             });
 

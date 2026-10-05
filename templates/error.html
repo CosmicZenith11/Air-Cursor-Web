@@ -1,749 +1,1154 @@
 <!DOCTYPE html>
-<html lang="gu">
+<html lang="gu" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <title>{% if code == 404 or code == '404' %}404 · This page came unplugged{% elif code == 500 or code == '500' %}500 · Server Blackout{% elif code == 403 or code == '403' %}403 · Access Restricted{% else %}{{ title|default('Circuit Cut') }}{% endif %} · Air Cursor</title>
-    
+    <title>{{ code|default('404') }} · This page came unplugged · Air Cursor</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
 
     <style>
+        /* ============================================================================
+           Unplugged404: Exact Design Tokens (tokens.css)
+           ============================================================================ */
         :root {
-            --bg-canvas: #090910;
-            --text-glow: rgba(255, 255, 255, 0.95);
-            --wire-color: #3b3a4e;
-            --wire-shadow: rgba(0, 0, 0, 0.7);
-            --plug-body: #222030;
-            --plug-accent: #2e2c40;
-            --socket-plate: #151420;
-            --socket-rim: #29283a;
-            --border-shelf: #1e1d2c;
-            --text-muted: #8e8d9f;
+            --radius-pill: 999px;
+            --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+            --tr-display: -0.025em;
+            --tr-tight: -0.015em;
+            --tr-base: -0.005em;
         }
 
-        * {
+        /* Dark Theme Tokens (Exact from tokens.css) */
+        [data-theme="dark"] .unplugged-root,
+        .unplugged-root {
+            --up-page-height: 100dvh;
+            --up-code-size: clamp(96px, min(21vw, 24vh), 216px);
+            --up-rig-height: clamp(190px, 34vh, 250px);
+
+            --accent-primary: #fbfbfd;
+            --accent-hover: #e6e4ec;
+            --text-on-accent: #16121f;
+
+            --bg-canvas: #0e0a16;
+            --bg-elevated-1: #171022;
+            --border-default: rgba(251, 251, 253, 0.1);
+            --border-strong: rgba(251, 251, 253, 0.18);
+
+            --text-primary: #fbfbfd;
+            --text-secondary: #bdb8c8;
+            --text-tertiary: #9892a4;
+
+            --up-dim: 0.24;
+            --up-bg-off: #0a0710;
+            --up-tube: rgba(251, 251, 253, 0.5);
+            --up-glow-rgb: 251, 251, 253;
+            --up-glow-strength: 0.07;
+            --up-code-glow: 0 0 36px rgba(251, 251, 253, 0.32), 0 0 2px rgba(251, 251, 253, 0.6);
+            --up-light-rgb: 251, 251, 253;
+
+            --up-wall: #140f1e;
+            --up-wall-line: rgba(251, 251, 253, 0.16);
+            --up-desk: #1f1830;
+            --up-desk-edge: rgba(251, 251, 253, 0.16);
+
+            --up-cable: #3d3550;
+            --up-cable-shine: #7d768f;
+            --up-cable-edge: transparent;
+            --up-plug-hi: #5a5369;
+            --up-plug-lo: #2e2740;
+            --up-plug-edge: rgba(251, 251, 253, 0.2);
+            --up-plug-groove: rgba(0, 0, 0, 0.32);
+            --up-plug-sheen: rgba(251, 251, 253, 0.28);
+            --up-plug-face: #251e33;
+            --up-pin-hi: #f4f3f7;
+            --up-pin-lo: #8e889c;
+            --up-shadow: 0.5;
+            --up-socket-hi: #3a3348;
+            --up-socket-lo: #1c1628;
+            --up-socket-face: #4b4459;
+            --up-socket-edge: rgba(251, 251, 253, 0.16);
+            --up-plate: #221b2e;
+            --up-recess: #2a2338;
+            --up-hole: #050308;
+            --up-near: rgba(251, 251, 253, 0.55);
+            --up-led-off: #3a3348;
+            --up-led-on: #fbfbfd;
+
+            --shadow-focus-ring: 0 0 0 3px rgba(251, 251, 253, 0.24);
+        }
+
+        /* ============================================================================
+           Unplugged404.css (Exact Component Layout)
+           ============================================================================ */
+        :where(.unplugged-root, .unplugged-root *, .unplugged-root *::before, .unplugged-root *::after) {
             box-sizing: border-box;
+        }
+        :where(.unplugged-root) :where(button, a) { font: inherit; color: inherit; }
+        :where(.unplugged-root) :where(h1, p) { margin: 0; }
+
+        html, body {
             margin: 0;
             padding: 0;
-            user-select: none;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            overflow: hidden;
+            background-color: #0a0710;
         }
 
-        body {
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-            background-color: var(--bg-canvas);
-            color: #ffffff;
+        .unplugged-root {
+            position: relative;
+            isolation: isolate;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            position: relative;
-            transition: background-color 0.4s ease;
+            width: 100vw;
+            height: 100vh;
+            min-height: var(--up-page-height);
+            padding: 0 clamp(16px, 4vw, 40px);
+            overflow: hidden;
+            overscroll-behavior: contain;
+            color: var(--text-primary);
+            background-color: var(--up-bg-off);
+            font-family: var(--font-sans);
+            letter-spacing: var(--tr-base);
+            -webkit-font-smoothing: antialiased;
+            transition: background-color 500ms var(--ease-out-quart);
+            user-select: none;
         }
+        .unplugged-root[data-power="on"] { background-color: var(--bg-canvas); }
 
-        /* Lightning Flash on snap */
-        .power-flash {
+        .unplugged-root::before {
+            content: '';
             position: absolute;
             inset: 0;
-            background: #ffffff;
+            z-index: -1;
+            background: radial-gradient(60% 55% at 50% 32%, rgba(var(--up-glow-rgb), var(--up-glow-strength)), transparent 72%);
             opacity: 0;
+            transition: opacity 700ms var(--ease-out-quart);
             pointer-events: none;
-            z-index: 100;
         }
-        .power-flash.flash-active {
-            animation: burstFlash 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        @keyframes burstFlash {
-            0% { opacity: 0.7; }
-            100% { opacity: 0; }
+        .unplugged-root[data-power="on"]::before { opacity: 1; }
+
+        .up-sr {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            margin: -1px;
+            padding: 0;
+            overflow: hidden;
+            clip: rect(0 0 0 0);
+            white-space: nowrap;
+            border: 0;
         }
 
-        /* =========================================================
-           💥 MAIN FLOATING HERO TYPOGRAPHY (NO BOX/CARD) 💥
-           ========================================================= */
-        .stage-center {
-            text-align: center;
-            max-width: 650px;
-            width: 90%;
-            margin-top: -90px;
-            z-index: 10;
+        /* STATUS */
+        .up-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 28px;
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            font-weight: 500;
+            line-height: 1;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--text-tertiary);
+            user-select: none;
+            transition: color 300ms var(--ease-out-quart);
+        }
+        .up-status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            border: 1.5px solid currentColor;
+            animation: up-blink 1.8s ease-in-out infinite;
+        }
+        [data-power="on"] .up-status { color: var(--text-secondary); }
+        [data-power="on"] .up-status-dot {
+            border-color: var(--text-primary);
+            background: var(--text-primary);
+            box-shadow: 0 0 10px rgba(var(--up-glow-rgb), 0.6);
+            animation: none;
+        }
+
+        /* SCREEN */
+        .up-screen {
+            flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
-            transition: opacity 0.4s ease;
+            justify-content: center;
+            width: 100%;
+            max-width: 640px;
+            padding: 28px 0 12px;
+            text-align: center;
+            transition: opacity 400ms ease;
         }
-
-        /* Top Monospace Status Pill */
-        .status-tracker {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 2.5px;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            margin-bottom: 24px;
-            transition: color 0.3s ease;
+        [data-power="off"] .up-screen {
+            opacity: var(--up-dim);
+            animation: up-dead 6.4s linear infinite;
         }
+        [data-power="off"] .up-screen:has(:focus-visible) { opacity: 1; animation: none; }
 
-        .status-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: #4a4958;
-            transition: all 0.3s ease;
+        .up-code {
+            font-size: var(--up-code-size);
+            font-weight: 650;
+            line-height: 0.84;
+            letter-spacing: -0.065em;
+            font-variant-numeric: tabular-nums;
+            padding-right: 0.065em;
+            color: var(--text-primary);
+            text-shadow: var(--up-code-glow);
+            user-select: none;
         }
-
-        body.is-plugged .status-tracker {
-            color: #d1d0df;
+        [data-power="off"] .up-code {
+            color: transparent;
+            -webkit-text-stroke: max(1.5px, 0.008em) var(--up-tube);
+            text-shadow: none;
+            animation: up-strike 6.4s linear infinite;
         }
-
-        body.is-plugged .status-dot {
-            background: #ffffff;
-            box-shadow: 0 0 8px #ffffff, 0 0 16px rgba(255, 255, 255, 0.8);
+        .up-title {
+            margin-top: 26px;
+            font-size: clamp(24px, 3vw, 34px);
+            font-weight: 600;
+            line-height: 1.15;
+            letter-spacing: var(--tr-display);
+            text-wrap: balance;
         }
-
-        /* Massive 404 with Bloom Backlight */
-        .big-code {
-            font-size: 8.5rem;
-            font-weight: 900;
-            line-height: 1;
-            letter-spacing: -3px;
-            color: #1e1d2c;
-            margin: 0 0 16px 0;
-            transition: all 0.45s ease;
+        .up-message {
+            max-width: 440px;
+            margin-top: 12px;
+            font-size: 16px;
+            line-height: 1.55;
+            color: var(--text-secondary);
+            text-wrap: pretty;
         }
-
-        body.is-plugged .big-code {
-            color: #ffffff;
-            text-shadow: 0 0 35px rgba(255, 255, 255, 0.75), 0 0 80px rgba(255, 255, 255, 0.35);
-        }
-
-        /* Headline */
-        .headline {
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: #383648;
-            letter-spacing: -0.5px;
-            margin-bottom: 12px;
-            transition: color 0.4s ease;
-        }
-
-        body.is-plugged .headline {
-            color: #ffffff;
-        }
-
-        /* Subtitle */
-        .subtext {
-            font-size: 0.98rem;
-            line-height: 1.6;
-            color: #403e50;
-            max-width: 480px;
-            margin-bottom: 32px;
-            transition: color 0.4s ease;
-        }
-
-        body.is-plugged .subtext {
-            color: var(--text-muted);
-        }
-
-        /* Action Buttons Row */
-        .btn-row {
+        .up-actions {
             display: flex;
+            flex-wrap: wrap;
             align-items: center;
             justify-content: center;
-            gap: 20px;
-            opacity: 0.15;
-            pointer-events: none;
-            transition: opacity 0.4s ease, transform 0.4s ease;
+            gap: 12px 22px;
+            margin-top: 28px;
         }
-
-        body.is-plugged .btn-row {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        /* White Pill Home Button */
-        .btn-white-pill {
-            background: #ffffff;
-            color: #090910;
-            padding: 12px 28px;
-            border-radius: 9999px;
-            font-size: 0.94rem;
-            font-weight: 600;
-            text-decoration: none;
+        .up-home {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            box-shadow: 0 4px 18px rgba(255, 255, 255, 0.2);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .btn-white-pill:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 24px rgba(255, 255, 255, 0.35);
-        }
-
-        .link-support {
-            color: var(--text-muted);
+            height: 44px;
+            padding: 0 22px 0 18px;
+            border: 0;
+            border-radius: var(--radius-pill);
+            background: var(--accent-primary);
+            color: var(--text-on-accent);
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: var(--tr-tight);
             text-decoration: none;
-            font-size: 0.94rem;
+            cursor: pointer;
+            transition: background 160ms var(--ease-out-quart), transform 160ms var(--ease-out-quart), box-shadow 200ms var(--ease-out-quart);
+        }
+        .up-home:hover { background: var(--accent-hover); transform: translateY(-1px); }
+        .up-home:active { transform: translateY(0) scale(0.98); }
+        .up-home svg { transition: transform 200ms var(--ease-out-quart); }
+        .up-home:hover svg { transform: translateX(-2px); }
+
+        .up-secondary {
+            padding: 6px 2px;
+            font-size: 15px;
             font-weight: 500;
-            transition: color 0.2s ease;
-        }
-
-        .link-support:hover {
-            color: #ffffff;
+            color: var(--text-secondary);
             text-decoration: underline;
+            text-decoration-color: var(--border-strong);
+            text-underline-offset: 4px;
+            transition: color 160ms var(--ease-out-quart), text-decoration-color 160ms var(--ease-out-quart);
         }
+        .up-secondary:hover { color: var(--text-primary); text-decoration-color: currentColor; }
 
-        /* =========================================================
-           💥 BOTTOM DESK / SHELF OUTLINE & UNPLUG SWITCH 💥
-           ========================================================= */
-        .desk-frame {
+        /* RIG */
+        .up-rig {
+            position: relative;
+            flex: none;
+            width: 100%;
+            max-width: 760px;
+        }
+        .up-stage {
+            position: relative;
+            height: var(--up-rig-height);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .up-scene, .up-socket, .up-cable, .up-fx {
             position: absolute;
-            bottom: 0;
-            left: 14vw;
-            width: 64vw;
-            height: 145px;
-            border: 2px solid var(--border-shelf);
-            border-bottom: none;
-            border-top-left-radius: 16px;
-            border-top-right-radius: 16px;
-            background: rgba(14, 13, 22, 0.5);
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            overflow: visible;
             pointer-events: none;
-            z-index: 5;
         }
+        .up-scene { z-index: 0; }
+        .up-socket { z-index: 1; }
+        .up-cable { z-index: 2; }
+        .up-plug { z-index: 3; }
+        .up-fx { z-index: 4; }
 
-        .desk-frame::after {
-            content: '';
+        .up-controls {
+            position: absolute;
+            top: 22px;
+            left: 0;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .up-hint {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--text-tertiary);
+            user-select: none;
+            transition: opacity 300ms var(--ease-out-quart);
+        }
+        [data-power="on"] .up-hint { opacity: 0; }
+        .up-fallback {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            height: 40px;
+            padding: 0 16px 0 13px;
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius-pill);
+            background: var(--bg-elevated-1);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: border-color 160ms var(--ease-out-quart), background 160ms var(--ease-out-quart), color 160ms var(--ease-out-quart), transform 160ms var(--ease-out-quart);
+        }
+        .up-fallback:hover { border-color: var(--text-tertiary); }
+        .up-fallback:active { transform: scale(0.97); }
+        [data-power="on"] .up-fallback {
+            border-color: var(--border-default);
+            background: transparent;
+            color: var(--text-tertiary);
+        }
+        [data-power="on"] .up-fallback:hover { color: var(--text-primary); border-color: var(--border-strong); }
+
+        /* Scene elements */
+        .up-stop-wall { stop-color: var(--up-wall); }
+        .up-wall-line { fill: var(--up-wall-line); }
+        .up-desk { fill: var(--up-desk); }
+        .up-desk-edge { fill: var(--up-desk-edge); }
+
+        /* Cable */
+        .up-cable path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+        .up-cable-edge { stroke: var(--up-cable-edge); }
+        .up-cable-body { stroke: var(--up-cable); }
+        .up-cable-shine { stroke: var(--up-cable-shine); }
+
+        /* Plug */
+        .up-plug {
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
-            height: 2px;
-            background: rgba(255, 255, 255, 0.06);
-        }
-
-        /* Left Pill Unplug Switch */
-        .unplug-switch-btn {
-            position: absolute;
-            left: 14vw;
-            bottom: 165px;
-            background: rgba(20, 19, 32, 0.85);
-            border: 1px solid #28263a;
-            color: var(--text-muted);
-            padding: 8px 18px;
-            border-radius: 9999px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            z-index: 30;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-            transition: all 0.2s ease;
-        }
-
-        .unplug-switch-btn:hover {
-            background: #252438;
-            color: #ffffff;
-            border-color: #3e3c54;
-        }
-
-        /* =========================================================
-           💥 RIGHT WALL PLATE & SOCKET 💥
-           ========================================================= */
-        .wall-plate {
-            position: absolute;
-            right: 0;
-            bottom: 30px;
-            width: 14px;
-            height: 190px;
-            background: var(--socket-plate);
-            border-left: 2px solid #232234;
-            border-top-left-radius: 6px;
-            border-bottom-left-radius: 6px;
-            z-index: 8;
-        }
-
-        .wall-socket-box {
-            position: absolute;
-            right: 14px;
-            bottom: 60px;
-            width: 32px;
-            height: 94px;
-            background: #171624;
-            border: 2px solid var(--socket-rim);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10;
-            box-shadow: -4px 6px 18px rgba(0, 0, 0, 0.7);
-            cursor: pointer;
-            transition: border-color 0.3s ease;
-        }
-
-        body.is-plugged .wall-socket-box {
-            border-color: #403e58;
-        }
-
-        .socket-receptacle {
-            width: 10px;
-            height: 60px;
-            background: #090810;
-            border-radius: 5px;
-            border: 1px solid #1a1928;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around;
-            align-items: center;
-            padding: 8px 0;
-        }
-
-        .socket-slot {
-            width: 4px;
-            height: 16px;
-            background: #000000;
-            border-radius: 2px;
-        }
-
-        /* Small LED Indicator above Socket */
-        .socket-led {
-            position: absolute;
-            right: 22px;
-            bottom: 168px;
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: #313042;
-            z-index: 15;
-            transition: all 0.3s ease;
-        }
-
-        body.is-plugged .socket-led {
-            background: #ffffff;
-            box-shadow: 0 0 10px #ffffff, 0 0 20px rgba(255, 255, 255, 0.9);
-        }
-
-        /* =========================================================
-           💥 CABLE SVG & DRAGGABLE PLUG 💥
-           ========================================================= */
-        #cableSvg {
-            position: absolute;
-            inset: 0;
-            width: 100vw;
-            height: 100vh;
-            pointer-events: none;
-            z-index: 18;
-        }
-
-        .cable-svg-path {
-            fill: none;
-            stroke: var(--wire-color);
-            stroke-width: 6.5px;
-            stroke-linecap: round;
-            filter: drop-shadow(0 8px 12px var(--wire-shadow));
-            transition: stroke 0.3s ease;
-        }
-
-        body.is-plugged .cable-svg-path {
-            stroke: #48465f;
-        }
-
-        /* Detailed AC Plug Handle */
-        .plug-grip {
-            position: absolute;
-            width: 78px;
-            height: 48px;
-            background: var(--plug-body);
-            border-radius: 12px;
-            border: 1px solid #323046;
+            width: calc(62px * var(--up-k, 1));
+            height: calc(32px * var(--up-k, 1));
+            margin: calc(-16px * var(--up-k, 1)) 0 0 calc(-62px * var(--up-k, 1));
+            padding: 0;
+            border: 0;
+            border-radius: calc(8px * var(--up-k, 1));
+            background: none;
             cursor: grab;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding-right: 2px;
-            z-index: 25;
             touch-action: none;
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.65);
-            transition: transform 0.05s ease-out;
+            user-select: none;
+            -webkit-user-select: none;
         }
-
-        .plug-grip:active {
-            cursor: grabbing;
-        }
-
-        /* Ribbed Grip Indents */
-        .plug-ribs {
-            display: flex;
-            gap: 4px;
-            margin-right: 12px;
-        }
-
-        .plug-rib {
-            width: 3px;
-            height: 22px;
-            background: #171622;
-            border-radius: 1px;
-        }
-
-        .plug-prongs {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-right: -14px;
-            transition: opacity 0.2s ease;
-        }
-
-        body.is-plugged .plug-prongs {
-            opacity: 0;
-        }
-
-        .prong-metal {
-            width: 14px;
-            height: 6px;
-            background: #a3a2b8;
-            border-radius: 2px;
-            box-shadow: inset 0 1px 2px #ffffff;
-        }
-
-        /* Spark Burst Canvas */
-        #sparkCanvas {
+        .up-plug::before { content: ''; position: absolute; inset: -10px -6px; }
+        .up-plug svg {
             position: absolute;
-            inset: 0;
-            width: 100vw;
-            height: 100vh;
-            pointer-events: none;
-            z-index: 50;
+            top: 0;
+            left: 0;
+            width: calc(82px * var(--up-k, 1));
+            height: 100%;
+            overflow: visible;
+            filter: drop-shadow(0 6px 8px rgba(0, 0, 0, var(--up-shadow)));
+        }
+        .unplugged-root.is-dragging { cursor: grabbing; }
+        .is-dragging .up-plug { cursor: grabbing; }
+
+        .up-stop-plug-hi { stop-color: var(--up-plug-hi); }
+        .up-stop-plug-lo { stop-color: var(--up-plug-lo); }
+        .up-stop-pin-hi { stop-color: var(--up-pin-hi); }
+        .up-stop-pin-lo { stop-color: var(--up-pin-lo); }
+        .up-body { stroke: var(--up-plug-edge); stroke-width: 1; }
+        .up-boot { fill: var(--up-plug-lo); stroke: var(--up-plug-edge); stroke-width: 1; }
+        .up-groove { fill: none; stroke: var(--up-plug-groove); stroke-width: 1.4; stroke-linecap: round; }
+        .up-sheen { fill: none; stroke: var(--up-plug-sheen); stroke-width: 1.2; stroke-linecap: round; }
+        .up-face { fill: var(--up-plug-face); }
+
+        /* Socket */
+        .up-stop-socket-hi { stop-color: var(--up-socket-hi); }
+        .up-stop-socket-lo { stop-color: var(--up-socket-lo); }
+        .up-barrel { stroke: var(--up-socket-edge); stroke-width: 1; }
+        .up-plate { fill: var(--up-plate); stroke: var(--up-socket-edge); stroke-width: 1; }
+        .up-socket-face { fill: var(--up-socket-face); stroke: var(--up-socket-edge); stroke-width: 1; }
+        .up-recess {
+            fill: var(--up-recess);
+            stroke: transparent;
+            stroke-width: 1.5;
+            transition: stroke 200ms var(--ease-out-quart);
+        }
+        .is-near .up-recess { stroke: var(--up-near); }
+        .up-hole { fill: var(--up-hole); }
+        .up-led {
+            fill: var(--up-led-off);
+            transition: fill 200ms var(--ease-out-quart), filter 200ms var(--ease-out-quart);
+        }
+        [data-power="on"] .up-led {
+            fill: var(--up-led-on);
+            filter: drop-shadow(0 0 3px rgba(var(--up-light-rgb), 0.9));
+        }
+
+        /* Spark */
+        .up-flash {
+            fill: rgba(var(--up-light-rgb), 0.5);
+            opacity: 0;
+            transform-box: fill-box;
+            transform-origin: center;
+            animation: up-flash 340ms ease-out forwards;
+            filter: blur(4px);
+        }
+        .up-ray {
+            fill: none;
+            stroke: rgb(var(--up-light-rgb));
+            stroke-width: calc(1.6px * var(--up-k, 1));
+            stroke-linecap: round;
+            stroke-dasharray: 0.45 1.2;
+            stroke-dashoffset: 0.45;
+            animation: up-ray 300ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+        }
+
+        /* Flicker animations */
+        @keyframes up-dead {
+            0%, 13%, 16.5%, 19%, 64%, 66.5%, 100% { opacity: var(--up-dim); }
+            14% { opacity: calc(var(--up-dim) * 1.45); }
+            15.5% { opacity: calc(var(--up-dim) * 0.8); }
+            17.5% { opacity: calc(var(--up-dim) * 1.25); }
+            65.2% { opacity: calc(var(--up-dim) * 1.3); }
+        }
+        @keyframes up-strike {
+            0%, 13%, 16.5%, 19%, 64%, 66.5%, 100% { color: transparent; }
+            14% { color: rgba(var(--up-light-rgb), 0.16); }
+            17.5% { color: rgba(var(--up-light-rgb), 0.08); }
+            65.2% { color: rgba(var(--up-light-rgb), 0.1); }
+        }
+        .is-booting .up-screen { animation: up-boot 760ms linear 110ms both; }
+        @keyframes up-boot {
+            0% { opacity: var(--up-dim); }
+            7% { opacity: 0.9; }
+            15% { opacity: 0.32; }
+            25% { opacity: 1; }
+            33% { opacity: 0.7; }
+            45%, 100% { opacity: 1; }
+        }
+        .is-dying .up-screen { animation: up-die 460ms linear both; }
+        @keyframes up-die {
+            0% { opacity: 1; }
+            28% { opacity: 0.42; }
+            42% { opacity: 0.66; }
+            100% { opacity: var(--up-dim); }
+        }
+        @keyframes up-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        @keyframes up-flash {
+            0% { opacity: 0; transform: scale(0.3); }
+            18% { opacity: 1; }
+            100% { opacity: 0; transform: scale(1.25); }
+        }
+        @keyframes up-ray {
+            0% { stroke-dashoffset: 0.45; opacity: 1; }
+            80% { opacity: 1; }
+            100% { stroke-dashoffset: -1; opacity: 0; }
+        }
+
+        @media (max-width: 560px) {
+            .unplugged-root {
+                --up-code-size: clamp(96px, 31vw, 150px);
+                --up-rig-height: 184px;
+            }
+            .up-status { margin-top: 20px; }
+            .up-screen { padding-top: 22px; }
+            .up-title { margin-top: 20px; font-size: 25px; }
+            .up-message { font-size: 15px; }
+            .up-actions { margin-top: 24px; }
+            .up-rig { margin-top: 14px; }
+            .up-controls {
+                position: static;
+                align-items: center;
+                gap: 10px;
+                margin: 0 auto;
+                max-width: 340px;
+            }
+            .up-fallback { justify-content: center; width: 100%; height: 46px; font-size: 15px; }
+            [data-power="on"] .up-fallback { width: auto; }
         }
     </style>
 </head>
-<body class="is-plugged" data-error="{{ code|default(404) }}">
+<body>
 
-    <div class="power-flash" id="flashOverlay"></div>
-    <canvas id="sparkCanvas"></canvas>
-
-    <!-- Top & Center Floating Hero Section (Exact 3rd Image) -->
-    <main class="stage-center">
-        <div class="status-tracker" id="statusTracker">
-            <span class="status-dot"></span>
-            <span id="statusText">POWER RESTORED</span>
-        </div>
-
-        <div class="big-code" id="bigCode">{{ code|default(404) }}</div>
-
-        <h1 class="headline" id="headlineText">
-            {% if code == 404 or code == '404' %}
-                This page came unplugged.
-            {% elif code == 500 or code == '500' %}
-                Server power tripped.
-            {% elif code == 403 or code == '403' %}
-                Access line severed.
-            {% else %}
-                {{ title|default("This page came unplugged.") }}
-            {% endif %}
-        </h1>
-
-        <p class="subtext" id="subText">
-            {% if message %}
-                {{ message }}
-            {% elif code == 404 or code == '404' %}
-                We couldn't find the page you were looking for. It may have moved, or the link may be broken.
-            {% else %}
-                The connection to this route has been severed. Reconnect the cable to restore service.
-            {% endif %}
+    <div class="unplugged-root" id="unpluggedRoot" data-power="on">
+        <!-- Top Status Line -->
+        <p class="up-status" aria-hidden="true">
+            <span class="up-status-dot"></span>
+            <span id="upStatusText">Power restored</span>
         </p>
+        <p class="up-sr" role="status" id="upLiveSr">Power restored</p>
 
-        <div class="btn-row" id="btnRow">
-            <a href="/" class="btn-white-pill">
-                <span>←</span> Take me home
-            </a>
-            <a href="mailto:support@aircursor.com" class="link-support">Contact support</a>
+        <!-- The Screen Content -->
+        <div class="up-screen">
+            <p class="up-code"><span class="up-sr">Error </span>{{ code|default('404') }}</p>
+            <h1 class="up-title">
+                {% if code == 404 or code == '404' %}
+                    This page came unplugged.
+                {% elif code == 500 or code == '500' %}
+                    Server power tripped.
+                {% elif code == 403 or code == '403' %}
+                    Access line severed.
+                {% else %}
+                    {{ title|default("This page came unplugged.") }}
+                {% endif %}
+            </h1>
+            <p class="up-message">
+                {% if message %}
+                    {{ message }}
+                {% elif code == 404 or code == '404' %}
+                    We couldn't find the page you were looking for. It may have moved, or the link may be broken.
+                {% else %}
+                    The connection to this route has been severed. Reconnect the cable to restore service.
+                {% endif %}
+            </p>
+            <div class="up-actions">
+                <a class="up-home" href="/">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M19 12H5M11 6l-6 6 6 6"/>
+                    </svg>
+                    <span>Take me home</span>
+                </a>
+                <a class="up-secondary" href="mailto:support@aircursor.com">Contact support</a>
+            </div>
         </div>
-    </main>
 
-    <!-- Desk Frame Outline & Unplug Button -->
-    <div class="desk-frame"></div>
-    
-    <button type="button" class="unplug-switch-btn" id="unplugToggleBtn" aria-label="Toggle Power State">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2v10M18.4 6.6a9 9 0 1 1-12.8 0"/>
-        </svg>
-        <span id="switchBtnText">Unplug it</span>
-    </button>
+        <!-- The Physical Rig: Desk, Socket, Cable, Plug -->
+        <div class="up-rig">
+            <div class="up-controls">
+                <p class="up-hint" aria-hidden="true">Drag the plug into the socket</p>
+                <button type="button" class="up-fallback" id="upFallbackBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M9 2v5M15 2v5M6 7h12v4a6 6 0 0 1-12 0zM12 17v5"/>
+                    </svg>
+                    <span id="upFallbackText">Unplug it</span>
+                </button>
+            </div>
 
-    <!-- Right Wall Plate & Mounted Socket -->
-    <div class="wall-plate"></div>
-    <div class="socket-led" id="socketLed"></div>
-    
-    <div class="wall-socket-box" id="socketBox" title="Click to plug in">
-        <div class="socket-receptacle">
-            <div class="socket-slot"></div>
-            <div class="socket-slot"></div>
+            <div class="up-stage" id="upStage">
+                <!-- SVG Scene (Wall & Desk) -->
+                <svg class="up-scene" id="svgScene" aria-hidden="true" focusable="false"></svg>
+
+                <!-- SVG Socket -->
+                <svg class="up-socket" id="svgSocket" aria-hidden="true" focusable="false"></svg>
+
+                <!-- SVG Cable (3 Layers: edge, body, shine) -->
+                <svg class="up-cable" id="svgCable" aria-hidden="true" focusable="false">
+                    <path class="up-cable-edge" id="cableEdge" d="" />
+                    <path class="up-cable-body" id="cableBody" d="" />
+                    <path class="up-cable-shine" id="cableShine" d="" />
+                </svg>
+
+                <!-- Draggable Plug Button -->
+                <button type="button" class="up-plug" id="upPlug" role="switch" aria-checked="true" aria-label="Power cable">
+                    <svg viewBox="0 0 82 32" id="plugSvg" aria-hidden="true" focusable="false">
+                        <defs>
+                            <linearGradient id="up-plug-body" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0" class="up-stop-plug-hi" />
+                                <stop offset="1" class="up-stop-plug-lo" />
+                            </linearGradient>
+                            <linearGradient id="up-plug-pin" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0" class="up-stop-pin-hi" />
+                                <stop offset="1" class="up-stop-pin-lo" />
+                            </linearGradient>
+                        </defs>
+                        <rect x="58" y="5.5" width="23.5" height="5" rx="2.5" fill="url(#up-plug-pin)" />
+                        <rect x="58" y="21.5" width="23.5" height="5" rx="2.5" fill="url(#up-plug-pin)" />
+                        <path class="up-boot" d="M18 5.5C11 7 6 11 1.5 12.6a1.6 1.6 0 0 0-1.5 1.6v3.6a1.6 1.6 0 0 0 1.5 1.6C6 21 11 25 18 26.5Z" />
+                        <path class="up-groove" d="M5.5 11.4v9.2M10 9.2v13.6" />
+                        <rect class="up-body" x="15" y="0.5" width="47" height="31" rx="7" fill="url(#up-plug-body)" />
+                        <path class="up-groove" d="M24 8.5v15M29 8.5v15M34 8.5v15" />
+                        <path class="up-sheen" d="M21 2.2h34" />
+                        <rect class="up-face" x="57" y="3.5" width="5" height="25" rx="2" />
+                    </svg>
+                </button>
+
+                <!-- SVG Spark FX Layer -->
+                <svg class="up-fx" id="svgFx" aria-hidden="true" focusable="false"></svg>
+            </div>
         </div>
     </div>
 
-    <!-- Cable SVG -->
-    <svg id="cableSvg">
-        <path id="cablePath" class="cable-svg-path" d="" />
-    </svg>
-
-    <!-- Draggable Plug -->
-    <div class="plug-grip" id="plugHandle" title="Drag to socket or click">
-        <div class="plug-ribs">
-            <div class="plug-rib"></div>
-            <div class="plug-rib"></div>
-            <div class="plug-rib"></div>
-        </div>
-        <div class="plug-prongs">
-            <div class="prong-metal"></div>
-            <div class="prong-metal"></div>
-        </div>
-    </div>
-
+    <!-- ============================================================================
+         Exact Mathematical Verlet Physics Engine (Unplugged404.jsx)
+         ============================================================================ -->
     <script>
         (function() {
-            const body = document.body;
-            const cablePath = document.getElementById('cablePath');
-            const plug = document.getElementById('plugHandle');
-            const socket = document.getElementById('socketBox');
-            const flash = document.getElementById('flashOverlay');
-            const statusText = document.getElementById('statusText');
-            const unplugToggleBtn = document.getElementById('unplugToggleBtn');
-            const switchBtnText = document.getElementById('switchBtnText');
-            const sparkCanvas = document.getElementById('sparkCanvas');
-            const ctx = sparkCanvas.getContext('2d');
+            const root = document.getElementById('unpluggedRoot');
+            const stage = document.getElementById('upStage');
+            const plug = document.getElementById('upPlug');
+            const plugSvg = document.getElementById('plugSvg');
+            const svgScene = document.getElementById('svgScene');
+            const svgSocket = document.getElementById('svgSocket');
+            const svgFx = document.getElementById('svgFx');
+            const cableEdge = document.getElementById('cableEdge');
+            const cableBody = document.getElementById('cableBody');
+            const cableShine = document.getElementById('cableShine');
+            const statusText = document.getElementById('upStatusText');
+            const liveSr = document.getElementById('upLiveSr');
+            const fallbackBtn = document.getElementById('upFallbackBtn');
+            const fallbackText = document.getElementById('upFallbackText');
 
-            let isPlugged = true; // Initial state matches 3rd image
+            const PLUG = { boot: 16, body: 46, h: 32, pin: 20 };
+            const CABLE_W = 7;
+            const SEG = 10;
+            const DT = 1 / 120;
+            const ITER = 30;
+            const GRAVITY = 2400;
+            const SAG = 60;
+            const PULL = 5;
+            const RAYS = [-168, -140, -112, -86, 94, 118, 146, 176];
+
+            let isPlugged = true;
             let isDragging = false;
-            let particles = [];
+            let isNear = false;
+            let currentGeo = null;
+            let currentRope = null;
 
-            let originPoint = { x: 0, y: 0 };
-            let plugPos = { x: 0, y: 0 };
-            let targetSocket = { x: 0, y: 0 };
+            let nx = 0, ny = 0, rot = 0;
+            let targetRot = 0;
 
-            function resizeCanvas() {
-                sparkCanvas.width = window.innerWidth;
-                sparkCanvas.height = window.innerHeight;
+            function measure(w, h) {
+                const k = w < 520 ? 1 : Math.max(1, Math.min(1.3, (h - 20) / 140));
+                const deskY = h - 46 * k;
+                const deskLeft = 6;
+                const wallX = w - 20 * k;
+                const plateX = wallX - 6 * k;
+                const faceX = plateX - 26 * k;
+                const mouthY = deskY - 74 * k;
+                const len = (PLUG.boot + PLUG.body) * k;
+                const pin = PLUG.pin * k;
+                const half = (PLUG.h * k) / 2;
+                const pre = { x: faceX - pin, y: mouthY };
+                const gap = Math.min(150 * k, (pre.x - deskLeft - len) * 0.55);
+                return {
+                    w, h, k, deskY, deskLeft, deskH: 10 * k, wallX, plateX, faceX, mouthY,
+                    sockH: 26 * k, faceRx: 8 * k, len, pin, half, r: (CABLE_W * k) / 2,
+                    seat: { x: faceX, y: mouthY },
+                    pre,
+                    rest: { x: pre.x - gap, y: deskY - half },
+                    minX: deskLeft + len + 12,
+                    minY: half + 2,
+                    magnet: 44 * k,
+                    snap: 52 * k,
+                    align: 9 * k,
+                };
             }
-            window.addEventListener('resize', resizeCanvas);
-            resizeCanvas();
 
-            function syncGeometry() {
-                const w = window.innerWidth;
-                const h = window.innerHeight;
+            function tailOf(g, x, y, deg) {
+                const a = (deg * Math.PI) / 180;
+                const c = Math.cos(a);
+                const s = Math.sin(a);
+                return { x: x - g.len * c, y: y - g.len * s, c, s };
+            }
 
-                // Cable starts from left desk frame
-                originPoint = {
-                    x: w * 0.14 + 10,
-                    y: h - 145
-                };
+            function anchorOf(g, rope, tail) {
+                const a = SAG * g.k;
+                const neckX = tail.x - tail.c * SEG;
+                const neckY = tail.y - tail.s * SEG;
+                const h = Math.max(0, g.deskY - g.r - neckY);
+                const s = Math.min(rope.len - 2 * SEG, Math.sqrt(h * h + 2 * h * a));
+                const x = a * Math.acosh(1 + h / a);
+                const ax = neckX - x - (rope.len - SEG - s) - PULL * g.k;
+                if (ax >= g.deskLeft) return { x: ax, y: g.deskY - g.r };
+                const corner = g.deskLeft - rope.rail;
+                return { x: rope.rail, y: g.deskY - g.r + Math.max(0, g.deskLeft - ax - corner) };
+            }
 
-                const sRect = socket.getBoundingClientRect();
-                targetSocket = {
-                    x: sRect.left - 64, // Exact snap position into right-hand socket
-                    y: sRect.top + (sRect.height / 2) - 24
-                };
+            function makeRope(g, tail) {
+                const a = SAG * g.k;
+                const hMax = g.deskY - g.minY;
+                const want = Math.sqrt(hMax * hMax + 2 * hMax * a) + 36 * g.k;
+                const n = Math.ceil(want / SEG) + 1;
+                const rope = { pts: [], n, len: (n - 1) * SEG, rail: g.deskLeft - g.r - 0.5 };
+                const head = anchorOf(g, rope, tail);
+                const top = g.deskY - g.r;
+                const path = [[head.x, head.y]];
+                if (head.y > top) path.push([rope.rail, top]);
+                path.push([Math.max(path[path.length - 1][0], tail.x - SEG * 2), top], [tail.x, tail.y]);
+                const lens = path.slice(1).map((p, i) => Math.hypot(p[0] - path[i][0], p[1] - path[i][1]));
+                const total = lens.reduce((sum, v) => sum + v, 0) || 1;
+                for (let i = 0, leg = 0, done = 0; i < n; i++) {
+                    const w = (total * i) / (n - 1);
+                    while (leg < lens.length - 1 && done + lens[leg] < w) done += lens[leg++];
+                    const t = lens[leg] ? Math.min(1, (w - done) / lens[leg]) : 0;
+                    const px = path[leg][0] + (path[leg + 1][0] - path[leg][0]) * t;
+                    const py = path[leg][1] + (path[leg + 1][1] - path[leg][1]) * t;
+                    rope.pts.push({ x: px, y: py, px, py });
+                }
+                return rope;
+            }
 
-                if (!isDragging) {
-                    if (isPlugged) {
-                        plugPos = { ...targetSocket };
-                    } else {
-                        // Unplugged dropped state on shelf
-                        plugPos = {
-                            x: w * 0.44,
-                            y: h - 110
-                        };
-                    }
-                    renderPath();
+            function collide(p, g) {
+                const r = g.r;
+                if (p.x > g.wallX - r) p.x = g.wallX - r;
+                const top = g.deskY - r;
+                const bottom = g.deskY + g.deskH + r;
+                const left = g.deskLeft - r;
+                if (p.x > left && p.y > top && p.y < bottom) {
+                    const up = p.y - top;
+                    const out = p.x - left;
+                    const down = bottom - p.y;
+                    if (up <= out && up <= down) p.y = top;
+                    else if (out <= down) p.x = left;
+                    else p.y = bottom;
+                }
+                const sTop = g.mouthY - g.sockH - r;
+                const sBottom = g.mouthY + g.sockH + r;
+                const sLeft = g.faceX - g.faceRx - r;
+                if (p.x > sLeft && p.y > sTop && p.y < sBottom) {
+                    const up = p.y - sTop;
+                    const out = p.x - sLeft;
+                    const down = sBottom - p.y;
+                    if (out <= up && out <= down) p.x = sLeft;
+                    else if (up <= down) p.y = sTop;
+                    else p.y = sBottom;
                 }
             }
 
-            // Natural Catena/Bezier Cable Geometry
-            function renderPath() {
-                plug.style.left = `${plugPos.x}px`;
-                plug.style.top = `${plugPos.y}px`;
+            function stepRope(rope, g, tail, damp) {
+                const { pts, n } = rope;
+                const grav = GRAVITY * DT * DT;
+                for (let i = 1; i < n - 2; i++) {
+                    const p = pts[i];
+                    const vx = (p.x - p.px) * damp;
+                    const vy = (p.y - p.py) * damp;
+                    p.px = p.x;
+                    p.py = p.y;
+                    p.x += vx;
+                    p.y += vy + grav;
+                }
+                const end = pts[n - 1];
+                const neck = pts[n - 2];
+                end.x = tail.x; end.y = tail.y;
+                neck.x = tail.x - tail.c * SEG; neck.y = tail.y - tail.s * SEG;
 
-                const startX = originPoint.x;
-                const startY = originPoint.y;
+                const head = anchorOf(g, rope, tail);
+                pts[0].x += (head.x - pts[0].x) * 0.25;
+                pts[0].y += (head.y - pts[0].y) * 0.25;
 
-                const endX = plugPos.x;
-                const endY = plugPos.y + 24;
+                for (let it = 0; it < ITER; it++) {
+                    for (let i = 0; i < n - 1; i++) {
+                        const a = pts[i];
+                        const b = pts[i + 1];
+                        const wa = i > 0 && i < n - 2 ? 1 : 0;
+                        const wb = i + 1 < n - 2 ? 1 : 0;
+                        if (!wa && !wb) continue;
+                        const dx = b.x - a.x;
+                        const dy = b.y - a.y;
+                        const d = Math.hypot(dx, dy) || 1e-6;
+                        const f = (d - SEG) / d / (wa + wb);
+                        a.x += dx * f * wa; a.y += dy * f * wa;
+                        b.x -= dx * f * wb; b.y -= dy * f * wb;
+                    }
+                    for (let i = 0; i < n - 2; i++) {
+                        const a = pts[i];
+                        const b = pts[i + 2];
+                        const wa = i > 0 ? 1 : 0;
+                        const wb = i + 2 < n - 2 ? 1 : 0;
+                        if (!wa && !wb) continue;
+                        const dx = b.x - a.x;
+                        const dy = b.y - a.y;
+                        const d = Math.hypot(dx, dy) || 1e-6;
+                        const min = SEG * 1.8;
+                        if (d >= min) continue;
+                        const f = ((d - min) / d / (wa + wb)) * 0.5;
+                        a.x += dx * f * wa; a.y += dy * f * wa;
+                        b.x -= dx * f * wb; b.y -= dy * f * wb;
+                    }
+                    for (let j = 1; j <= 2; j++) {
+                        const p = pts[n - 2 - j];
+                        const pull = j === 1 ? 0.3 : 0.1;
+                        p.x += (neck.x - tail.c * SEG * j - p.x) * pull;
+                        p.y += (neck.y - tail.s * SEG * j - p.y) * pull;
+                    }
+                    for (let i = 1; i < n - 2; i++) collide(pts[i], g);
+                }
+                for (let i = 1; i < n - 2; i++) {
+                    const p = pts[i];
+                    const a = pts[i - 1];
+                    const b = pts[i + 1];
+                    p.x += ((a.x + b.x) / 2 - p.x) * 0.3;
+                    p.y += ((a.y + b.y) / 2 - p.y) * 0.3;
+                    collide(p, g);
+                }
+                for (let i = 1; i < n - 2; i++) {
+                    const p = pts[i];
+                    if (p.x > g.deskLeft && p.y >= g.deskY - g.r - 0.2) p.px += (p.x - p.px) * 0.3;
+                }
+            }
 
-                const dx = endX - startX;
-                const dy = endY - startY;
-
-                let cp1X, cp1Y, cp2X, cp2Y;
-
-                if (isPlugged) {
-                    // Natural droop sagging across the desk and swooping up to wall socket
-                    cp1X = startX + dx * 0.35;
-                    cp1Y = Math.max(startY, endY) + 75;
-
-                    cp2X = startX + dx * 0.82;
-                    cp2Y = endY + 45;
+            function ropePath(rope, g) {
+                const { pts, n, rail } = rope;
+                const f = (v) => Math.round(v * 10) / 10;
+                const head = pts[0];
+                const top = g.deskY - g.r;
+                let d = `M${f(rail)} ${f(g.h + 40)}`;
+                if (head.y <= top + 0.5) {
+                    const bend = 2 * g.r;
+                    d += `V${f(top + bend)}Q${f(rail)} ${f(top)} ${f(rail + bend)} ${f(top)}L${f(head.x)} ${f(head.y)}`;
                 } else {
-                    // Loose relaxed cable laying along desk
-                    cp1X = startX + dx * 0.4;
-                    cp1Y = Math.max(startY, endY) + 40;
-
-                    cp2X = startX + dx * 0.7;
-                    cp2Y = endY + 25;
+                    d += `L${f(head.x)} ${f(head.y)}`;
                 }
-
-                const d = `M ${startX} ${startY} C ${cp1X} ${cp1Y}, ${cp2X} ${cp2Y}, ${endX} ${endY}`;
-                cablePath.setAttribute('d', d);
+                for (let i = 1; i < n - 1; i++) {
+                    const a = pts[i];
+                    const b = pts[i + 1];
+                    d += `Q${f(a.x)} ${f(a.y)} ${f((a.x + b.x) / 2)} ${f((a.y + b.y) / 2)}`;
+                }
+                const end = pts[n - 1];
+                return `${d}L${f(end.x)} ${f(end.y)}`;
             }
 
-            // Electric Spark Particle Burst
-            function triggerSparkBurst(x, y) {
-                particles = [];
-                for (let i = 0; i < 32; i++) {
-                    const angle = Math.random() * Math.PI * 2;
-                    const speed = 2.5 + Math.random() * 6.5;
-                    particles.push({
-                        x: x,
-                        y: y,
-                        vx: Math.cos(angle) * speed,
-                        vy: Math.sin(angle) * speed - 1.2,
-                        life: 1,
-                        decay: 0.03 + Math.random() * 0.04,
-                        size: 2 + Math.random() * 2
-                    });
-                }
-                runSparks();
+            function rubber(v, min, max, give = 50) {
+                if (v < min) return min - give * (1 - 1 / (1 + (min - v) / give));
+                if (v > max) return max + give * (1 - 1 / (1 + (v - max) / give));
+                return v;
             }
 
-            function runSparks() {
-                ctx.clearRect(0, 0, sparkCanvas.width, sparkCanvas.height);
-                for (let i = particles.length - 1; i >= 0; i--) {
-                    const p = particles[i];
-                    p.x += p.vx;
-                    p.y += p.vy;
-                    p.vy += 0.16;
-                    p.life -= p.decay;
+            function land(t) {
+                if (t < 0.62) return (t / 0.62) ** 2;
+                const bounce = (a, b, height) => { const u = (t - a) / (b - a); return 1 - height * 4 * u * (1 - u); };
+                return t < 0.86 ? bounce(0.62, 0.86, 0.09) : bounce(0.86, 1, 0.022);
+            }
 
-                    if (p.life <= 0) {
-                        particles.splice(i, 1);
-                        continue;
+            function nearSocket(g, x, y) {
+                return x > g.pre.x - 1 || Math.hypot(g.pre.x - x, g.pre.y - y) < g.snap;
+            }
+
+            function constrain(g, x, y) {
+                x = rubber(x, g.minX, Infinity);
+                y = Math.min(rubber(y, g.minY, Infinity), g.rest.y);
+                const dx = g.pre.x - x;
+                const dy = g.pre.y - y;
+                const d = Math.hypot(dx, dy);
+                if (x <= g.pre.x && d < g.magnet) {
+                    const pull = (1 - d / g.magnet) ** 2;
+                    x += dx * pull * 0.6;
+                    y += dy * pull;
+                }
+                if (x > g.pre.x) {
+                    if (Math.abs(y - g.pre.y) <= g.align) {
+                        y = g.pre.y;
+                        x = Math.min(x, g.seat.x);
+                    } else if (Math.abs(y - g.mouthY) < g.half + g.sockH) {
+                        x = g.pre.x;
+                    } else {
+                        x = Math.min(x, g.wallX - g.pin - 1);
                     }
-
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
-                    ctx.fillStyle = '#ffffff';
-                    ctx.shadowColor = '#ffffff';
-                    ctx.shadowBlur = 10;
-                    ctx.fill();
                 }
+                return [x, y];
+            }
 
-                if (particles.length > 0) {
-                    requestAnimationFrame(runSparks);
+            function renderSceneAndSocket() {
+                const g = currentGeo;
+                const k = g.k;
+                svgScene.innerHTML = `
+                    <defs>
+                        <linearGradient id="up-wall" x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0" class="up-stop-wall" />
+                            <stop offset="1" class="up-stop-wall" stop-opacity="0" />
+                        </linearGradient>
+                        <linearGradient id="up-fade" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0" stop-color="#fff" stop-opacity="0" />
+                            <stop offset="0.6" stop-color="#fff" />
+                        </linearGradient>
+                        <mask id="up-wall-mask">
+                            <rect x="${g.wallX - 2}" y="0" width="${90 * k}" height="${g.h}" fill="url(#up-fade)" />
+                        </mask>
+                    </defs>
+                    <g mask="url(#up-wall-mask)">
+                        <rect x="${g.wallX}" y="0" width="${80 * k}" height="${g.h}" fill="url(#up-wall)" />
+                        <rect class="up-wall-line" x="${g.wallX}" y="0" width="1" height="${g.h}" />
+                    </g>
+                    <rect class="up-desk" x="${g.deskLeft}" y="${g.deskY}" width="${g.wallX - g.deskLeft}" height="${g.deskH}" rx="${2.5 * k}" />
+                    <rect class="up-desk-edge" x="${g.deskLeft + 2}" y="${g.deskY}" width="${g.wallX - g.deskLeft - 2}" height="1" />
+                `;
+
+                const top = g.mouthY - g.sockH;
+                svgSocket.innerHTML = `
+                    <defs>
+                        <linearGradient id="up-barrel" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0" class="up-stop-socket-lo" />
+                            <stop offset="0.22" class="up-stop-socket-hi" />
+                            <stop offset="1" class="up-stop-socket-lo" />
+                        </linearGradient>
+                    </defs>
+                    <rect class="up-barrel" x="${g.faceX}" y="${top}" width="${g.plateX - g.faceX + 2}" height="${g.sockH * 2}" fill="url(#up-barrel)" />
+                    <rect class="up-plate" x="${g.plateX}" y="${g.mouthY - 50 * k}" width="${g.wallX - g.plateX + 1}" height="${100 * k}" rx="${2 * k}" />
+                    <ellipse class="up-socket-face" cx="${g.faceX}" cy="${g.mouthY}" rx="${g.faceRx}" ry="${g.sockH}" />
+                    <ellipse class="up-recess" cx="${g.faceX - 0.5 * k}" cy="${g.mouthY}" rx="${g.faceRx * 0.6}" ry="${g.sockH * 0.74}" />
+                    <ellipse class="up-hole" cx="${g.faceX - 0.6 * k}" cy="${g.mouthY - 8 * k}" rx="${1.8 * k}" ry="${3.4 * k}" />
+                    <ellipse class="up-hole" cx="${g.faceX - 0.6 * k}" cy="${g.mouthY + 8 * k}" rx="${1.8 * k}" ry="${3.4 * k}" />
+                    <circle class="up-led" cx="${g.plateX - 8 * k}" cy="${top + 7 * k}" r="${2.3 * k}" />
+                `;
+            }
+
+            function triggerSpark() {
+                const g = currentGeo;
+                const k = g.k;
+                let raysHtml = '';
+                RAYS.forEach((deg, i) => {
+                    const a = (deg * Math.PI) / 180;
+                    const c = Math.cos(a);
+                    const s = Math.sin(a);
+                    const inner = 6 * k;
+                    const outer = (i % 2 ? 16 : 23) * k;
+                    raysHtml += `<path class="up-ray" pathLength="1" d="M${g.faceX + c * inner} ${g.mouthY + s * inner}L${g.faceX + c * outer} ${g.mouthY + s * outer}" style="animation-delay: ${(i % 3) * 22}ms"></path>`;
+                });
+                svgFx.innerHTML = `<circle class="up-flash" cx="${g.faceX}" cy="${g.mouthY}" r="${24 * k}"></circle>${raysHtml}`;
+                setTimeout(() => { svgFx.innerHTML = ''; }, 400);
+            }
+
+            function setPower(on) {
+                if (isPlugged === on) return;
+                isPlugged = on;
+                root.setAttribute('data-power', on ? 'on' : 'off');
+                plug.setAttribute('aria-checked', on ? 'true' : 'false');
+                root.classList.remove('is-booting', 'is-dying');
+                void root.offsetWidth;
+                root.classList.add(on ? 'is-booting' : 'is-dying');
+
+                statusText.textContent = on ? 'Power restored' : 'Signal lost';
+                liveSr.textContent = on ? 'Power restored' : 'Signal lost';
+                fallbackText.textContent = on ? 'Unplug it' : 'Plug it back in';
+
+                if (on) triggerSpark();
+            }
+
+            // Animation Loop
+            let runningAnim = null;
+            function cancelRunningAnim() {
+                if (runningAnim) {
+                    cancelAnimationFrame(runningAnim);
+                    runningAnim = null;
                 }
             }
 
-            // Power Restoration
-            function plugIn() {
-                if (isPlugged) return;
-                isPlugged = true;
-                body.classList.add('is-plugged');
-                statusText.textContent = "POWER RESTORED";
-                switchBtnText.textContent = "Unplug it";
-
-                // Flash & Sparks
-                flash.classList.remove('flash-active');
-                void flash.offsetWidth;
-                flash.classList.add('flash-active');
-
-                const sRect = socket.getBoundingClientRect();
-                triggerSparkBurst(sRect.left, sRect.top + sRect.height / 2);
-
-                plugPos = { ...targetSocket };
-                renderPath();
+            function animateTo(targetX, targetY, duration, onComplete, customEase) {
+                cancelRunningAnim();
+                const startX = nx;
+                const startY = ny;
+                const startTime = performance.now();
+                function frame(now) {
+                    const elapsed = (now - startTime) / 1000;
+                    const t = Math.min(1, elapsed / duration);
+                    const easeVal = customEase ? customEase(t) : (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t);
+                    nx = startX + (targetX - startX) * easeVal;
+                    ny = startY + (targetY - startY) * easeVal;
+                    updatePlugTransform();
+                    if (t < 1) {
+                        runningAnim = requestAnimationFrame(frame);
+                    } else {
+                        runningAnim = null;
+                        if (onComplete) onComplete();
+                    }
+                }
+                runningAnim = requestAnimationFrame(frame);
             }
 
-            // Power Cut / Disconnect
-            function unplug() {
-                if (!isPlugged) return;
-                isPlugged = false;
-                body.classList.remove('is-plugged');
-                statusText.textContent = "UNPLUGGED";
-                switchBtnText.textContent = "Plug it in";
-                syncGeometry();
+            function seatPlug() {
+                const g = currentGeo;
+                targetRot = 0;
+                animateTo(g.pre.x, g.pre.y, 0.16, () => {
+                    animateTo(g.seat.x, g.seat.y, 0.09, () => {
+                        setPower(true);
+                    });
+                });
             }
 
-            // Pointer Event Dragging
+            function dropPlug() {
+                const g = currentGeo;
+                targetRot = 0;
+                const fall = Math.max(0, g.rest.y - ny);
+                animateTo(g.rest.x, g.rest.y, 0.26 + Math.sqrt(fall) * 0.028, null, land);
+            }
+
+            function plugInDirect() {
+                targetRot = -5;
+                animateTo(currentGeo.pre.x, currentGeo.pre.y, 0.22, () => {
+                    seatPlug();
+                });
+            }
+
+            function unplugDirect() {
+                setPower(false);
+                animateTo(currentGeo.pre.x - 8 * currentGeo.k, currentGeo.mouthY, 0.16, () => {
+                    dropPlug();
+                });
+            }
+
+            function togglePlug() {
+                if (isPlugged) unplugDirect();
+                else plugInDirect();
+            }
+
+            function updatePlugTransform() {
+                plug.style.transform = `translate3d(${nx}px, ${ny}px, 0px) rotate(${rot}deg)`;
+                const g = currentGeo;
+                const inside = nx + PLUG.pin * g.k - g.faceX;
+                plugSvg.style.clipPath = inside > 0 ? `inset(-24px ${inside.toFixed(2)}px -24px -24px)` : 'none';
+            }
+
+            // Drag Handler
+            let grab = null;
             function onPointerDown(e) {
-                isDragging = true;
-                plug.setPointerCapture(e.pointerId);
+                if (e.pointerType === 'mouse' && e.button !== 0) return;
+                try { plug.setPointerCapture(e.pointerId); } catch (_) {}
+                cancelRunningAnim();
+                const scale = stage.getBoundingClientRect().width / stage.offsetWidth || 1;
+                grab = {
+                    id: e.pointerId, sx: e.clientX, sy: e.clientY, ox: nx, oy: ny,
+                    scale, moved: false, vy: 0, lastY: ny, lastT: e.timeStamp
+                };
             }
 
             function onPointerMove(e) {
-                if (!isDragging) return;
-                plugPos = {
-                    x: e.clientX - 45,
-                    y: e.clientY - 24
-                };
+                if (!grab || grab.id !== e.pointerId) return;
+                const dx = (e.clientX - grab.sx) / grab.scale;
+                const dy = (e.clientY - grab.sy) / grab.scale;
+                if (!grab.moved) {
+                    if (Math.hypot(dx, dy) < 4) return;
+                    grab.moved = true;
+                    isDragging = true;
+                    root.classList.add('is-dragging');
+                }
+                const g = currentGeo;
+                const [cx, cy] = constrain(g, grab.ox + dx, grab.oy + dy);
+                nx = cx;
+                ny = cy;
 
-                // Magnetic Proximity Snapping to Socket (Radius 50px)
-                const dist = Math.hypot(plugPos.x - targetSocket.x, plugPos.y - targetSocket.y);
-                if (dist < 50) {
-                    plugIn();
-                    isDragging = false;
-                    return;
-                } else if (isPlugged && dist >= 60) {
-                    unplug();
+                if (isPlugged && nx < g.seat.x - 3 * g.k) setPower(false);
+
+                const near = nearSocket(g, nx, ny);
+                if (isNear !== near) {
+                    isNear = near;
+                    root.classList.toggle('is-near', near);
                 }
 
-                renderPath();
+                const dt = Math.max(1, e.timeStamp - grab.lastT) / 1000;
+                grab.vy = grab.vy * 0.6 + ((ny - grab.lastY) / dt) * 0.4;
+                grab.lastY = ny;
+                grab.lastT = e.timeStamp;
+
+                const lifted = ny < g.rest.y - 1;
+                const toMouth = Math.min(1, Math.hypot(g.pre.x - nx, g.pre.y - ny) / g.magnet);
+                const base = lifted ? -4 : 0;
+                targetRot = nx > g.pre.x ? 0 : (base + Math.max(-14, Math.min(14, grab.vy * 0.012))) * toMouth;
             }
 
-            function onPointerUp() {
-                if (!isDragging) return;
+            function onPointerUp(e) {
+                if (!grab || grab.id !== e.pointerId) return;
+                const wasMoved = grab.moved;
+                grab = null;
                 isDragging = false;
-                const dist = Math.hypot(plugPos.x - targetSocket.x, plugPos.y - targetSocket.y);
-                if (dist < 60) {
-                    plugIn();
-                } else {
-                    unplug();
+                isNear = false;
+                root.classList.remove('is-dragging', 'is-near');
+                if (!wasMoved) {
+                    togglePlug();
+                    return;
                 }
+                if (nearSocket(currentGeo, nx, ny)) seatPlug();
+                else dropPlug();
             }
 
             plug.addEventListener('pointerdown', onPointerDown);
             plug.addEventListener('pointermove', onPointerMove);
             plug.addEventListener('pointerup', onPointerUp);
             plug.addEventListener('pointercancel', onPointerUp);
+            plug.addEventListener('click', (e) => { e.preventDefault(); });
+            fallbackBtn.addEventListener('click', togglePlug);
 
-            // Toggle Click
-            unplugToggleBtn.addEventListener('click', () => {
-                if (isPlugged) unplug();
-                else plugIn();
-            });
-
-            socket.addEventListener('click', plugIn);
-            plug.addEventListener('click', () => {
-                if (!isPlugged) plugIn();
-            });
-
-            // Keyboard Space / Enter
             window.addEventListener('keydown', (e) => {
                 if (e.code === 'Space' || e.code === 'Enter') {
                     if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'A') {
                         e.preventDefault();
-                        if (isPlugged) unplug();
-                        else plugIn();
+                        togglePlug();
                     }
                 }
             });
 
-            window.addEventListener('resize', syncGeometry);
-            setTimeout(syncGeometry, 50);
+            // Physics Render Loop
+            let lastTime = performance.now();
+            let acc = 0;
+            function mainLoop(now) {
+                acc += Math.min(0.05, (now - lastTime) / 1000);
+                lastTime = now;
+                const g = currentGeo;
+
+                rot += (targetRot - rot) * 0.22;
+                updatePlugTransform();
+
+                if (currentRope) {
+                    const tail = tailOf(g, nx, ny, rot);
+                    let steps = 0;
+                    while (acc >= DT && steps < 8) {
+                        stepRope(currentRope, g, tail, 0.988);
+                        acc -= DT;
+                        steps++;
+                    }
+                    const d = ropePath(currentRope, g);
+                    cableEdge.setAttribute('d', d);
+                    cableBody.setAttribute('d', d);
+                    cableShine.setAttribute('d', d);
+                }
+
+                requestAnimationFrame(mainLoop);
+            }
+
+            function setupStage() {
+                const w = stage.clientWidth;
+                const h = stage.clientHeight;
+                if (!w || !h) return;
+                currentGeo = measure(w, h);
+                root.style.setProperty('--up-k', currentGeo.k);
+
+                renderSceneAndSocket();
+
+                nx = isPlugged ? currentGeo.seat.x : currentGeo.rest.x;
+                ny = isPlugged ? currentGeo.seat.y : currentGeo.rest.y;
+                rot = 0;
+                targetRot = 0;
+                updatePlugTransform();
+
+                cableEdge.setAttribute('stroke-width', (CABLE_W * currentGeo.k + 2) + 'px');
+                cableBody.setAttribute('stroke-width', (CABLE_W * currentGeo.k) + 'px');
+                cableShine.setAttribute('stroke-width', (1.5 * currentGeo.k) + 'px');
+                cableShine.setAttribute('transform', `translate(0, ${-1.6 * currentGeo.k})`);
+
+                const tail = tailOf(currentGeo, nx, ny, rot);
+                currentRope = makeRope(currentGeo, tail);
+                for (let i = 0; i < 480; i++) stepRope(currentRope, currentGeo, tail, 0.9);
+            }
+
+            window.addEventListener('resize', setupStage);
+            setupStage();
+            requestAnimationFrame(mainLoop);
         })();
     </script>
 </body>

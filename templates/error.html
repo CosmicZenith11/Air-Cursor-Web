@@ -8,7 +8,7 @@
 
     <style>
         /* ============================================================================
-           Unplugged404: Exact Design Tokens (tokens.css)
+           Unplugged404: Matte Logo Design Tokens with Per-Error Color Themes
            ============================================================================ */
         :root {
             --radius-pill: 999px;
@@ -20,67 +20,108 @@
             --tr-base: -0.005em;
         }
 
-        /* Dark Theme Tokens (Exact from tokens.css) */
-        [data-theme="dark"] .unplugged-root,
+        /* Base Matte Dark Theme Variables */
         .unplugged-root {
             --up-page-height: 100dvh;
             --up-code-size: clamp(96px, min(21vw, 24vh), 216px);
             --up-rig-height: clamp(190px, 34vh, 250px);
 
-            --accent-primary: #fbfbfd;
-            --accent-hover: #e6e4ec;
-            --text-on-accent: #16121f;
+            --bg-canvas: #07090e;
+            --bg-elevated-1: #0f1523;
+            --border-default: rgba(255, 255, 255, 0.08);
+            --border-strong: rgba(255, 255, 255, 0.16);
 
-            --bg-canvas: #0e0a16;
-            --bg-elevated-1: #171022;
-            --border-default: rgba(251, 251, 253, 0.1);
-            --border-strong: rgba(251, 251, 253, 0.18);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-tertiary: #64748b;
 
-            --text-primary: #fbfbfd;
-            --text-secondary: #bdb8c8;
-            --text-tertiary: #9892a4;
+            --up-dim: 0.22;
+            --up-bg-off: #05060a;
+            --up-wall: #0b0f1a;
+            --up-wall-line: rgba(255, 255, 255, 0.08);
+            --up-desk: #111726;
+            --up-desk-edge: rgba(255, 255, 255, 0.1);
 
-            --up-dim: 0.24;
-            --up-bg-off: #0a0710;
-            --up-tube: rgba(251, 251, 253, 0.5);
-            --up-glow-rgb: 251, 251, 253;
-            --up-glow-strength: 0.07;
-            --up-code-glow: 0 0 36px rgba(251, 251, 253, 0.32), 0 0 2px rgba(251, 251, 253, 0.6);
-            --up-light-rgb: 251, 251, 253;
-
-            --up-wall: #140f1e;
-            --up-wall-line: rgba(251, 251, 253, 0.16);
-            --up-desk: #1f1830;
-            --up-desk-edge: rgba(251, 251, 253, 0.16);
-
-            --up-cable: #3d3550;
-            --up-cable-shine: #7d768f;
+            /* Hardware Matte Styling */
+            --up-cable: #1e2638;
+            --up-cable-shine: #334155;
             --up-cable-edge: transparent;
-            --up-plug-hi: #5a5369;
-            --up-plug-lo: #2e2740;
-            --up-plug-edge: rgba(251, 251, 253, 0.2);
-            --up-plug-groove: rgba(0, 0, 0, 0.32);
-            --up-plug-sheen: rgba(251, 251, 253, 0.28);
-            --up-plug-face: #251e33;
-            --up-pin-hi: #f4f3f7;
-            --up-pin-lo: #8e889c;
-            --up-shadow: 0.5;
-            --up-socket-hi: #3a3348;
-            --up-socket-lo: #1c1628;
-            --up-socket-face: #4b4459;
-            --up-socket-edge: rgba(251, 251, 253, 0.16);
-            --up-plate: #221b2e;
-            --up-recess: #2a2338;
-            --up-hole: #050308;
-            --up-near: rgba(251, 251, 253, 0.55);
-            --up-led-off: #3a3348;
-            --up-led-on: #fbfbfd;
+            --up-plug-hi: #2b354c;
+            --up-plug-lo: #161c2b;
+            --up-plug-edge: rgba(255, 255, 255, 0.15);
+            --up-plug-groove: rgba(0, 0, 0, 0.4);
+            --up-plug-sheen: rgba(255, 255, 255, 0.2);
+            --up-plug-face: #121724;
+            --up-pin-hi: #cbd5e1;
+            --up-pin-lo: #64748b;
+            --up-shadow: 0.6;
+            --up-socket-hi: #242c40;
+            --up-socket-lo: #111622;
+            --up-socket-face: #1e2536;
+            --up-socket-edge: rgba(255, 255, 255, 0.14);
+            --up-plate: #131926;
+            --up-recess: #171e2e;
+            --up-hole: #030508;
+            --up-led-off: #1e2536;
 
-            --shadow-focus-ring: 0 0 0 3px rgba(251, 251, 253, 0.24);
+            /* DEFAULT / 404: Matte Electric Blue (App Logo Match) */
+            --accent-primary: #2563eb;
+            --accent-hover: #1d4ed8;
+            --text-on-accent: #ffffff;
+            --accent-glow: rgba(37, 99, 235, 0.45);
+            --up-light-rgb: 37, 99, 235;
+            --up-glow-rgb: 56, 189, 248;
+            --up-glow-strength: 0.14;
+            --up-code-glow: 0 0 38px rgba(37, 99, 235, 0.65), 0 0 85px rgba(56, 189, 248, 0.25);
+            --up-tube: rgba(37, 99, 235, 0.4);
+            --up-near: rgba(56, 189, 248, 0.6);
+            --up-led-on: #38bdf8;
+        }
+
+        /* 500: Server Error (Matte Crimson Red) */
+        .unplugged-root[data-error="500"],
+        body[data-error="500"] .unplugged-root {
+            --accent-primary: #dc2626;
+            --accent-hover: #b91c1c;
+            --accent-glow: rgba(220, 38, 38, 0.45);
+            --up-light-rgb: 220, 38, 38;
+            --up-glow-rgb: 248, 113, 113;
+            --up-code-glow: 0 0 38px rgba(220, 38, 38, 0.65), 0 0 85px rgba(248, 113, 113, 0.25);
+            --up-tube: rgba(220, 38, 38, 0.4);
+            --up-near: rgba(248, 113, 113, 0.6);
+            --up-led-on: #f87171;
+        }
+
+        /* 403: Access Restricted (Matte Amber Orange) */
+        .unplugged-root[data-error="403"],
+        body[data-error="403"] .unplugged-root {
+            --accent-primary: #d97706;
+            --accent-hover: #b45309;
+            --accent-glow: rgba(217, 119, 6, 0.45);
+            --up-light-rgb: 217, 119, 6;
+            --up-glow-rgb: 251, 191, 36;
+            --up-code-glow: 0 0 38px rgba(217, 119, 6, 0.65), 0 0 85px rgba(251, 191, 36, 0.25);
+            --up-tube: rgba(217, 119, 6, 0.4);
+            --up-near: rgba(251, 191, 36, 0.6);
+            --up-led-on: #fbbf24;
+        }
+
+        /* 400: Bad Request (Matte Violet / Purple) */
+        .unplugged-root[data-error="400"],
+        body[data-error="400"] .unplugged-root {
+            --accent-primary: #7c3aed;
+            --accent-hover: #6d28d9;
+            --accent-glow: rgba(124, 58, 237, 0.45);
+            --up-light-rgb: 124, 58, 237;
+            --up-glow-rgb: 167, 139, 250;
+            --up-code-glow: 0 0 38px rgba(124, 58, 237, 0.65), 0 0 85px rgba(167, 139, 250, 0.25);
+            --up-tube: rgba(124, 58, 237, 0.4);
+            --up-near: rgba(167, 139, 250, 0.6);
+            --up-led-on: #a78bfa;
         }
 
         /* ============================================================================
-           Unplugged404.css (Exact Component Layout)
+           Layout & Typography
            ============================================================================ */
         :where(.unplugged-root, .unplugged-root *, .unplugged-root *::before, .unplugged-root *::after) {
             box-sizing: border-box;
@@ -92,7 +133,7 @@
             margin: 0;
             padding: 0;
             overflow: hidden;
-            background-color: #0a0710;
+            background-color: #05060a;
         }
 
         .unplugged-root {
@@ -141,7 +182,7 @@
             border: 0;
         }
 
-        /* STATUS */
+        /* Top Status */
         .up-status {
             display: flex;
             align-items: center;
@@ -166,13 +207,13 @@
         }
         [data-power="on"] .up-status { color: var(--text-secondary); }
         [data-power="on"] .up-status-dot {
-            border-color: var(--text-primary);
-            background: var(--text-primary);
-            box-shadow: 0 0 10px rgba(var(--up-glow-rgb), 0.6);
+            border-color: var(--up-led-on);
+            background: var(--up-led-on);
+            box-shadow: 0 0 10px var(--accent-glow);
             animation: none;
         }
 
-        /* SCREEN */
+        /* Screen Typography */
         .up-screen {
             flex: 1;
             display: flex;
@@ -193,7 +234,7 @@
 
         .up-code {
             font-size: var(--up-code-size);
-            font-weight: 650;
+            font-weight: 700;
             line-height: 0.84;
             letter-spacing: -0.065em;
             font-variant-numeric: tabular-nums;
@@ -201,6 +242,7 @@
             color: var(--text-primary);
             text-shadow: var(--up-code-glow);
             user-select: none;
+            transition: text-shadow 0.4s ease, color 0.4s ease;
         }
         [data-power="off"] .up-code {
             color: transparent;
@@ -224,49 +266,50 @@
             color: var(--text-secondary);
             text-wrap: pretty;
         }
+
+        /* 💥 SINGLE CENTERED "TAKE ME HOME" BUTTON 💥 */
         .up-actions {
             display: flex;
-            flex-wrap: wrap;
             align-items: center;
             justify-content: center;
-            gap: 12px 22px;
+            width: 100%;
             margin-top: 28px;
         }
         .up-home {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            height: 44px;
-            padding: 0 22px 0 18px;
-            border: 0;
+            justify-content: center;
+            gap: 10px;
+            height: 46px;
+            padding: 0 30px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
             border-radius: var(--radius-pill);
             background: var(--accent-primary);
             color: var(--text-on-accent);
             font-size: 15px;
-            font-weight: 600;
+            font-weight: 700;
             letter-spacing: var(--tr-tight);
             text-decoration: none;
             cursor: pointer;
-            transition: background 160ms var(--ease-out-quart), transform 160ms var(--ease-out-quart), box-shadow 200ms var(--ease-out-quart);
+            box-shadow: 0 10px 24px var(--accent-glow);
+            transition: all 180ms var(--ease-out-quart);
         }
-        .up-home:hover { background: var(--accent-hover); transform: translateY(-1px); }
-        .up-home:active { transform: translateY(0) scale(0.98); }
-        .up-home svg { transition: transform 200ms var(--ease-out-quart); }
-        .up-home:hover svg { transform: translateX(-2px); }
-
-        .up-secondary {
-            padding: 6px 2px;
-            font-size: 15px;
-            font-weight: 500;
-            color: var(--text-secondary);
-            text-decoration: underline;
-            text-decoration-color: var(--border-strong);
-            text-underline-offset: 4px;
-            transition: color 160ms var(--ease-out-quart), text-decoration-color 160ms var(--ease-out-quart);
+        .up-home:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 14px 28px var(--accent-glow);
         }
-        .up-secondary:hover { color: var(--text-primary); text-decoration-color: currentColor; }
+        .up-home:active {
+            transform: translateY(0) scale(0.98);
+        }
+        .up-home svg {
+            transition: transform 200ms var(--ease-out-quart);
+        }
+        .up-home:hover svg {
+            transform: translateX(-3px);
+        }
 
-        /* RIG */
+        /* Physical Rig */
         .up-rig {
             position: relative;
             flex: none;
@@ -325,7 +368,7 @@
             font-size: 14px;
             font-weight: 500;
             cursor: pointer;
-            transition: border-color 160ms var(--ease-out-quart), background 160ms var(--ease-out-quart), color 160ms var(--ease-out-quart), transform 160ms var(--ease-out-quart);
+            transition: all 160ms var(--ease-out-quart);
         }
         .up-fallback:hover { border-color: var(--text-tertiary); }
         .up-fallback:active { transform: scale(0.97); }
@@ -336,19 +379,19 @@
         }
         [data-power="on"] .up-fallback:hover { color: var(--text-primary); border-color: var(--border-strong); }
 
-        /* Scene elements */
+        /* Scene graphics */
         .up-stop-wall { stop-color: var(--up-wall); }
         .up-wall-line { fill: var(--up-wall-line); }
         .up-desk { fill: var(--up-desk); }
         .up-desk-edge { fill: var(--up-desk-edge); }
 
-        /* Cable */
+        /* Cable lines */
         .up-cable path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
         .up-cable-edge { stroke: var(--up-cable-edge); }
         .up-cable-body { stroke: var(--up-cable); }
         .up-cable-shine { stroke: var(--up-cable-shine); }
 
-        /* Plug */
+        /* Plug element */
         .up-plug {
             position: absolute;
             top: 0;
@@ -388,7 +431,7 @@
         .up-sheen { fill: none; stroke: var(--up-plug-sheen); stroke-width: 1.2; stroke-linecap: round; }
         .up-face { fill: var(--up-plug-face); }
 
-        /* Socket */
+        /* Socket graphics */
         .up-stop-socket-hi { stop-color: var(--up-socket-hi); }
         .up-stop-socket-lo { stop-color: var(--up-socket-lo); }
         .up-barrel { stroke: var(--up-socket-edge); stroke-width: 1; }
@@ -408,12 +451,12 @@
         }
         [data-power="on"] .up-led {
             fill: var(--up-led-on);
-            filter: drop-shadow(0 0 3px rgba(var(--up-light-rgb), 0.9));
+            filter: drop-shadow(0 0 6px var(--up-led-on));
         }
 
-        /* Spark */
+        /* Spark effects */
         .up-flash {
-            fill: rgba(var(--up-light-rgb), 0.5);
+            fill: rgba(var(--up-light-rgb), 0.55);
             opacity: 0;
             transform-box: fill-box;
             transform-origin: center;
@@ -422,7 +465,7 @@
         }
         .up-ray {
             fill: none;
-            stroke: rgb(var(--up-light-rgb));
+            stroke: var(--up-led-on);
             stroke-width: calc(1.6px * var(--up-k, 1));
             stroke-linecap: round;
             stroke-dasharray: 0.45 1.2;
@@ -430,7 +473,7 @@
             animation: up-ray 300ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
         }
 
-        /* Flicker animations */
+        /* Keyframes */
         @keyframes up-dead {
             0%, 13%, 16.5%, 19%, 64%, 66.5%, 100% { opacity: var(--up-dim); }
             14% { opacity: calc(var(--up-dim) * 1.45); }
@@ -482,6 +525,7 @@
             .up-title { margin-top: 20px; font-size: 25px; }
             .up-message { font-size: 15px; }
             .up-actions { margin-top: 24px; }
+            .up-home { width: 100%; max-width: 320px; }
             .up-rig { margin-top: 14px; }
             .up-controls {
                 position: static;
@@ -495,9 +539,9 @@
         }
     </style>
 </head>
-<body>
+<body data-error="{{ code|default('404') }}">
 
-    <div class="unplugged-root" id="unpluggedRoot" data-power="on">
+    <div class="unplugged-root" id="unpluggedRoot" data-power="on" data-error="{{ code|default('404') }}">
         <!-- Top Status Line -->
         <p class="up-status" aria-hidden="true">
             <span class="up-status-dot"></span>
@@ -515,6 +559,8 @@
                     Server power tripped.
                 {% elif code == 403 or code == '403' %}
                     Access line severed.
+                {% elif code == 400 or code == '400' %}
+                    Bad electrical request.
                 {% else %}
                     {{ title|default("This page came unplugged.") }}
                 {% endif %}
@@ -524,18 +570,23 @@
                     {{ message }}
                 {% elif code == 404 or code == '404' %}
                     We couldn't find the page you were looking for. It may have moved, or the link may be broken.
+                {% elif code == 500 or code == '500' %}
+                    The central server encountered an unexpected blackout. Please try again later.
+                {% elif code == 403 or code == '403' %}
+                    Access to this zone is restricted. Authorization voltage is grounded.
                 {% else %}
                     The connection to this route has been severed. Reconnect the cable to restore service.
                 {% endif %}
             </p>
+            
+            <!-- Centered "Take me home" Button (No Support Link) -->
             <div class="up-actions">
                 <a class="up-home" href="/">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M19 12H5M11 6l-6 6 6 6"/>
                     </svg>
                     <span>Take me home</span>
                 </a>
-                <a class="up-secondary" href="mailto:support@aircursor.com">Contact support</a>
             </div>
         </div>
 
@@ -596,7 +647,7 @@
     </div>
 
     <!-- ============================================================================
-         Exact Mathematical Verlet Physics Engine (Unplugged404.jsx)
+         Verlet Physics Engine
          ============================================================================ -->
     <script>
         (function() {
@@ -728,7 +779,7 @@
                     const down = sBottom - p.y;
                     if (out <= up && out <= down) p.x = sLeft;
                     else if (up <= down) p.y = sTop;
-                    else p.y = sBottom;
+                    else p.y = bottom;
                 }
             }
 
@@ -747,7 +798,7 @@
                 const end = pts[n - 1];
                 const neck = pts[n - 2];
                 end.x = tail.x; end.y = tail.y;
-                neck.x = tail.x - tail.c * SEG; neck.y = tail.y - tail.s * SEG;
+                neck.x = tail.x - tail.c * SEG; neck.y = tail.s * SEG;
 
                 const head = anchorOf(g, rope, tail);
                 pts[0].x += (head.x - pts[0].x) * 0.25;
@@ -941,7 +992,6 @@
                 if (on) triggerSpark();
             }
 
-            // Animation Loop
             let runningAnim = null;
             function cancelRunningAnim() {
                 if (runningAnim) {
@@ -1015,7 +1065,6 @@
                 plugSvg.style.clipPath = inside > 0 ? `inset(-24px ${inside.toFixed(2)}px -24px -24px)` : 'none';
             }
 
-            // Drag Handler
             let grab = null;
             function onPointerDown(e) {
                 if (e.pointerType === 'mouse' && e.button !== 0) return;
@@ -1093,7 +1142,6 @@
                 }
             });
 
-            // Physics Render Loop
             let lastTime = performance.now();
             let acc = 0;
             function mainLoop(now) {
